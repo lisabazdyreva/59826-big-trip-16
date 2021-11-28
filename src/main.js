@@ -1,5 +1,5 @@
 import {render} from './utils/utils';
-import {RenderPosition} from './consts';
+import {RenderPosition, DefaultValue} from './consts';
 import {getPoint} from './mock/point';
 
 import {createMenuView} from './view/menu-view';
@@ -20,9 +20,9 @@ const mainContainer = document.querySelector('.trip-events');
 const infoContainer = document.querySelector('.trip-main');
 
 
-const menuTemplate = createMenuView();
-const filtersTemplate = createFiltersView();
-const sortingTemplate = createSortingView();
+const menuTemplate = createMenuView(DefaultValue.MENU);
+const filtersTemplate = createFiltersView(DefaultValue.FILTER);
+const sortingTemplate = createSortingView(DefaultValue.SORTING);
 const pointsListTemplate = createPointsListView();
 const editPointTemplate = createEditPointView(points[0]);
 const infoTemplate = createInfoView(points); // TODO вью еще поправить

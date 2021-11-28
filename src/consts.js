@@ -5,7 +5,7 @@ const RenderPosition = {
   AFTEREND: 'afterend',
 };
 
-const SortingTypes = {
+const SortingType = {
   DAY: 'day',
   EVENT: 'event',
   TIME: 'time',
@@ -13,6 +13,22 @@ const SortingTypes = {
   OFFERS: 'offers',
 };
 
+const FilterValue = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PAST: 'past',
+};
+
+const MenuTab = {
+  TABLE: 'Table',
+  STATS: 'Stats',
+};
+
+const DefaultValue = {
+  SORTING: SortingType.DAY,
+  FILTER: FilterValue.EVERYTHING,
+  MENU: MenuTab.TABLE,
+};
 
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
@@ -26,4 +42,4 @@ const TimeFormat = {
 const FAKE_NAMES = ['Toronto', 'Tokyo', 'Bursa', 'Bishkek', 'Torzhok', 'Tambov', 'Valencia', 'Warsaw','Dakar', 'Ottawa'];
 
 
-export {RenderPosition, TYPES, TimeFormat, FAKE_NAMES, SortingTypes};
+export {RenderPosition, TYPES, TimeFormat, FAKE_NAMES, SortingType, FilterValue, MenuTab, DefaultValue};
