@@ -14,7 +14,7 @@ const render = (container, template, position) => {
   container.insertAdjacentHTML(position, template);
 };
 
-const getFormattedDuration = (difference) => { // TODO мб улучшить можно
+const getFormattedDuration = (difference) => { // TODO мб улучшить можно будет со временем
   if (difference < TimeConverter.MINUTES_IN_HOUR) {
     return `${difference}${TimeUnit.MINUTES}`;
   }

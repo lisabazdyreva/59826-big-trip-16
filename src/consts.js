@@ -37,6 +37,7 @@ const TimeFormat = {
   ISO: 'YYYY-MM-DDTHH:mm',
   MONTH_DAY: 'MMM D',
   YEAR_MONTH_DAY: 'YYYY-MM-DD',
+  DAYS_MONTHS_YEARS_TIME: 'DD/MM/YY HH:mm',
 };
 
 const FAKE_NAMES = ['Toronto', 'Tokyo', 'Bursa', 'Bishkek', 'Torzhok', 'Tambov', 'Valencia', 'Warsaw','Dakar', 'Ottawa'];

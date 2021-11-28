@@ -3,15 +3,14 @@ import {getFormattedDuration} from '../utils/utils';
 import {TimeFormat} from '../consts';
 
 
-const getOffersTemplate = (offers) => (
-  `<h4 class="visually-hidden">Offers:</h4>
-   <ul class="event__selected-offers">
+const getOffersTemplate = (offers) => `<h4 class="visually-hidden">Offers:</h4>
+  <ul class="event__selected-offers">
     ${offers.map(({title, price}) => `<li class="event__offer">
       <span class="event__offer-title">${title}</span>
           &plus;&euro;&nbsp;
       <span class="event__offer-price">${price}</span>`)}
-   </ul>`
-);
+  </ul>`;
+
 
 const getScheduleTemplate = (from, to, difference) => {
   const timeFrom = `${from.format(TimeFormat.HOURS_MINUTES)}`;
@@ -32,6 +31,7 @@ const getScheduleTemplate = (from, to, difference) => {
   </div>`;
 };
 
+
 const getEventDateTemplate = (from) => {
   const date = from.format(TimeFormat.MONTH_DAY);
   const attrDate = from.format(TimeFormat.YEAR_MONTH_DAY);
@@ -51,7 +51,6 @@ const createPointView = (point) => {
   const to = (dateTo !== null) ? dayjs(dateTo) : '';
   const difference = dayjs(dateTo).diff(dateFrom, 'minute');
   const scheduleTemplate = getScheduleTemplate(from, to, difference);
-
   const fromDateTemplate = getEventDateTemplate(from);
 
   return `<li class="trip-events__item">

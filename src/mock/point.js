@@ -17,7 +17,6 @@ const FakeValue = {
   MAX_OFFERS: 5,
   MIN_PRICE: 10,
   MAX_PRICE: 1000,
-  MIN_SENTENCES: 1,
   MAX_SENTENCES: 5,
   MAX_PICTURES: 6,
   MAX_DAYS_GAP: 7,
@@ -26,6 +25,7 @@ const FakeValue = {
   MIN_DIFF_MINUTES: 10,
   MAX_DIFF_MINUTES: 1600,
 };
+
 const UnitValue = {
   DAY: 'day',
   MINUTE: 'minute',
@@ -34,7 +34,7 @@ const UnitValue = {
 
 const getRandomDescription = () => {
   let description = '';
-  const valueOfSentences = getRandomInteger(FakeValue.MIN_SENTENCES, FakeValue.MAX_SENTENCES);
+  const valueOfSentences = getRandomInteger(0, FakeValue.MAX_SENTENCES);
 
   for (let i = 0; i < valueOfSentences; i++) {
     description += FAKE_DESCRIPTIONS[getRandomInteger(0, FAKE_DESCRIPTIONS.length - 1)];
