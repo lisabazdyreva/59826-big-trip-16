@@ -1,5 +1,6 @@
 import {render} from './utils/utils';
 import {RenderPosition} from './consts';
+import {getPoint} from './mock/point';
 
 import {createMenuView} from './view/menu-view';
 import {createFiltersView} from './view/filters-view';
@@ -9,7 +10,8 @@ import {createPointView} from './view/point-view';
 import {createEditPointView} from './view/edit-point-view';
 
 
-const POINTS_VALUE = 3;
+const POINTS_VALUE = 15;
+const points = Array.from({length: POINTS_VALUE}, getPoint);
 
 const menuContainer = document.querySelector('.trip-controls__navigation');
 const filtersContainer = document.querySelector('.trip-controls__filters');
@@ -20,7 +22,7 @@ const filtersTemplate = createFiltersView();
 const sortingTemplate = createSortingView();
 const pointsListTemplate = createPointsListView();
 const editPointTemplate = createEditPointView();
-const pointTemplate = createPointView();
+const pointTemplate = createPointView(points[0]);
 
 
 render(menuContainer, menuTemplate, RenderPosition.BEFOREEND);
