@@ -21,8 +21,7 @@ const menuTemplate = createMenuView();
 const filtersTemplate = createFiltersView();
 const sortingTemplate = createSortingView();
 const pointsListTemplate = createPointsListView();
-const editPointTemplate = createEditPointView();
-const pointTemplate = createPointView(points[0]);
+const editPointTemplate = createEditPointView(points[0]);
 
 
 render(menuContainer, menuTemplate, RenderPosition.BEFOREEND);
@@ -34,8 +33,8 @@ render(mainContainer, pointsListTemplate, RenderPosition.BEFOREEND);
 const pointsListContainer = mainContainer.querySelector('.trip-events__list');
 
 render(pointsListContainer, editPointTemplate, RenderPosition.BEFOREEND);
-for (let i = 0; i < POINTS_VALUE; i++) {
-  render(pointsListContainer, pointTemplate, RenderPosition.BEFOREEND);
+for (let i = 1; i < POINTS_VALUE; i++) {
+  render(pointsListContainer, createPointView(points[i]), RenderPosition.BEFOREEND);
 }
 
 
