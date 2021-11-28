@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {TYPES} from '../consts';
+import {TYPES, FAKE_NAMES} from '../consts';
 import {getRandomInteger} from '../utils/mock-utils';
 
 
@@ -12,7 +12,7 @@ eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed fel
 Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`.split('.');
 
 const FAKE_PICTURE_URL = 'http://picsum.photos/248/152?r=';
-const FAKE_NAMES = ['Toronto', 'Tokyo', 'Bursa', 'Bishkek', 'Torzhok', 'Tambov', 'Valencia', 'Warsaw','Dakar', 'Ottawa'];
+
 const FakeValue = {
   MAX_OFFERS: 5,
   MIN_PRICE: 10,

@@ -14,5 +14,7 @@ const TimeFormat = {
   YEAR_MONTH_DAY: 'YYYY-MM-DD',
 };
 
+const FAKE_NAMES = ['Toronto', 'Tokyo', 'Bursa', 'Bishkek', 'Torzhok', 'Tambov', 'Valencia', 'Warsaw','Dakar', 'Ottawa'];
 
-export {RenderPosition, TYPES, TimeFormat};
+
+export {RenderPosition, TYPES, TimeFormat, FAKE_NAMES};
