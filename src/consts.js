@@ -5,6 +5,15 @@ const RenderPosition = {
   AFTEREND: 'afterend',
 };
 
+const SortingTypes = {
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFERS: 'offers',
+};
+
+
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
 const TimeFormat = {
@@ -17,4 +26,4 @@ const TimeFormat = {
 const FAKE_NAMES = ['Toronto', 'Tokyo', 'Bursa', 'Bishkek', 'Torzhok', 'Tambov', 'Valencia', 'Warsaw','Dakar', 'Ottawa'];
 
 
-export {RenderPosition, TYPES, TimeFormat, FAKE_NAMES};
+export {RenderPosition, TYPES, TimeFormat, FAKE_NAMES, SortingTypes};

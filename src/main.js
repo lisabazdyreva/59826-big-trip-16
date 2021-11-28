@@ -25,7 +25,7 @@ const filtersTemplate = createFiltersView();
 const sortingTemplate = createSortingView();
 const pointsListTemplate = createPointsListView();
 const editPointTemplate = createEditPointView(points[0]);
-const infoTemplate = createInfoView(points);
+const infoTemplate = createInfoView(points); // TODO вью еще поправить
 
 
 render(menuContainer, menuTemplate, RenderPosition.BEFOREEND);
