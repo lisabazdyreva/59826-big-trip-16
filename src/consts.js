@@ -36,6 +36,7 @@ const TimeFormat = {
   HOURS_MINUTES: 'HH:mm',
   ISO: 'YYYY-MM-DDTHH:mm',
   MONTH_DAY: 'MMM D',
+  DAY: 'D',
   YEAR_MONTH_DAY: 'YYYY-MM-DD',
   DAYS_MONTHS_YEARS_TIME: 'DD/MM/YY HH:mm',
 };
