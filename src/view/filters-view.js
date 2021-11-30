@@ -1,4 +1,5 @@
 import {FilterValue} from '../consts';
+import {createElement} from '../utils/utils';
 
 const filterValuesList = Object.values(FilterValue);
 
@@ -18,4 +19,27 @@ const createFiltersView = (activeFilter) => (
    </form>`
 );
 
-export {createFiltersView};
+export default class FiltersView {
+  #activeFilter;
+  #element = null;
+
+  constructor(activeFilter) {
+    this.#activeFilter = activeFilter;
+  }
+
+  get template() {
+    return createFiltersView(this.#activeFilter);
+  }
+
+  get element() {
+    if(!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

@@ -3,7 +3,7 @@ import {RenderPosition, DefaultValue} from './consts';
 import {getPoint} from './mock/point';
 
 import MenuView from './view/menu-view';
-import {createFiltersView} from './view/filters-view';
+import FiltersView from './view/filters-view';
 import {createSortingView} from './view/sorting-view';
 import {createPointsListView} from './view/points-list-view';
 import {createPointView} from './view/point-view';
@@ -21,7 +21,7 @@ const infoContainer = document.querySelector('.trip-main');
 
 
 const menuElement = new MenuView(DefaultValue.MENU).element;
-const filtersTemplate = createFiltersView(DefaultValue.FILTER);
+const filtersElement = new FiltersView(DefaultValue.FILTER).element;
 const sortingTemplate = createSortingView(DefaultValue.SORTING);
 const pointsListTemplate = createPointsListView();
 const editPointTemplate = createEditPointView(points[0]);
@@ -30,7 +30,7 @@ const infoElement = new InfoView(points).element; // TODO вью еще попр
 
 render(menuContainer, menuElement, RenderPosition.BEFOREEND, true);
 render(infoContainer, infoElement, RenderPosition.AFTERBEGIN, true);
-render(filtersContainer, filtersTemplate, RenderPosition.BEFOREEND);
+render(filtersContainer, filtersElement, RenderPosition.BEFOREEND, true);
 render(mainContainer, sortingTemplate, RenderPosition.BEFOREEND);
 render(mainContainer, pointsListTemplate, RenderPosition.BEFOREEND);
 
