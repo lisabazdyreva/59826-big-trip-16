@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import {TimeFormat} from '../consts';
+import {createElement} from '../utils/utils';
 
 const MIN_PRICE = 0;
 
@@ -64,4 +65,26 @@ const createInfoView = (points) => {
   </section>`;
 };
 
-export {createInfoView};
+export default class InfoView {
+  #points;
+  #element = null;
+
+  constructor(points) {
+    this.#points = points;
+  }
+
+  get template() {
+    return createInfoView(this.#points);
+  }
+
+  get element() {
+    if(!this.#element) {
+      this.#element = createElement(this.template);
+    }
+    return this.#element;
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

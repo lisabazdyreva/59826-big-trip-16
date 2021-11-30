@@ -8,7 +8,7 @@ import {createSortingView} from './view/sorting-view';
 import {createPointsListView} from './view/points-list-view';
 import {createPointView} from './view/point-view';
 import {createEditPointView} from './view/edit-point-view';
-import {createInfoView} from './view/info-view';
+import InfoView from './view/info-view';
 
 
 const POINTS_VALUE = 15;
@@ -25,11 +25,11 @@ const filtersTemplate = createFiltersView(DefaultValue.FILTER);
 const sortingTemplate = createSortingView(DefaultValue.SORTING);
 const pointsListTemplate = createPointsListView();
 const editPointTemplate = createEditPointView(points[0]);
-const infoTemplate = createInfoView(points); // TODO вью еще поправить
+const infoElement = new InfoView(points).element; // TODO вью еще поправить
 
 
 render(menuContainer, menuElement, RenderPosition.BEFOREEND, true);
-render(infoContainer, infoTemplate, RenderPosition.AFTERBEGIN);
+render(infoContainer, infoElement, RenderPosition.AFTERBEGIN, true);
 render(filtersContainer, filtersTemplate, RenderPosition.BEFOREEND);
 render(mainContainer, sortingTemplate, RenderPosition.BEFOREEND);
 render(mainContainer, pointsListTemplate, RenderPosition.BEFOREEND);
