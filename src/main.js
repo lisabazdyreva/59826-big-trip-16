@@ -6,7 +6,7 @@ import MenuView from './view/menu-view';
 import FiltersView from './view/filters-view';
 import SortingView from './view/sorting-view';
 import PointsListView from './view/points-list-view';
-import {createPointView} from './view/point-view';
+import PointView from './view/point-view';
 import {createEditPointView} from './view/edit-point-view';
 import InfoView from './view/info-view';
 
@@ -39,7 +39,7 @@ const pointsListContainer = mainContainer.querySelector('.trip-events__list');
 
 render(pointsListContainer, editPointTemplate, RenderPosition.BEFOREEND);
 for (let i = 1; i < POINTS_VALUE; i++) {
-  render(pointsListContainer, createPointView(points[i]), RenderPosition.BEFOREEND);
+  render(pointsListContainer, new PointView(points[i]).element, RenderPosition.BEFOREEND, true);
 }
 
 
