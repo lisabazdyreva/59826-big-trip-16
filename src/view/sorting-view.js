@@ -1,4 +1,5 @@
 import {SortingType} from '../consts';
+import {createElement} from '../utils/utils';
 
 const sortingTypesList = Object.values(SortingType);
 
@@ -23,4 +24,27 @@ const createSortingView = (activeSortingType) => (
   </form>`
 );
 
-export {createSortingView};
+export default class SortingView{
+  #activeSortingType;
+  #element = null;
+
+  constructor(activeSortingType) {
+    this.#activeSortingType = activeSortingType;
+  }
+
+  get template() {
+    return createSortingView(this.#activeSortingType);
+  }
+
+  get element() {
+    if(!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
