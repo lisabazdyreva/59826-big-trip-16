@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
 import {TimeFormat} from '../consts';
 
+const MIN_PRICE = 0;
+
 const getCitiesTemplate = (cities) => {
   const startCity = cities[0];
   const finishCity = cities[cities.length - 1];
@@ -29,14 +31,14 @@ const getDatesTemplate = (startPoint, finishPoint) => {
 const getCost = (points) => points.slice().reduce((total, point) => {
   const {offers, price} = point;
 
-  let offersCost = 0;
+  let offersCost = MIN_PRICE;
 
   for (const offer of offers) {
     offersCost += offer.price;
   }
 
   return total + price + offersCost;
-}, 0); // TODO посмотреть в ТЗ, не грузит насчет стоимости предложений
+}, MIN_PRICE);
 
 
 const createInfoView = (points) => {

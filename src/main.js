@@ -2,7 +2,7 @@ import {render} from './utils/utils';
 import {RenderPosition, DefaultValue} from './consts';
 import {getPoint} from './mock/point';
 
-import {createMenuView} from './view/menu-view';
+import MenuView from './view/menu-view';
 import {createFiltersView} from './view/filters-view';
 import {createSortingView} from './view/sorting-view';
 import {createPointsListView} from './view/points-list-view';
@@ -20,7 +20,7 @@ const mainContainer = document.querySelector('.trip-events');
 const infoContainer = document.querySelector('.trip-main');
 
 
-const menuTemplate = createMenuView(DefaultValue.MENU);
+const menuElement = new MenuView(DefaultValue.MENU).element;
 const filtersTemplate = createFiltersView(DefaultValue.FILTER);
 const sortingTemplate = createSortingView(DefaultValue.SORTING);
 const pointsListTemplate = createPointsListView();
@@ -28,7 +28,7 @@ const editPointTemplate = createEditPointView(points[0]);
 const infoTemplate = createInfoView(points); // TODO вью еще поправить
 
 
-render(menuContainer, menuTemplate, RenderPosition.BEFOREEND);
+render(menuContainer, menuElement, RenderPosition.BEFOREEND, true);
 render(infoContainer, infoTemplate, RenderPosition.AFTERBEGIN);
 render(filtersContainer, filtersTemplate, RenderPosition.BEFOREEND);
 render(mainContainer, sortingTemplate, RenderPosition.BEFOREEND);

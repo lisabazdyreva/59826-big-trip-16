@@ -1,3 +1,5 @@
+import {RenderPosition} from '../consts';
+
 const TimeConverter = {
   MINUTES_IN_HOUR: 60,
   MINUTES_IN_DAY: 1440,
@@ -10,8 +12,21 @@ const TimeUnit = {
   DAYS: 'D',
 };
 
-const render = (container, template, position) => {
-  container.insertAdjacentHTML(position, template);
+const render = (container, template, position, isNew = false) => {
+  if(isNew) {
+    switch (position) {
+      case (RenderPosition.AFTERBEGIN):
+        container.prepend(template);
+        break;
+      default:
+        container.append(template);
+        break;
+    }
+
+  } else {
+    container.insertAdjacentHTML(position, template);
+  }
+
 };
 
 const getFormattedDuration = (difference) => { // TODO мб улучшить можно будет со временем
@@ -34,4 +49,11 @@ const getFormattedDuration = (difference) => { // TODO мб улучшить м�
     return `${days}${TimeUnit.DAYS} ${hours}${TimeUnit.HOURS} ${minutes}${TimeUnit.MINUTES}`;
   }
 };
-export {render, getFormattedDuration};
+
+const createElement = (template) => {
+  const emptyElement = document.createElement('div');
+  emptyElement.innerHTML = template;
+  return emptyElement.firstElementChild;
+};
+
+export {render, getFormattedDuration, createElement};
