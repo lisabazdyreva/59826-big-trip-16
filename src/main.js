@@ -9,10 +9,15 @@ import PointsListView from './view/points-list-view';
 import PointView from './view/point-view';
 import EditPointView from './view/edit-point-view';
 import InfoView from './view/info-view';
+import EmptyListView from './view/empty-list-view';
 
 
-const POINTS_VALUE = 15;
-const points = Array.from({length: POINTS_VALUE}, getPoint);
+const PointsValue = {
+  FULL: 15,
+  EMPTY: 0,
+};
+
+const data = Array.from({length: PointsValue.FULL}, getPoint);
 
 const menuContainer = document.querySelector('.trip-controls__navigation');
 const filtersContainer = document.querySelector('.trip-controls__filters');
@@ -22,16 +27,12 @@ const infoContainer = document.querySelector('.trip-main');
 
 const menuElement = new MenuView(DefaultValue.MENU).element;
 const filtersElement = new FiltersView(DefaultValue.FILTER).element;
-const sortingElement = new SortingView(DefaultValue.SORTING).element;
 const pointsListElement = new PointsListView().element;
-const infoElement = new InfoView(points).element; // TODO вью еще поправить
+const emptyListElement = new EmptyListView(DefaultValue.NOTIFICATION).element;
 
 
 render(menuContainer, menuElement, RenderPosition.BEFOREEND);
-render(infoContainer, infoElement, RenderPosition.AFTERBEGIN);
 render(filtersContainer, filtersElement, RenderPosition.BEFOREEND);
-render(mainContainer, sortingElement, RenderPosition.BEFOREEND);
-render(mainContainer, pointsListElement, RenderPosition.BEFOREEND);
 
 
 const renderPoint = (container, point) => {
@@ -71,8 +72,22 @@ const renderPoint = (container, point) => {
 };
 
 
-for (let i = 0; i < POINTS_VALUE; i++) {
-  renderPoint(pointsListElement, points[i]);
-}
+const renderMainContent = (points) => {
+  if(!points.length) {
+    render(mainContainer, emptyListElement, RenderPosition.BEFOREEND);
+  } else {
+    const infoElement = new InfoView(points).element;
+    const sortingElement = new SortingView(DefaultValue.SORTING).element;
+
+    render(infoContainer, infoElement, RenderPosition.AFTERBEGIN);
+    render(mainContainer, sortingElement, RenderPosition.BEFOREEND);
+    render(mainContainer, pointsListElement, RenderPosition.BEFOREEND);
+
+    for (let i = 0; i < PointsValue.FULL; i++) {
+      renderPoint(pointsListElement, points[i]);
+    }
+  }
+};
 
 
+renderMainContent(data);
