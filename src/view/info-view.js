@@ -66,7 +66,7 @@ const createInfoView = (points) => {
 };
 
 export default class InfoView {
-  #points;
+  #points = null;
   #element = null;
 
   constructor(points) {

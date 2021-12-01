@@ -20,7 +20,7 @@ const createFiltersView = (activeFilter) => (
 );
 
 export default class FiltersView {
-  #activeFilter;
+  #activeFilter = null;
   #element = null;
 
   constructor(activeFilter) {

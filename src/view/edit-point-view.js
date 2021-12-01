@@ -5,6 +5,19 @@ import {createElement} from '../utils/utils';
 
 const isEditPoint = true; // TODO временно
 
+const DEFAULT_POINT = {
+  price: '',
+  dateFrom: dayjs(),
+  dateTo: dayjs(),
+  destination : {
+    name: '',
+    pictures: [],
+    description: '',
+  },
+  offers: [],
+  type: TYPES[0],
+};
+
 
 const getEditButtonGroupTemplate = () => `<button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
   <button class="event__reset-btn" type="reset">Delete</button>
@@ -96,15 +109,8 @@ const getDestinationsListTemplate = (destinations) => `<datalist id="destination
 </datalist>`;
 
 
-const createEditPointView = (point = {}) => {
-  const {
-    price = '',
-    dateFrom = dayjs(),
-    dateTo = dayjs(),
-    destination = {name: '', pictures: [], description: ''},
-    offers = [],
-    type = TYPES[0]
-  } = point;
+const createEditPointView = (point) => {
+  const {price, dateFrom, dateTo, destination, offers, type} = point;
   const {name, pictures, description} = destination;
 
   const eventTypeListTemplate = getEventTypeListTemplate(type);
@@ -161,10 +167,10 @@ const createEditPointView = (point = {}) => {
 };
 
 export default class EditPointView {
+  #point = null;
   #element = null;
-  #point;
 
-  constructor(point) {
+  constructor(point = DEFAULT_POINT) {
     this.#point = point;
   }
 

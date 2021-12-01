@@ -12,7 +12,7 @@ const createMenuView = (activeTab) => `<nav class="trip-controls__trip-tabs  tri
 </nav>`;
 
 export default class MenuView {
-  #activeTab;
+  #activeTab = null;
   #element = null;
 
   constructor(activeTab) {

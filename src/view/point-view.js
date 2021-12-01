@@ -79,8 +79,8 @@ const createPointView = (point) => {
 };
 
 export default class PointView {
+  #point = null;
   #element = null;
-  #point;
 
   constructor(point) {
     this.#point = point;

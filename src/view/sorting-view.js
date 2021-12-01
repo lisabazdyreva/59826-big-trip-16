@@ -24,8 +24,8 @@ const createSortingView = (activeSortingType) => (
   </form>`
 );
 
-export default class SortingView{
-  #activeSortingType;
+export default class SortingView {
+  #activeSortingType = null;
   #element = null;
 
   constructor(activeSortingType) {
