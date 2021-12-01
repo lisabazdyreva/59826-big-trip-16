@@ -1,4 +1,4 @@
-import {render} from './utils/utils';
+import {render, replaceChild} from './utils/utils';
 import {RenderPosition, DefaultValue} from './consts';
 import {getPoint} from './mock/point';
 
@@ -24,7 +24,6 @@ const menuElement = new MenuView(DefaultValue.MENU).element;
 const filtersElement = new FiltersView(DefaultValue.FILTER).element;
 const sortingElement = new SortingView(DefaultValue.SORTING).element;
 const pointsListElement = new PointsListView().element;
-const editPointElement = new EditPointView(points[0]).element;
 const infoElement = new InfoView(points).element; // TODO вью еще поправить
 
 
@@ -35,11 +34,29 @@ render(mainContainer, sortingElement, RenderPosition.BEFOREEND);
 render(mainContainer, pointsListElement, RenderPosition.BEFOREEND);
 
 
-const pointsListContainer = mainContainer.querySelector('.trip-events__list');
+const renderPoint = (container, point) => {
+  const pointElement = new PointView(point).element;
+  const editPointElement = new EditPointView(point).element;
 
-render(pointsListContainer, editPointElement, RenderPosition.BEFOREEND);
-for (let i = 1; i < POINTS_VALUE; i++) {
-  render(pointsListContainer, new PointView(points[i]).element, RenderPosition.BEFOREEND);
+  const replacePointToEdit = () => {
+    replaceChild(editPointElement, pointElement, container);
+  };
+
+  const replaceEditToPoint = () => {
+    replaceChild(pointElement, editPointElement, container);
+  };
+
+  pointElement.querySelector('.event__rollup-btn').addEventListener('click', replacePointToEdit);
+
+  editPointElement.querySelector('.event__rollup-btn').addEventListener('click', replaceEditToPoint);
+  editPointElement.querySelector('.event--edit').addEventListener('submit', replaceEditToPoint);
+
+  render(container, pointElement, RenderPosition.BEFOREEND);
+};
+
+
+for (let i = 0; i < POINTS_VALUE; i++) {
+  renderPoint(pointsListElement, points[i]);
 }
 
 

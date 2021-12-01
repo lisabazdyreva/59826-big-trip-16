@@ -59,4 +59,8 @@ const createElement = (template) => {
   return emptyElement.firstElementChild;
 };
 
-export {render, getFormattedDuration, createElement};
+const replaceChild = (to, from, container) => {
+  container.replaceChild(to, from);
+};
+
+export {render, getFormattedDuration, createElement, replaceChild};

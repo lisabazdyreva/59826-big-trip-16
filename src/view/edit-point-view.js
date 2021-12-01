@@ -1,22 +1,9 @@
 import dayjs from 'dayjs';
-import {FAKE_NAMES, TYPES, TimeFormat} from '../consts';
+import {FAKE_NAMES, TYPES, TimeFormat, DefaultValue} from '../consts';
 import {createElement} from '../utils/utils';
 
 
 const isEditPoint = true; // TODO временно
-
-const DEFAULT_POINT = {
-  price: '',
-  dateFrom: dayjs(),
-  dateTo: dayjs(),
-  destination : {
-    name: '',
-    pictures: [],
-    description: '',
-  },
-  offers: [],
-  type: TYPES[0],
-};
 
 
 const getEditButtonGroupTemplate = () => `<button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -170,7 +157,7 @@ export default class EditPointView {
   #point = null;
   #element = null;
 
-  constructor(point = DEFAULT_POINT) {
+  constructor(point = DefaultValue.POINT) {
     this.#point = point;
   }
 
