@@ -1,4 +1,4 @@
-import {render, replaceChild} from './utils/utils';
+import {render, replaceChild, isEsc} from './utils/utils';
 import {RenderPosition, DefaultValue} from './consts';
 import {getPoint} from './mock/point';
 
@@ -38,18 +38,34 @@ const renderPoint = (container, point) => {
   const pointElement = new PointView(point).element;
   const editPointElement = new EditPointView(point).element;
 
-  const replacePointToEdit = () => {
+  const formEscHandler = (evt) => {
+    if (isEsc(evt.code)) {
+      replaceChild(pointElement, editPointElement, container);
+      document.removeEventListener('keydown', formEscHandler);
+    }
+  };
+
+  const buttonOpenClickHandler = () => {
     replaceChild(editPointElement, pointElement, container);
+    document.addEventListener('keydown', formEscHandler);
   };
 
-  const replaceEditToPoint = () => {
+  const buttonCloseClickHandler = () => {
     replaceChild(pointElement, editPointElement, container);
+    document.removeEventListener('keydown', formEscHandler);
   };
 
-  pointElement.querySelector('.event__rollup-btn').addEventListener('click', replacePointToEdit);
+  const formSubmitHandler = () => {
+    replaceChild(pointElement, editPointElement, container);
+    document.removeEventListener('keydown', formEscHandler);
+  };
 
-  editPointElement.querySelector('.event__rollup-btn').addEventListener('click', replaceEditToPoint);
-  editPointElement.querySelector('.event--edit').addEventListener('submit', replaceEditToPoint);
+
+  pointElement.querySelector('.event__rollup-btn').addEventListener('click', buttonOpenClickHandler);
+
+  editPointElement.querySelector('.event__rollup-btn').addEventListener('click', buttonCloseClickHandler);
+  editPointElement.querySelector('.event--edit').addEventListener('submit', formSubmitHandler);
+
 
   render(container, pointElement, RenderPosition.BEFOREEND);
 };
