@@ -12,21 +12,24 @@ const TimeUnit = {
   DAYS: 'D',
 };
 
-const render = (container, template, position, isNew = false) => {
-  if(isNew) {
-    switch (position) {
-      case (RenderPosition.AFTERBEGIN):
-        container.prepend(template);
-        break;
-      default:
-        container.append(template);
-        break;
-    }
-
-  } else {
-    container.insertAdjacentHTML(position, template);
+const render = (container, element, position) => {
+  switch (position) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREBEGIN:
+      container.before(element);
+      break;
+    case RenderPosition.AFTEREND:
+      container.after(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+    default:
+      container.append(element);
+      break;
   }
-
 };
 
 const getFormattedDuration = (difference) => { // TODO мб улучшить можно будет со временем

@@ -7,7 +7,7 @@ import FiltersView from './view/filters-view';
 import SortingView from './view/sorting-view';
 import PointsListView from './view/points-list-view';
 import PointView from './view/point-view';
-import {createEditPointView} from './view/edit-point-view';
+import EditPointView from './view/edit-point-view';
 import InfoView from './view/info-view';
 
 
@@ -24,22 +24,22 @@ const menuElement = new MenuView(DefaultValue.MENU).element;
 const filtersElement = new FiltersView(DefaultValue.FILTER).element;
 const sortingElement = new SortingView(DefaultValue.SORTING).element;
 const pointsListElement = new PointsListView().element;
-const editPointTemplate = createEditPointView(points[0]);
+const editPointElement = new EditPointView(points[0]).element;
 const infoElement = new InfoView(points).element; // TODO вью еще поправить
 
 
-render(menuContainer, menuElement, RenderPosition.BEFOREEND, true);
-render(infoContainer, infoElement, RenderPosition.AFTERBEGIN, true);
-render(filtersContainer, filtersElement, RenderPosition.BEFOREEND, true);
-render(mainContainer, sortingElement, RenderPosition.BEFOREEND, true);
-render(mainContainer, pointsListElement, RenderPosition.BEFOREEND, true);
+render(menuContainer, menuElement, RenderPosition.BEFOREEND);
+render(infoContainer, infoElement, RenderPosition.AFTERBEGIN);
+render(filtersContainer, filtersElement, RenderPosition.BEFOREEND);
+render(mainContainer, sortingElement, RenderPosition.BEFOREEND);
+render(mainContainer, pointsListElement, RenderPosition.BEFOREEND);
 
 
 const pointsListContainer = mainContainer.querySelector('.trip-events__list');
 
-render(pointsListContainer, editPointTemplate, RenderPosition.BEFOREEND);
+render(pointsListContainer, editPointElement, RenderPosition.BEFOREEND);
 for (let i = 1; i < POINTS_VALUE; i++) {
-  render(pointsListContainer, new PointView(points[i]).element, RenderPosition.BEFOREEND, true);
+  render(pointsListContainer, new PointView(points[i]).element, RenderPosition.BEFOREEND);
 }
 
 
