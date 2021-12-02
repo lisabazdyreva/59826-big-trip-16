@@ -63,8 +63,6 @@ const replaceChild = (to, from, container) => {
   container.replaceChild(to, from);
 };
 
-const isEsc = (key) => {
-  return key === 'Esc' || key === 'Escape';
-};
+const isEsc = (key) => key === 'Esc' || key === 'Escape';
 
 export {render, getFormattedDuration, createElement, replaceChild, isEsc};
