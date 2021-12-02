@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
-import {FAKE_NAMES, TYPES, TimeFormat} from '../consts';
+import {FAKE_NAMES, TYPES, TimeFormat, DefaultValue} from '../consts';
+import {createElement} from '../utils/utils';
 
 
 const isEditPoint = true; // TODO временно
@@ -95,15 +96,8 @@ const getDestinationsListTemplate = (destinations) => `<datalist id="destination
 </datalist>`;
 
 
-const createEditPointView = (point = {}) => {
-  const {
-    price = '',
-    dateFrom = dayjs(),
-    dateTo = dayjs(),
-    destination = {name: '', pictures: [], description: ''},
-    offers = [],
-    type = TYPES[0]
-  } = point;
+const createEditPointView = (point) => {
+  const {price, dateFrom, dateTo, destination, offers, type} = point;
   const {name, pictures, description} = destination;
 
   const eventTypeListTemplate = getEventTypeListTemplate(type);
@@ -159,4 +153,27 @@ const createEditPointView = (point = {}) => {
   </li>`;
 };
 
-export {createEditPointView};
+export default class EditPointView {
+  #point = null;
+  #element = null;
+
+  constructor(point = DefaultValue.POINT) {
+    this.#point = point;
+  }
+
+  get template() {
+    return createEditPointView(this.#point);
+  }
+
+  get element() {
+    if(!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

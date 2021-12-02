@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {getFormattedDuration} from '../utils/utils';
+import {createElement, getFormattedDuration} from '../utils/utils';
 import {TimeFormat} from '../consts';
 
 
@@ -78,4 +78,27 @@ const createPointView = (point) => {
   </li>`;
 };
 
-export {createPointView};
+export default class PointView {
+  #point = null;
+  #element = null;
+
+  constructor(point) {
+    this.#point = point;
+  }
+
+  get template() {
+    return createPointView(this.#point);
+  }
+
+  get element() {
+    if(!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

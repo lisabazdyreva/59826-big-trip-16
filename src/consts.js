@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 const RenderPosition = {
   BEFOREBEGIN: 'beforebegin',
   AFTERBEGIN: 'afterbegin',
@@ -23,14 +25,25 @@ const MenuTab = {
   TABLE: 'Table',
   STATS: 'Stats',
 };
+const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
 const DefaultValue = {
   SORTING: SortingType.DAY,
   FILTER: FilterValue.EVERYTHING,
   MENU: MenuTab.TABLE,
+  POINT: {
+    price: '',
+    dateFrom: dayjs(),
+    dateTo: dayjs(),
+    destination : {
+      name: '',
+      pictures: [],
+      description: '',
+    },
+    offers: [],
+    type: TYPES[0],
+  },
 };
-
-const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
 const TimeFormat = {
   HOURS_MINUTES: 'HH:mm',
