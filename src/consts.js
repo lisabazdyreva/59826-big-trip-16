@@ -25,7 +25,14 @@ const MenuTab = {
   TABLE: 'Table',
   STATS: 'Stats',
 };
+
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
+
+const EmptyNotification = {
+  EVERYTHING: 'Click New Event to create your first point',
+  PAST: 'There are no past events now',
+  FUTURE: 'There are no future events now',
+};
 
 const DefaultValue = {
   SORTING: SortingType.DAY,
@@ -43,6 +50,7 @@ const DefaultValue = {
     offers: [],
     type: TYPES[0],
   },
+  NOTIFICATION: EmptyNotification.EVERYTHING,
 };
 
 const TimeFormat = {
