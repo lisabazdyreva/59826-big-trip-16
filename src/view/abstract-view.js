@@ -4,7 +4,7 @@ export default class AbstractView {
   #element = null;
 
   constructor() {
-    if(new.target === AbstractView) {
+    if (new.target === AbstractView) {
       throw new Error('Abstract class is not for instantiation');
     }
   }
@@ -14,7 +14,7 @@ export default class AbstractView {
   }
 
   get element() {
-    if(!this.#element) {
+    if (!this.#element) {
       this.#element = createElement(this.template);
     }
     return this.#element;

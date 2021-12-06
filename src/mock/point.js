@@ -103,7 +103,7 @@ const getFakeOffers = () => {
     for (let i = 0; i < valueOfOffers; i++) {
       const offer = getFakeOffer();
 
-      if(offer) {
+      if (offer) {
         offersList.push(offer);
       }
     }

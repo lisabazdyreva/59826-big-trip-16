@@ -1,4 +1,4 @@
-import {RenderPosition} from '../consts';
+import AbstractView from '../view/abstract-view';
 
 const TimeConverter = {
   MINUTES_IN_HOUR: 60,
@@ -10,26 +10,6 @@ const TimeUnit = {
   MINUTES: 'M',
   HOURS: 'H',
   DAYS: 'D',
-};
-
-const render = (container, element, position) => {
-  switch (position) {
-    case RenderPosition.AFTERBEGIN:
-      container.prepend(element);
-      break;
-    case RenderPosition.BEFOREBEGIN:
-      container.before(element);
-      break;
-    case RenderPosition.AFTEREND:
-      container.after(element);
-      break;
-    case RenderPosition.BEFOREEND:
-      container.append(element);
-      break;
-    default:
-      container.append(element);
-      break;
-  }
 };
 
 const getFormattedDuration = (difference) => { // TODO мб улучшить можно будет со временем
@@ -59,10 +39,7 @@ const createElement = (template) => {
   return emptyElement.firstElementChild;
 };
 
-const replaceChild = (to, from, container) => {
-  container.replaceChild(to, from);
-};
-
 const isEsc = (key) => key === 'Esc' || key === 'Escape';
 
-export {render, getFormattedDuration, createElement, replaceChild, isEsc};
+
+export {getFormattedDuration, createElement, isEsc};
