@@ -1,5 +1,5 @@
 import {isEsc} from './utils/utils';
-import {removeComponent, render, replaceChild} from './utils/render-utils';
+import {render, replaceChild} from './utils/render-utils';
 
 import {RenderPosition, DefaultValue} from './consts';
 import {getPoint} from './mock/point';
