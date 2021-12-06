@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import {FAKE_NAMES, TYPES, TimeFormat, DefaultValue} from '../consts';
-import {createElement} from '../utils/utils';
+import AbstractView from './abstract-view';
 
 
 const isEditPoint = true; // TODO временно
@@ -153,27 +153,15 @@ const createEditPointView = (point) => {
   </li>`;
 };
 
-export default class EditPointView {
+export default class EditPointView extends AbstractView {
   #point = null;
-  #element = null;
 
   constructor(point = DefaultValue.POINT) {
+    super();
     this.#point = point;
   }
 
   get template() {
     return createEditPointView(this.#point);
-  }
-
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

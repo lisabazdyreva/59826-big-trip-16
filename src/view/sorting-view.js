@@ -1,5 +1,5 @@
 import {SortingType} from '../consts';
-import {createElement} from '../utils/utils';
+import AbstractView from './abstract-view';
 
 const sortingTypesList = Object.values(SortingType);
 
@@ -24,27 +24,15 @@ const createSortingView = (activeSortingType) => (
   </form>`
 );
 
-export default class SortingView {
+export default class SortingView extends AbstractView {
   #activeSortingType = null;
-  #element = null;
 
   constructor(activeSortingType) {
+    super();
     this.#activeSortingType = activeSortingType;
   }
 
   get template() {
     return createSortingView(this.#activeSortingType);
-  }
-
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

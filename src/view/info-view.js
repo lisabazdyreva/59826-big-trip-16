@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import {TimeFormat} from '../consts';
-import {createElement} from '../utils/utils';
+import AbstractView from './abstract-view';
 
 const MIN_PRICE = 0;
 
@@ -65,26 +65,15 @@ const createInfoView = (points) => {
   </section>`;
 };
 
-export default class InfoView {
+export default class InfoView extends AbstractView {
   #points = null;
-  #element = null;
 
   constructor(points) {
+    super();
     this.#points = points;
   }
 
   get template() {
     return createInfoView(this.#points);
-  }
-
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
