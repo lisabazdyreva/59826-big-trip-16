@@ -63,12 +63,10 @@ const renderPoint = (container, point) => {
     document.removeEventListener('keydown', formEscHandler);
   };
 
+  pointComponent.setClickHandler(buttonOpenClickHandler);
 
-  pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', buttonOpenClickHandler);
-
-  editPointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', buttonCloseClickHandler);
-  editPointComponent.element.querySelector('.event--edit').addEventListener('submit', formSubmitHandler);
-
+  editPointComponent.setClickHandler(buttonCloseClickHandler);
+  editPointComponent.setSubmitHandler(formSubmitHandler);
 
   render(container, pointComponent, RenderPosition.BEFOREEND);
 };
