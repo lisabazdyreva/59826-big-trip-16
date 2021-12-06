@@ -1,5 +1,3 @@
-import AbstractView from '../view/abstract-view';
-
 const TimeConverter = {
   MINUTES_IN_HOUR: 60,
   MINUTES_IN_DAY: 1440,
