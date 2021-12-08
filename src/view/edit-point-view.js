@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import {FAKE_NAMES, TYPES, TimeFormat, DefaultValue} from '../consts';
-import {createElement} from '../utils/utils';
+import AbstractView from './abstract-view';
 
 
 const isEditPoint = true; // TODO временно
@@ -153,11 +153,11 @@ const createEditPointView = (point) => {
   </li>`;
 };
 
-export default class EditPointView {
+export default class EditPointView extends AbstractView {
   #point = null;
-  #element = null;
 
   constructor(point = DefaultValue.POINT) {
+    super();
     this.#point = point;
   }
 
@@ -165,15 +165,20 @@ export default class EditPointView {
     return createEditPointView(this.#point);
   }
 
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
+  setClickHandler(cb) {
+    this._callbacks.closeClickHandler = cb;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickHandler);
   }
 
-  removeElement() {
-    this.#element = null;
+  setSubmitHandler(cb) {
+    this._callbacks.submitFormHandler = cb;
+    this.element.querySelector('.event--edit').addEventListener('submit', this.#submitHandler);
   }
+
+  #clickHandler = () => this._callbacks.closeClickHandler();
+
+  #submitHandler = (evt) => {
+    evt.preventDefault();
+    this._callbacks.submitFormHandler();
+  };
 }

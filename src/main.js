@@ -1,4 +1,6 @@
-import {render, replaceChild, isEsc} from './utils/utils';
+import {isEsc} from './utils/utils';
+import {render, replaceChild} from './utils/render-utils';
+
 import {RenderPosition, DefaultValue} from './consts';
 import {getPoint} from './mock/point';
 
@@ -25,66 +27,64 @@ const mainContainer = document.querySelector('.trip-events');
 const infoContainer = document.querySelector('.trip-main');
 
 
-const menuElement = new MenuView(DefaultValue.MENU).element;
-const filtersElement = new FiltersView(DefaultValue.FILTER).element;
-const pointsListElement = new PointsListView().element;
+const menuComponent = new MenuView(DefaultValue.MENU);
+const filtersComponent = new FiltersView(DefaultValue.FILTER);
+const pointsListComponent = new PointsListView();
 const emptyListElement = new EmptyListView(DefaultValue.NOTIFICATION).element;
 
 
-render(menuContainer, menuElement, RenderPosition.BEFOREEND);
-render(filtersContainer, filtersElement, RenderPosition.BEFOREEND);
+render(menuContainer, menuComponent, RenderPosition.BEFOREEND);
+render(filtersContainer, filtersComponent, RenderPosition.BEFOREEND);
 
 
 const renderPoint = (container, point) => {
-  const pointElement = new PointView(point).element;
-  const editPointElement = new EditPointView(point).element;
+  const pointComponent = new PointView(point);
+  const editPointComponent = new EditPointView(point);
 
   const formEscHandler = (evt) => {
     if (isEsc(evt.code)) {
-      replaceChild(pointElement, editPointElement, container);
+      replaceChild(pointComponent, editPointComponent);
       document.removeEventListener('keydown', formEscHandler);
     }
   };
 
   const buttonOpenClickHandler = () => {
-    replaceChild(editPointElement, pointElement, container);
+    replaceChild(editPointComponent, pointComponent);
     document.addEventListener('keydown', formEscHandler);
   };
 
   const buttonCloseClickHandler = () => {
-    replaceChild(pointElement, editPointElement, container);
+    replaceChild(pointComponent, editPointComponent);
     document.removeEventListener('keydown', formEscHandler);
   };
 
   const formSubmitHandler = () => {
-    replaceChild(pointElement, editPointElement, container);
+    replaceChild(pointComponent, editPointComponent);
     document.removeEventListener('keydown', formEscHandler);
   };
 
+  pointComponent.setClickHandler(buttonOpenClickHandler);
 
-  pointElement.querySelector('.event__rollup-btn').addEventListener('click', buttonOpenClickHandler);
+  editPointComponent.setClickHandler(buttonCloseClickHandler);
+  editPointComponent.setSubmitHandler(formSubmitHandler);
 
-  editPointElement.querySelector('.event__rollup-btn').addEventListener('click', buttonCloseClickHandler);
-  editPointElement.querySelector('.event--edit').addEventListener('submit', formSubmitHandler);
-
-
-  render(container, pointElement, RenderPosition.BEFOREEND);
+  render(container, pointComponent, RenderPosition.BEFOREEND);
 };
 
 
 const renderMainContent = (points) => {
-  if(!points.length) {
+  if (!points.length) {
     render(mainContainer, emptyListElement, RenderPosition.BEFOREEND);
   } else {
-    const infoElement = new InfoView(points).element;
-    const sortingElement = new SortingView(DefaultValue.SORTING).element;
+    const infoComponent= new InfoView(points);
+    const sortingComponent = new SortingView(DefaultValue.SORTING);
 
-    render(infoContainer, infoElement, RenderPosition.AFTERBEGIN);
-    render(mainContainer, sortingElement, RenderPosition.BEFOREEND);
-    render(mainContainer, pointsListElement, RenderPosition.BEFOREEND);
+    render(infoContainer, infoComponent, RenderPosition.AFTERBEGIN);
+    render(mainContainer, sortingComponent, RenderPosition.BEFOREEND);
+    render(mainContainer, pointsListComponent, RenderPosition.BEFOREEND);
 
     for (let i = 0; i < PointsValue.FULL; i++) {
-      renderPoint(pointsListElement, points[i]);
+      renderPoint(pointsListComponent, points[i]);
     }
   }
 };

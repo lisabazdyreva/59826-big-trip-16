@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
-import {createElement, getFormattedDuration} from '../utils/utils';
+import {getFormattedDuration} from '../utils/utils';
 import {TimeFormat} from '../consts';
+import AbstractView from './abstract-view';
 
 
 const getOffersTemplate = (offers) => `<h4 class="visually-hidden">Offers:</h4>
@@ -78,11 +79,11 @@ const createPointView = (point) => {
   </li>`;
 };
 
-export default class PointView {
+export default class PointView extends AbstractView {
   #point = null;
-  #element = null;
 
   constructor(point) {
+    super();
     this.#point = point;
   }
 
@@ -90,15 +91,10 @@ export default class PointView {
     return createPointView(this.#point);
   }
 
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
+  setClickHandler(cb) {
+    this._callbacks.openClickHandler = cb;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickHandler);
   }
 
-  removeElement() {
-    this.#element = null;
-  }
+  #clickHandler = () => this._callbacks.openClickHandler();
 }

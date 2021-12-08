@@ -1,22 +1,7 @@
-import {createElement} from '../utils/utils';
+import AbstractView from './abstract-view';
 
-export default class PointsListView {
-  #element = null;
-
+export default class PointsListView extends AbstractView {
   get template() {
     return '<ul class="trip-events__list"></ul>';
   }
-
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
 }
-

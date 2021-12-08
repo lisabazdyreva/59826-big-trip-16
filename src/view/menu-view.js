@@ -1,5 +1,5 @@
 import {MenuTab} from '../consts';
-import {createElement} from '../utils/utils';
+import AbstractView from './abstract-view';
 
 
 const menuTabsList = Object.values(MenuTab);
@@ -11,27 +11,15 @@ const createMenuView = (activeTab) => `<nav class="trip-controls__trip-tabs  tri
     return `<a class="trip-tabs__btn ${isActive}" href="#">${tab}</a>`;}).join('')}
 </nav>`;
 
-export default class MenuView {
+export default class MenuView extends AbstractView {
   #activeTab = null;
-  #element = null;
 
   constructor(activeTab) {
+    super();
     this.#activeTab  = activeTab;
   }
 
   get template() {
     return createMenuView(this.#activeTab);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

@@ -1,27 +1,15 @@
-import {createElement} from '../utils/utils';
+import AbstractView from './abstract-view';
 
 
-export default class EmptyListView {
+export default class EmptyListView extends AbstractView {
   #notification = null;
-  #element = null;
 
   constructor(notification) {
+    super();
     this.#notification = notification;
   }
 
   get template() {
     return `<p class="trip-events__msg">${this.#notification}</p>`;
-  }
-
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
