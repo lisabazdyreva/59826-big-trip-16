@@ -74,6 +74,6 @@ export default class InfoView extends AbstractView {
   }
 
   get template() {
-    return createInfoView(this.#points);
+    return createInfoView(this.#points.slice());
   }
 }

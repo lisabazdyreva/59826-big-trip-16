@@ -1,22 +1,24 @@
 import {DefaultValue, RenderPosition} from '../consts';
-import {render, replaceChild} from '../utils/render-utils';
-import {isEsc} from '../utils/utils';
+import {render} from '../utils/render-utils';
 
 import PointsListView from '../view/points-list-view';
 import EmptyListView from '../view/empty-list-view';
 import InfoView from '../view/info-view';
 import SortingView from '../view/sorting-view';
-import PointView from '../view/point-view';
-import EditPointView from '../view/edit-point-view';
+
+import PointPresenter from './point-presenter';
 
 
 export default class TripPresenter {
+
+  #infoComponent = null;
 
   #mainContainer = null;
   #infoContainer = null;
 
   #pointsListComponent = new PointsListView();
   #emptyListComponent = new EmptyListView(DefaultValue.NOTIFICATION);
+  #sortingComponent = new SortingView(DefaultValue.SORTING);
 
   #tripPoints = [];
 
@@ -28,77 +30,47 @@ export default class TripPresenter {
   init = (points) => {
     this.#tripPoints = [...points];
 
-    this.renderMainContent();
+    this.#renderMainContent();
   }
 
-  renderPoint = (container, point) => {
-    const pointComponent = new PointView(point);
-    const editPointComponent = new EditPointView(point);
-
-    const formEscHandler = (evt) => {
-      if (isEsc(evt.code)) {
-        replaceChild(pointComponent, editPointComponent);
-        document.removeEventListener('keydown', formEscHandler);
-      }
-    };
-
-    const buttonOpenClickHandler = () => {
-      replaceChild(editPointComponent, pointComponent);
-      document.addEventListener('keydown', formEscHandler);
-    };
-
-    const buttonCloseClickHandler = () => {
-      replaceChild(pointComponent, editPointComponent);
-      document.removeEventListener('keydown', formEscHandler);
-    };
-
-    const formSubmitHandler = () => {
-      replaceChild(pointComponent, editPointComponent);
-      document.removeEventListener('keydown', formEscHandler);
-    };
-
-    pointComponent.setClickHandler(buttonOpenClickHandler);
-
-    editPointComponent.setClickHandler(buttonCloseClickHandler);
-    editPointComponent.setSubmitHandler(formSubmitHandler);
-
-    render(container, pointComponent, RenderPosition.BEFOREEND);
+  #renderPoint = (container, point) => {
+    const pointPresenter = new PointPresenter(container);
+    pointPresenter.init(point);
   }
 
-  renderPoints = () => {
-    this.#tripPoints.slice().forEach((point) => this.renderPoint(this.#pointsListComponent, point));
+  #renderPoints = () => {
+    this.#tripPoints.slice().forEach((point) => this.#renderPoint(this.#pointsListComponent, point));
   }
 
-  renderInfo = () => {
-    const infoComponent = new InfoView(this.#tripPoints);
-    render(this.#infoContainer, infoComponent, RenderPosition.AFTERBEGIN);
+  #renderInfo = () => {
+    this.#infoComponent = new InfoView(this.#tripPoints);
+    render(this.#infoContainer, this.#infoComponent, RenderPosition.AFTERBEGIN);
   }
 
-  renderSorting = () => {
-    const sortingComponent = new SortingView(DefaultValue.SORTING);
-    render(this.#mainContainer, sortingComponent, RenderPosition.BEFOREEND);
+  #renderSorting = () => {
+    render(this.#mainContainer, this.#sortingComponent, RenderPosition.BEFOREEND);
   }
 
-  renderPointsList = () => {
+  #renderPointsList = () => {
     render(this.#mainContainer, this.#pointsListComponent, RenderPosition.BEFOREEND);
-    this.renderPoints();
+    this.#renderPoints();
   }
 
-  renderTripComponents = () => {
-    this.renderInfo();
-    this.renderSorting();
-    this.renderPointsList();
+  #renderTripComponents = () => {
+    this.#renderInfo();
+    this.#renderSorting();
+    this.#renderPointsList();
   }
 
-  renderMainContent = () => {
+  #renderMainContent = () => {
     if (!this.#tripPoints.length) {
-      this.renderEmptyList();
+      this.#renderEmptyList();
     } else {
-      this.renderTripComponents();
+      this.#renderTripComponents();
     }
   }
 
-  renderEmptyList = () => {
+  #renderEmptyList = () => {
     render(this.#mainContainer, this.#emptyListComponent, RenderPosition.BEFOREEND);
   }
 }
