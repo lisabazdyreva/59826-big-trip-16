@@ -30,7 +30,7 @@ const infoContainer = document.querySelector('.trip-main');
 const menuComponent = new MenuView(DefaultValue.MENU);
 const filtersComponent = new FiltersView(DefaultValue.FILTER);
 const pointsListComponent = new PointsListView();
-const emptyListElement = new EmptyListView(DefaultValue.NOTIFICATION).element;
+const emptyListComponent = new EmptyListView(DefaultValue.NOTIFICATION);
 
 
 render(menuContainer, menuComponent, RenderPosition.BEFOREEND);
@@ -74,7 +74,7 @@ const renderPoint = (container, point) => {
 
 const renderMainContent = (points) => {
   if (!points.length) {
-    render(mainContainer, emptyListElement, RenderPosition.BEFOREEND);
+    render(mainContainer, emptyListComponent, RenderPosition.BEFOREEND);
   } else {
     const infoComponent= new InfoView(points);
     const sortingComponent = new SortingView(DefaultValue.SORTING);
