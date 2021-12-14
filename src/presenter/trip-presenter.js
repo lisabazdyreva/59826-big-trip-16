@@ -1,5 +1,6 @@
 import {DefaultValue, RenderPosition} from '../consts';
 import {render} from '../utils/render-utils';
+import {updateItem} from '../utils/utils';
 
 import PointsListView from '../view/points-list-view';
 import EmptyListView from '../view/empty-list-view';
@@ -21,6 +22,7 @@ export default class TripPresenter {
   #sortingComponent = new SortingView(DefaultValue.SORTING);
 
   #tripPoints = [];
+  #pointPresenters = new Map();
 
   constructor(mainContainer, infoContainer) {
     this.#mainContainer = mainContainer;
@@ -34,12 +36,19 @@ export default class TripPresenter {
   }
 
   #renderPoint = (container, point) => {
-    const pointPresenter = new PointPresenter(container);
+    const pointPresenter = new PointPresenter(container, this.#handlePointChange);
     pointPresenter.init(point);
+
+    this.#pointPresenters.set(point.id, pointPresenter);
   }
 
   #renderPoints = () => {
     this.#tripPoints.slice().forEach((point) => this.#renderPoint(this.#pointsListComponent, point));
+  }
+
+  #removePoints = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.removePoint());
+    this.#pointPresenters.clear();
   }
 
   #renderInfo = () => {
@@ -73,4 +82,10 @@ export default class TripPresenter {
   #renderEmptyList = () => {
     render(this.#mainContainer, this.#emptyListComponent, RenderPosition.BEFOREEND);
   }
+
+  #handlePointChange = (updatingPoint) => {
+    this.#tripPoints = updateItem(this.#tripPoints, updatingPoint);
+    this.#pointPresenters.get(updatingPoint.id).init(updatingPoint);
+  }
+
 }
