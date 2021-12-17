@@ -1,12 +1,16 @@
-import PointView from '../view/point-view';
-import EditPointView from '../view/edit-point-view';
 import {isEsc} from '../utils/utils';
 import {render, replace, remove} from '../utils/render-utils';
-import {RenderPosition} from '../consts';
+
+import {RenderPosition, Mode} from '../consts';
+
+import PointView from '../view/point-view';
+import EditPointView from '../view/edit-point-view';
+
 
 export default class PointPresenter {
   #container = null;
   #point = null;
+  #mode = Mode.DEFAULT;
 
   #pointComponent = null;
   #editPointComponent = null;
@@ -15,10 +19,12 @@ export default class PointPresenter {
   #prevEditPointComponent = null;
 
   #changeData = null;
+  #changeMode = null;
 
-  constructor(container, changeData) {
+  constructor(container, changeData, changeMode) {
     this.#container = container;
     this.#changeData = changeData;
+    this.#changeMode = changeMode;
   }
 
   init = (point) => {
@@ -30,11 +36,11 @@ export default class PointPresenter {
     this.#pointComponent = new PointView(point);
     this.#editPointComponent = new EditPointView(point);
 
-    this.#pointComponent.setClickHandler(this.#buttonOpenClickHandler);
-    this.#pointComponent.setFavoriteClickHandler(this.#buttonSetFavoriteHandler);
+    this.#pointComponent.setClickHandler(this.#openEditPointForm);
+    this.#pointComponent.setFavoriteClickHandler(this.#toggleFavoriteFlag);
 
-    this.#editPointComponent.setClickHandler(this.#buttonCloseClickHandler);
-    this.#editPointComponent.setSubmitHandler(this.#formSubmitHandler);
+    this.#editPointComponent.setClickHandler(this.#closeEditPointForm);
+    this.#editPointComponent.setSubmitHandler(this.#submitForm);
 
     this.#render();
   }
@@ -45,46 +51,55 @@ export default class PointPresenter {
       return;
     }
 
-    if (this.#container.element.contains(this.#prevPointComponent.element)) {
+    if (this.#mode === Mode.DEFAULT) {
       replace(this.#pointComponent, this.#prevPointComponent);
     }
 
-    if (this.#container.element.contains(this.#prevEditPointComponent.element)) {
+    if (this.#mode === Mode.EDIT) {
       replace(this.#editPointComponent, this.#prevEditPointComponent);
     }
 
+
     remove(this.#prevPointComponent);
     remove(this.#prevEditPointComponent);
+
   }
 
-  removePoint = () => {
-    remove(this.#pointComponent);
-    remove(this.#editPointComponent);
+  // removePointComponent = () => {
+  //   remove(this.#pointComponent);
+  //   remove(this.#editPointComponent);
+  // }// TODO закомментировала, чтобы линтер не ругался
+
+  resetMode = () => {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#closeEditPointForm();
+    }
   }
 
   #formEscHandler = (evt) => {
     if (isEsc(evt.code)) {
-      replace(this.#pointComponent, this.#editPointComponent);
-      document.removeEventListener('keydown', this.#formEscHandler);
+      this.#closeEditPointForm();
     }
   }
 
-  #buttonOpenClickHandler = () => {
+  #openEditPointForm = () => {
     replace(this.#editPointComponent, this.#pointComponent);
     document.addEventListener('keydown', this.#formEscHandler);
+    this.#changeMode();
+    this.#mode = Mode.EDIT;
   }
 
-  #buttonCloseClickHandler = () => {
+  #closeEditPointForm = () => {
     replace(this.#pointComponent, this.#editPointComponent);
     document.removeEventListener('keydown', this.#formEscHandler);
+    this.#mode = Mode.DEFAULT;
   }
 
-  #formSubmitHandler = () => {
-    replace(this.#pointComponent, this.#editPointComponent);
-    document.removeEventListener('keydown', this.#formEscHandler);
+  #submitForm = () => {
+    this.#closeEditPointForm();
   }
 
-  #buttonSetFavoriteHandler = () => {
+  #toggleFavoriteFlag = () => {
     this.#changeData({...this.#point, isFavorite: !this.#point.isFavorite});
   }
 }

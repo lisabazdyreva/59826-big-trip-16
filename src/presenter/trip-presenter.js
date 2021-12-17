@@ -36,7 +36,7 @@ export default class TripPresenter {
   }
 
   #renderPoint = (container, point) => {
-    const pointPresenter = new PointPresenter(container, this.#handlePointChange);
+    const pointPresenter = new PointPresenter(container, this.#handlePointDataChange, this.#handleModeChange);
     pointPresenter.init(point);
 
     this.#pointPresenters.set(point.id, pointPresenter);
@@ -46,10 +46,10 @@ export default class TripPresenter {
     this.#tripPoints.slice().forEach((point) => this.#renderPoint(this.#pointsListComponent, point));
   }
 
-  #removePoints = () => {
-    this.#pointPresenters.forEach((presenter) => presenter.removePoint());
-    this.#pointPresenters.clear();
-  }
+  // #removePointsList = () => {
+  //   this.#pointPresenters.forEach((presenter) => presenter.removePointComponent());
+  //   this.#pointPresenters.clear();
+  // } // TODO закомментировала, чтобы линтер не ругался
 
   #renderInfo = () => {
     this.#infoComponent = new InfoView(this.#tripPoints);
@@ -65,7 +65,7 @@ export default class TripPresenter {
     this.#renderPoints();
   }
 
-  #renderTripComponents = () => {
+  #renderTrip = () => {
     this.#renderInfo();
     this.#renderSorting();
     this.#renderPointsList();
@@ -73,19 +73,22 @@ export default class TripPresenter {
 
   #renderMainContent = () => {
     if (!this.#tripPoints.length) {
-      this.#renderEmptyList();
+      this.#renderEmptyTrip();
     } else {
-      this.#renderTripComponents();
+      this.#renderTrip();
     }
   }
 
-  #renderEmptyList = () => {
+  #renderEmptyTrip = () => {
     render(this.#mainContainer, this.#emptyListComponent, RenderPosition.BEFOREEND);
   }
 
-  #handlePointChange = (updatingPoint) => {
+  #handlePointDataChange = (updatingPoint) => {
     this.#tripPoints = updateItem(this.#tripPoints, updatingPoint);
     this.#pointPresenters.get(updatingPoint.id).init(updatingPoint);
   }
 
+  #handleModeChange = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.resetMode());
+  }
 }
