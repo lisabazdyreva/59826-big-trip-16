@@ -36,11 +36,11 @@ export default class PointPresenter {
     this.#pointComponent = new PointView(point);
     this.#editPointComponent = new EditPointView(point);
 
-    this.#pointComponent.setClickHandler(this.#openEditPointForm);
-    this.#pointComponent.setFavoriteClickHandler(this.#toggleFavoriteFlag);
+    this.#pointComponent.setClickHandler(this.#openButtonClickHandler);
+    this.#pointComponent.setFavoriteClickHandler(this.#favoriteToggleHandler);
 
-    this.#editPointComponent.setClickHandler(this.#closeEditPointForm);
-    this.#editPointComponent.setSubmitHandler(this.#submitForm);
+    this.#editPointComponent.setClickHandler(this.#closeButtonClickHandler);
+    this.#editPointComponent.setSubmitHandler(this.#formSubmitHandler);
 
     this.#render();
   }
@@ -65,41 +65,49 @@ export default class PointPresenter {
 
   }
 
-  // removePointComponent = () => {
-  //   remove(this.#pointComponent);
-  //   remove(this.#editPointComponent);
-  // }// TODO закомментировала, чтобы линтер не ругался
+  removePointComponent = () => {
+    remove(this.#pointComponent);
+    remove(this.#editPointComponent);
+  }
 
   resetMode = () => {
     if (this.#mode !== Mode.DEFAULT) {
-      this.#closeEditPointForm();
+      this.#closeEditPoint();
     }
   }
 
   #formEscHandler = (evt) => {
     if (isEsc(evt.code)) {
-      this.#closeEditPointForm();
+      this.#closeEditPoint();
     }
   }
 
-  #openEditPointForm = () => {
+  #openEditPoint = () => {
     replace(this.#editPointComponent, this.#pointComponent);
     document.addEventListener('keydown', this.#formEscHandler);
     this.#changeMode();
     this.#mode = Mode.EDIT;
   }
 
-  #closeEditPointForm = () => {
+  #closeEditPoint = () => {
     replace(this.#pointComponent, this.#editPointComponent);
     document.removeEventListener('keydown', this.#formEscHandler);
     this.#mode = Mode.DEFAULT;
   }
 
-  #submitForm = () => {
-    this.#closeEditPointForm();
+  #openButtonClickHandler = () => {
+    this.#openEditPoint();
   }
 
-  #toggleFavoriteFlag = () => {
+  #closeButtonClickHandler = () => {
+    this.#closeButtonClickHandler();
+  }
+
+  #formSubmitHandler = () => {
+    this.#closeEditPoint();
+  }
+
+  #favoriteToggleHandler = () => {
     this.#changeData({...this.#point, isFavorite: !this.#point.isFavorite});
   }
 }
