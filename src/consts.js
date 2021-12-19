@@ -64,5 +64,10 @@ const TimeFormat = {
 
 const FAKE_NAMES = ['Toronto', 'Tokyo', 'Bursa', 'Bishkek', 'Torzhok', 'Tambov', 'Valencia', 'Warsaw','Dakar', 'Ottawa'];
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDIT: 'EDIT',
+};
 
-export {RenderPosition, TYPES, TimeFormat, FAKE_NAMES, SortingType, FilterValue, MenuTab, DefaultValue};
+
+export {RenderPosition, TYPES, TimeFormat, FAKE_NAMES, SortingType, FilterValue, MenuTab, DefaultValue, Mode};

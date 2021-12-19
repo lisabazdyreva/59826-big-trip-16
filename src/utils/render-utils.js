@@ -28,7 +28,7 @@ const render = (container, element, position) => {
   }
 };
 
-const replaceChild = (to, from) => {
+const replace = (to, from) => {
   if (to === null || from === null) {
     throw new Error('Can not replace empty elements');
   }
@@ -40,7 +40,7 @@ const replaceChild = (to, from) => {
   parent.replaceChild(newChild, oldChild);
 };
 
-const removeComponent = (component) => {
+const remove = (component) => {
   if (component instanceof AbstractView) {
     component.element.remove();
     component.removeElement();
@@ -49,4 +49,4 @@ const removeComponent = (component) => {
   }
 };
 
-export {render, replaceChild, removeComponent};
+export {render, replace, remove};

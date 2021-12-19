@@ -139,5 +139,6 @@ export const getPoint = () => {
     isFavorite: Boolean(getRandomInteger(0, 1)),
     offers,
     type,
+    id: getRandomInteger(1, 10000),
   });
 };

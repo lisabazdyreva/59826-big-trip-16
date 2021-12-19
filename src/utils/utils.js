@@ -39,5 +39,18 @@ const createElement = (template) => {
 
 const isEsc = (key) => key === 'Esc' || key === 'Escape';
 
+const updateItem = (items, updatingItem) => {
+  const index = items.findIndex((item) => item.id === updatingItem.id);
+  if (index === -1) {
+    return items;
+  }
 
-export {getFormattedDuration, createElement, isEsc};
+  return [
+    ...items.slice(0, index),
+    updatingItem,
+    ...items.slice(index + 1),
+  ];
+};
+
+
+export {getFormattedDuration, createElement, isEsc, updateItem};
