@@ -100,7 +100,7 @@ export default class PointPresenter {
   }
 
   #closeButtonClickHandler = () => {
-    this.#closeButtonClickHandler();
+    this.#closeEditPoint();
   }
 
   #formSubmitHandler = () => {
