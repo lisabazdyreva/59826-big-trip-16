@@ -12,6 +12,7 @@ const createSortingView = (activeSortingType) => (
     return `<div class="trip-sort__item  trip-sort__item--${type}">
       <input
         id="sort-${type}"
+        data-sort-type="${type}"
         class="trip-sort__input  visually-hidden"
         type="radio"
         name="trip-sort"
@@ -34,5 +35,18 @@ export default class SortingView extends AbstractView {
 
   get template() {
     return createSortingView(this.#activeSortingType);
+  }
+
+  setSortingChangeHandler = (cb) => {
+    this._callbacks.changeSorting = cb;
+    this.element.addEventListener('change', this.#sortingHandler);
+  }
+
+  #sortingHandler = (evt) => {
+    if (evt.target.tagName !== 'INPUT') {
+      return;
+    }
+
+    this._callbacks.changeSorting(evt.target.dataset.sortType);
   }
 }

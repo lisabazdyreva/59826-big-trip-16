@@ -52,5 +52,16 @@ const updateItem = (items, updatingItem) => {
   ];
 };
 
+const sortByFromDate = (pointA, pointB) => pointA.dateFrom - pointB.dateFrom;
 
-export {getFormattedDuration, createElement, isEsc, updateItem};
+const sortByDuration = (pointA, pointB) => {
+  const durationA = pointA.dateTo - pointA.dateFrom;
+  const durationB = pointB.dateTo - pointB.dateFrom;
+
+  return durationB - durationA;
+};
+
+const sortByPrice = (pointA, pointB) => pointB.price - pointA.price;
+
+
+export {getFormattedDuration, createElement, isEsc, updateItem, sortByFromDate, sortByDuration, sortByPrice};
