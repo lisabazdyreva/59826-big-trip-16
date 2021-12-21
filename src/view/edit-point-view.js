@@ -154,15 +154,15 @@ const createEditPointView = (point) => {
 };
 
 export default class EditPointView extends AbstractView {
-  #point = null;
+  _state = null;
 
   constructor(point = DefaultValue.POINT) {
     super();
-    this.#point = point;
+    this._state = EditPointView.parsePointToState(point);
   }
 
   get template() {
-    return createEditPointView(this.#point);
+    return createEditPointView(this._state);
   }
 
   setClickHandler = (cb) => {
@@ -179,6 +179,16 @@ export default class EditPointView extends AbstractView {
 
   #submitHandler = (evt) => {
     evt.preventDefault();
-    this._callbacks.submitFormHandler();
+    this._callbacks.submitFormHandler(EditPointView.parseStateToPoint(this._state));
   };
+
+  static parsePointToState = (point) => ({
+    ...point,
+  });
+
+  static parseStateToPoint = (state) => {
+    const point = {...state};
+
+    return point;
+  }
 }
