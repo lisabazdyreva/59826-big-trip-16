@@ -167,8 +167,7 @@ export default class EditPointView extends AbstractView {
     super();
     this._state = EditPointView.parsePointToState(point);
 
-    this.element.querySelector('.event__type-group').addEventListener('click', this.#typeChangeHandler);
-    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+    this.#setInnerHandlers();
   }
 
   get template() {
@@ -192,6 +191,18 @@ export default class EditPointView extends AbstractView {
     this._callbacks.submitFormHandler(EditPointView.parseStateToPoint(this._state));
   };
 
+  #setInnerHandlers = () => {
+    this.element.querySelector('.event__type-group').addEventListener('click', this.#typeChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+  }
+
+  #restoreHandlers = () => {
+    this.#setInnerHandlers();
+
+    this.setSubmitHandler(this._callbacks.submitFormHandler);
+    this.setClickHandler(this._callbacks.closeClickHandler);
+  }
+
   #updateElement = () => {
     const prevElement = this.element;
     const parent = prevElement.parentElement;
@@ -200,6 +211,8 @@ export default class EditPointView extends AbstractView {
 
     const newElement = this.element;
     parent.replaceChild(newElement, prevElement);
+
+    this.#restoreHandlers();
   }
 
   #updateState = (update) => {
@@ -231,6 +244,9 @@ export default class EditPointView extends AbstractView {
   }
 
   #destinationChangeHandler = (evt) => {
+    if (evt.target.tagName !== 'INPUT') {
+      return;
+    }
     const city = evt.target.value;
 
     const [destination] = destinationsData.filter(({name}) => name === city);
