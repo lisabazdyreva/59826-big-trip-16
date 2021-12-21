@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import {FAKE_NAMES, TYPES, TimeFormat, DefaultValue} from '../consts';
 import AbstractView from './abstract-view';
+import {destinationsData, offersData} from '../mock/point';
 
 
 const isEditPoint = true; // TODO временно
@@ -75,7 +76,7 @@ const getOffersTemplate = (offers) => `<section class="event__section  event__se
 
 const getPicturesTemplate = (pictures) => `<div class="event__photos-container">
   <div class="event__photos-tape">
-    ${pictures.map(({url, description}) => `<img class="event__photo" src=${url} alt=${description}>`).join('')}
+    ${pictures.map(({src, description}) => `<img class="event__photo" src=${src} alt=${description}>`).join('')}
   </div>
 </div>`;
 
@@ -215,30 +216,34 @@ export default class EditPointView extends AbstractView {
     if (evt.target.tagName !== 'INPUT') {
       return;
     }
-    const type = evt.target.value;
+    const typeValue = evt.target.value;
 
-    const offers = []; // TODO поменять на данные
+    const [offer] = offersData.filter(({type}) => type === typeValue);
+
+    const offers = offer.offers;
     const isOffers = offers.length !== 0;
 
     this.#updateState({
-      type,
+      type: typeValue,
       offers,
       isOffers,
     });
   }
 
   #destinationChangeHandler = (evt) => {
-    const name = evt.target.value;
+    const city = evt.target.value;
 
-    const description = ''; // TODO поменять на данные
-    const pictures = []; // TODO поменять на данные
+    const [destination] = destinationsData.filter(({name}) => name === city);
+
+    const description = destination.description;
+    const pictures = destination.pictures;
 
     const isDescription = description.length !== 0;
     const isPictures = pictures.length !== 0;
 
     this.#updateState({
       destination: {
-        name,
+        name: city,
         description,
         pictures
       },
@@ -250,7 +255,7 @@ export default class EditPointView extends AbstractView {
   static parsePointToState = (point) => ({
     ...point,
     isOffers: point.offers.length !== 0,
-    isDescription: point.destination.description !== '',
+    isDescription: point.destination.description.length !== 0,
     isPictures: point.destination.pictures.length !== 0,
   });
 
