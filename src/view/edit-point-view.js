@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import {FAKE_NAMES, TYPES, TimeFormat, DefaultValue} from '../consts';
-import AbstractView from './abstract-view';
 import {destinationsData, offersData} from '../mock/point';
+import SmartView from './smart-view';
 
 
 const isEditPoint = true; // TODO временно
@@ -15,7 +15,6 @@ const getEditButtonGroupTemplate = () => `<button class="event__save-btn  btn  b
 
 const getAddButtonGroupTemplate = () => `<button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
 <button class="event__reset-btn" type="reset">Cancel</button>`;
-
 
 const getEventTypeListTemplate = (activeType) => `<div class="event__type-list">
   <fieldset class="event__type-group">
@@ -44,7 +43,6 @@ const getEventTypeListTemplate = (activeType) => `<div class="event__type-list">
   </fieldset>
 </div>`;
 
-
 const getTimeTemplate = (dateFrom, dateTo) => {
   const from = dayjs(dateFrom).format(TimeFormat.DAYS_MONTHS_YEARS_TIME);
   const to = dayjs(dateTo).format(TimeFormat.DAYS_MONTHS_YEARS_TIME);
@@ -57,7 +55,6 @@ const getTimeTemplate = (dateFrom, dateTo) => {
     <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value='${to}'>
   </div>`;
 };
-
 
 const getOffersTemplate = (offers) => `<section class="event__section  event__section--offers">
   <h3 class="event__section-title  event__section-title--offers">Offers</h3>
@@ -72,7 +69,6 @@ const getOffersTemplate = (offers) => `<section class="event__section  event__se
     </div>`).join('')}
   </div>
 </section>`;
-
 
 const getPicturesTemplate = (pictures) => `<div class="event__photos-container">
   <div class="event__photos-tape">
@@ -160,8 +156,8 @@ const createEditPointView = (point) => {
   </li>`;
 };
 
-export default class EditPointView extends AbstractView {
-  _state = null;
+
+export default class EditPointView extends SmartView {
 
   constructor(point = DefaultValue.POINT) {
     super();
@@ -196,33 +192,11 @@ export default class EditPointView extends AbstractView {
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
   }
 
-  #restoreHandlers = () => {
+  restoreHandlers = () => {
     this.#setInnerHandlers();
 
     this.setSubmitHandler(this._callbacks.submitFormHandler);
     this.setClickHandler(this._callbacks.closeClickHandler);
-  }
-
-  #updateElement = () => {
-    const prevElement = this.element;
-    const parent = prevElement.parentElement;
-
-    this.removeElement();
-
-    const newElement = this.element;
-    parent.replaceChild(newElement, prevElement);
-
-    this.#restoreHandlers();
-  }
-
-  #updateState = (update) => {
-    if (!update) {
-      return;
-    } // TODO под вопросом, нужно ли
-
-    this._state = {...this._state, ...update};
-
-    this.#updateElement();
   }
 
   #typeChangeHandler = (evt) => {
@@ -236,7 +210,7 @@ export default class EditPointView extends AbstractView {
     const offers = offer.offers;
     const isOffers = offers.length !== 0;
 
-    this.#updateState({
+    this.updateState({
       type: typeValue,
       offers,
       isOffers,
@@ -257,7 +231,7 @@ export default class EditPointView extends AbstractView {
     const isDescription = description.length !== 0;
     const isPictures = pictures.length !== 0;
 
-    this.#updateState({
+    this.updateState({
       destination: {
         name: city,
         description,
