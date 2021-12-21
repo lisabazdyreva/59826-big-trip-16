@@ -79,25 +79,21 @@ const getPicturesTemplate = (pictures) => `<div class="event__photos-container">
   </div>
 </div>`;
 
+const getDescriptionTemplate = (description) => `<p class="event__destination-description">${description}</p>`;
 
-const getDestinationTemplate = (description, picturesTemplate) => {
-  const isDescription = description ? `<p class="event__destination-description">${description}</p>` : '';
-
-  return `<section class="event__section  event__section--destination">
-    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-    ${isDescription}
-    ${picturesTemplate}
-  </section>`;
-};
-
+const getDestinationTemplate = (descriptionTemplate, picturesTemplate) => `<section class="event__section  event__section--destination">
+  <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+  ${descriptionTemplate}
+  ${picturesTemplate}
+</section>`;
 
 const getDestinationsListTemplate = (destinations) => `<datalist id="destination-list-1">
-  ${destinations.map((destination) => `<option value=${destination}></option>`)}
+  ${destinations.map((destination) => `<option value=${destination}></option>`).join('')}
 </datalist>`;
 
 
 const createEditPointView = (point) => {
-  const {price, dateFrom, dateTo, destination, offers, type} = point;
+  const {price, dateFrom, dateTo, destination, offers, type, isOffers, isDescription, isPictures} = point;
   const {name, pictures, description} = destination;
 
   const eventTypeListTemplate = getEventTypeListTemplate(type);
@@ -105,9 +101,11 @@ const createEditPointView = (point) => {
   const editButtonsTemplate = getEditButtonGroupTemplate();
   const addButtonsTemplate = getAddButtonGroupTemplate();
 
-  const offersTemplate = offers.length ? getOffersTemplate(offers) : '';
-  const picturesTemplate = pictures.length ? getPicturesTemplate(pictures) : '';
-  const destinationTemplate = description || pictures.length ? getDestinationTemplate(description, picturesTemplate) : '';
+  const offersTemplate = isOffers ? getOffersTemplate(offers) : '';
+  const picturesTemplate = isPictures ? getPicturesTemplate(pictures) : '';
+  const descriptionTemplate = isDescription ? getDescriptionTemplate(description): '';
+
+  const destinationTemplate = isDescription || isPictures ? getDestinationTemplate(descriptionTemplate, picturesTemplate) : '';
 
   const destinationsListTemplate = getDestinationsListTemplate(FAKE_NAMES);
 
@@ -127,7 +125,15 @@ const createEditPointView = (point) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input event__input--destination" id="event-destination-1" type="text" name="event-destination" value='${name}' list="destination-list-1">
+          <input
+            class="event__input event__input--destination"
+            id="event-destination-1"
+            type="text"
+            name="event-destination"
+            value='${name}'
+            list="destination-list-1"
+            autocomplete="off"
+          >
           ${destinationsListTemplate}
         </div>
 
@@ -159,6 +165,9 @@ export default class EditPointView extends AbstractView {
   constructor(point = DefaultValue.POINT) {
     super();
     this._state = EditPointView.parsePointToState(point);
+
+    this.element.querySelector('.event__type-group').addEventListener('click', this.#typeChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
   }
 
   get template() {
@@ -182,12 +191,75 @@ export default class EditPointView extends AbstractView {
     this._callbacks.submitFormHandler(EditPointView.parseStateToPoint(this._state));
   };
 
+  #updateElement = () => {
+    const prevElement = this.element;
+    const parent = prevElement.parentElement;
+
+    this.removeElement();
+
+    const newElement = this.element;
+    parent.replaceChild(newElement, prevElement);
+  }
+
+  #updateState = (update) => {
+    if (!update) {
+      return;
+    } // TODO под вопросом, нужно ли
+
+    this._state = {...this._state, ...update};
+
+    this.#updateElement();
+  }
+
+  #typeChangeHandler = (evt) => {
+    if (evt.target.tagName !== 'INPUT') {
+      return;
+    }
+    const type = evt.target.value;
+
+    const offers = []; // TODO поменять на данные
+    const isOffers = offers.length !== 0;
+
+    this.#updateState({
+      type,
+      offers,
+      isOffers,
+    });
+  }
+
+  #destinationChangeHandler = (evt) => {
+    const name = evt.target.value;
+
+    const description = ''; // TODO поменять на данные
+    const pictures = []; // TODO поменять на данные
+
+    const isDescription = description.length !== 0;
+    const isPictures = pictures.length !== 0;
+
+    this.#updateState({
+      destination: {
+        name,
+        description,
+        pictures
+      },
+      isDescription,
+      isPictures,
+    });
+  }
+
   static parsePointToState = (point) => ({
     ...point,
+    isOffers: point.offers.length !== 0,
+    isDescription: point.destination.description !== '',
+    isPictures: point.destination.pictures.length !== 0,
   });
 
   static parseStateToPoint = (state) => {
     const point = {...state};
+
+    delete point.isOffers;
+    delete point.isDescription;
+    delete point.isPictures;
 
     return point;
   }
