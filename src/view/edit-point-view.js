@@ -180,6 +180,12 @@ export default class EditPointView extends SmartView {
     this.element.querySelector('.event--edit').addEventListener('submit', this.#submitHandler);
   }
 
+  reset = (point) => {
+    this.updateState(
+      EditPointView.parsePointToState(point),
+    );
+  }
+
   #clickHandler = () => this._callbacks.closeClickHandler();
 
   #submitHandler = (evt) => {
@@ -222,10 +228,11 @@ export default class EditPointView extends SmartView {
       return;
     }
     const city = evt.target.value;
+    // if (city === '') {} // TODO undefined, если не указано
 
     const [destination] = destinationsData.filter(({name}) => name === city);
 
-    const description = destination.description;
+    const description = destination.description; // TODO undefined, если не указано
     const pictures = destination.pictures;
 
     const isDescription = description.length !== 0;
