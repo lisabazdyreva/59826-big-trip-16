@@ -1,10 +1,14 @@
 import dayjs from 'dayjs';
 import {FAKE_NAMES, TYPES, TimeFormat, DefaultValue} from '../consts';
+import {isInput} from '../utils/utils';
 import {destinationsData, offersData} from '../mock/point';
 import SmartView from './smart-view';
 
 
 const isEditPoint = true; // TODO временно
+const ValidationMessage = {
+  NAME: 'Select a value from the list',
+};
 
 
 const getEditButtonGroupTemplate = () => `<button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -60,8 +64,8 @@ const getOffersTemplate = (offers) => `<section class="event__section  event__se
   <h3 class="event__section-title  event__section-title--offers">Offers</h3>
   <div class="event__available-offers">
     ${offers.map(({title, price}) => `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
-      <label class="event__offer-label" for="event-offer-luggage-1">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked> <!--TODO При изменении типа точки маршрута выбранный ранее список дополнительных опций очищается.-->
+      <label class="event__offer-label" for="event-offer-luggage-1"> <!--TODO изначально нужно будет сравнить offers полученные для точки и offers с сервера, здесь отражаем все + checked.-->
         <span class="event__offer-title">${title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${price}</span>
@@ -130,6 +134,7 @@ const createEditPointView = (point) => {
             value='${name}'
             list="destination-list-1"
             autocomplete="off"
+            required
           >
           ${destinationsListTemplate}
         </div>
@@ -206,14 +211,14 @@ export default class EditPointView extends SmartView {
   }
 
   #typeChangeHandler = (evt) => {
-    if (evt.target.tagName !== 'INPUT') {
+    if (!isInput(evt)) {
       return;
     }
+
     const typeValue = evt.target.value;
+    const [offerWithType] = offersData.filter(({type}) => type === typeValue);
 
-    const [offer] = offersData.filter(({type}) => type === typeValue);
-
-    const offers = offer.offers;
+    const offers = offerWithType.offers;
     const isOffers = offers.length !== 0;
 
     this.updateState({
@@ -224,15 +229,19 @@ export default class EditPointView extends SmartView {
   }
 
   #destinationChangeHandler = (evt) => {
-    if (evt.target.tagName !== 'INPUT') {
+    if (!isInput(evt)) {
       return;
     }
-    const city = evt.target.value;
-    // if (city === '') {} // TODO undefined, если не указано
 
-    const [destination] = destinationsData.filter(({name}) => name === city);
+    const nameValue = evt.target.value;
+    const [destination] = destinationsData.filter(({name}) => name === nameValue);
 
-    const description = destination.description; // TODO undefined, если не указано
+    if (destination === undefined) {
+      evt.target.setCustomValidity(ValidationMessage.NAME);
+      return;
+    }
+
+    const description = destination.description;
     const pictures = destination.pictures;
 
     const isDescription = description.length !== 0;
@@ -240,7 +249,7 @@ export default class EditPointView extends SmartView {
 
     this.updateState({
       destination: {
-        name: city,
+        name: nameValue,
         description,
         pictures
       },

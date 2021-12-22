@@ -1,10 +1,11 @@
 import AbstractView from './abstract-view';
+import {ErrorMessage} from '../consts';
 
 export default class SmartView extends AbstractView {
   _state = {};
 
   restoreHandlers = () => {
-    throw new Error('Need implementation');
+    throw new Error(ErrorMessage.METHOD);
   }
 
   #updateElement = () => {
@@ -20,12 +21,7 @@ export default class SmartView extends AbstractView {
   }
 
   updateState = (update) => {
-    if (!update) {
-      return;
-    } // TODO под вопросом, нужно ли
-
     this._state = {...this._state, ...update};
-
     this.#updateElement();
   }
 }

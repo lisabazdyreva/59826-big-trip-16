@@ -69,5 +69,11 @@ const Mode = {
   EDIT: 'EDIT',
 };
 
+const ErrorMessage = {
+  METHOD : 'Method implementation is not available in abstract class',
+  GETTER : 'Getter implementation is not available in abstract class',
+  INSTANT: 'Abstract class is not for instantiation',
+};
 
-export {RenderPosition, TYPES, TimeFormat, FAKE_NAMES, SortingType, FilterValue, MenuTab, DefaultValue, Mode};
+
+export {RenderPosition, TYPES, TimeFormat, FAKE_NAMES, SortingType, FilterValue, MenuTab, DefaultValue, Mode, ErrorMessage};
