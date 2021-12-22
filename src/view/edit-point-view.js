@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import {FAKE_NAMES, TYPES, TimeFormat, DefaultValue} from '../consts';
-import AbstractView from './abstract-view';
+import {destinationsData, offersData} from '../mock/point';
+import SmartView from './smart-view';
 
 
 const isEditPoint = true; // TODO временно
@@ -14,7 +15,6 @@ const getEditButtonGroupTemplate = () => `<button class="event__save-btn  btn  b
 
 const getAddButtonGroupTemplate = () => `<button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
 <button class="event__reset-btn" type="reset">Cancel</button>`;
-
 
 const getEventTypeListTemplate = (activeType) => `<div class="event__type-list">
   <fieldset class="event__type-group">
@@ -43,7 +43,6 @@ const getEventTypeListTemplate = (activeType) => `<div class="event__type-list">
   </fieldset>
 </div>`;
 
-
 const getTimeTemplate = (dateFrom, dateTo) => {
   const from = dayjs(dateFrom).format(TimeFormat.DAYS_MONTHS_YEARS_TIME);
   const to = dayjs(dateTo).format(TimeFormat.DAYS_MONTHS_YEARS_TIME);
@@ -56,7 +55,6 @@ const getTimeTemplate = (dateFrom, dateTo) => {
     <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value='${to}'>
   </div>`;
 };
-
 
 const getOffersTemplate = (offers) => `<section class="event__section  event__section--offers">
   <h3 class="event__section-title  event__section-title--offers">Offers</h3>
@@ -72,32 +70,27 @@ const getOffersTemplate = (offers) => `<section class="event__section  event__se
   </div>
 </section>`;
 
-
 const getPicturesTemplate = (pictures) => `<div class="event__photos-container">
   <div class="event__photos-tape">
-    ${pictures.map(({url, description}) => `<img class="event__photo" src=${url} alt=${description}>`).join('')}
+    ${pictures.map(({src, description}) => `<img class="event__photo" src=${src} alt=${description}>`).join('')}
   </div>
 </div>`;
 
+const getDescriptionTemplate = (description) => `<p class="event__destination-description">${description}</p>`;
 
-const getDestinationTemplate = (description, picturesTemplate) => {
-  const isDescription = description ? `<p class="event__destination-description">${description}</p>` : '';
-
-  return `<section class="event__section  event__section--destination">
-    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-    ${isDescription}
-    ${picturesTemplate}
-  </section>`;
-};
-
+const getDestinationTemplate = (descriptionTemplate, picturesTemplate) => `<section class="event__section  event__section--destination">
+  <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+  ${descriptionTemplate}
+  ${picturesTemplate}
+</section>`;
 
 const getDestinationsListTemplate = (destinations) => `<datalist id="destination-list-1">
-  ${destinations.map((destination) => `<option value=${destination}></option>`)}
+  ${destinations.map((destination) => `<option value=${destination}></option>`).join('')}
 </datalist>`;
 
 
 const createEditPointView = (point) => {
-  const {price, dateFrom, dateTo, destination, offers, type} = point;
+  const {price, dateFrom, dateTo, destination, offers, type, isOffers, isDescription, isPictures} = point;
   const {name, pictures, description} = destination;
 
   const eventTypeListTemplate = getEventTypeListTemplate(type);
@@ -105,9 +98,11 @@ const createEditPointView = (point) => {
   const editButtonsTemplate = getEditButtonGroupTemplate();
   const addButtonsTemplate = getAddButtonGroupTemplate();
 
-  const offersTemplate = offers.length ? getOffersTemplate(offers) : '';
-  const picturesTemplate = pictures.length ? getPicturesTemplate(pictures) : '';
-  const destinationTemplate = description || pictures.length ? getDestinationTemplate(description, picturesTemplate) : '';
+  const offersTemplate = isOffers ? getOffersTemplate(offers) : '';
+  const picturesTemplate = isPictures ? getPicturesTemplate(pictures) : '';
+  const descriptionTemplate = isDescription ? getDescriptionTemplate(description): '';
+
+  const destinationTemplate = isDescription || isPictures ? getDestinationTemplate(descriptionTemplate, picturesTemplate) : '';
 
   const destinationsListTemplate = getDestinationsListTemplate(FAKE_NAMES);
 
@@ -127,7 +122,15 @@ const createEditPointView = (point) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input event__input--destination" id="event-destination-1" type="text" name="event-destination" value='${name}' list="destination-list-1">
+          <input
+            class="event__input event__input--destination"
+            id="event-destination-1"
+            type="text"
+            name="event-destination"
+            value='${name}'
+            list="destination-list-1"
+            autocomplete="off"
+          >
           ${destinationsListTemplate}
         </div>
 
@@ -153,16 +156,18 @@ const createEditPointView = (point) => {
   </li>`;
 };
 
-export default class EditPointView extends AbstractView {
-  #point = null;
+
+export default class EditPointView extends SmartView {
 
   constructor(point = DefaultValue.POINT) {
     super();
-    this.#point = point;
+    this._state = EditPointView.parsePointToState(point);
+
+    this.#setInnerHandlers();
   }
 
   get template() {
-    return createEditPointView(this.#point);
+    return createEditPointView(this._state);
   }
 
   setClickHandler = (cb) => {
@@ -175,10 +180,89 @@ export default class EditPointView extends AbstractView {
     this.element.querySelector('.event--edit').addEventListener('submit', this.#submitHandler);
   }
 
+  reset = (point) => {
+    this.updateState(
+      EditPointView.parsePointToState(point),
+    );
+  }
+
   #clickHandler = () => this._callbacks.closeClickHandler();
 
   #submitHandler = (evt) => {
     evt.preventDefault();
-    this._callbacks.submitFormHandler();
+    this._callbacks.submitFormHandler(EditPointView.parseStateToPoint(this._state));
   };
+
+  #setInnerHandlers = () => {
+    this.element.querySelector('.event__type-group').addEventListener('click', this.#typeChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+  }
+
+  restoreHandlers = () => {
+    this.#setInnerHandlers();
+
+    this.setSubmitHandler(this._callbacks.submitFormHandler);
+    this.setClickHandler(this._callbacks.closeClickHandler);
+  }
+
+  #typeChangeHandler = (evt) => {
+    if (evt.target.tagName !== 'INPUT') {
+      return;
+    }
+    const typeValue = evt.target.value;
+
+    const [offer] = offersData.filter(({type}) => type === typeValue);
+
+    const offers = offer.offers;
+    const isOffers = offers.length !== 0;
+
+    this.updateState({
+      type: typeValue,
+      offers,
+      isOffers,
+    });
+  }
+
+  #destinationChangeHandler = (evt) => {
+    if (evt.target.tagName !== 'INPUT') {
+      return;
+    }
+    const city = evt.target.value;
+    // if (city === '') {} // TODO undefined, если не указано
+
+    const [destination] = destinationsData.filter(({name}) => name === city);
+
+    const description = destination.description; // TODO undefined, если не указано
+    const pictures = destination.pictures;
+
+    const isDescription = description.length !== 0;
+    const isPictures = pictures.length !== 0;
+
+    this.updateState({
+      destination: {
+        name: city,
+        description,
+        pictures
+      },
+      isDescription,
+      isPictures,
+    });
+  }
+
+  static parsePointToState = (point) => ({
+    ...point,
+    isOffers: point.offers.length !== 0,
+    isDescription: point.destination.description.length !== 0,
+    isPictures: point.destination.pictures.length !== 0,
+  });
+
+  static parseStateToPoint = (state) => {
+    const point = {...state};
+
+    delete point.isOffers;
+    delete point.isDescription;
+    delete point.isPictures;
+
+    return point;
+  }
 }

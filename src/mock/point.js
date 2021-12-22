@@ -12,6 +12,8 @@ eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed fel
 Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`.split('.');
 
 const FAKE_PICTURE_URL = 'http://picsum.photos/248/152?r=';
+const VALUE_OF_DESTINATIONS = FAKE_NAMES.length;
+const VALUE_OF_OFFERS = TYPES.length;
 
 const FakeValue = {
   MAX_OFFERS: 5,
@@ -32,6 +34,56 @@ const UnitValue = {
   HOUR: 'hour',
 };
 
+
+const getFakeOffer = () => {
+  const titles = FAKE_DESCRIPTIONS[getRandomInteger(0, FAKE_DESCRIPTIONS.length - 1)].split(' ');
+  const titleString = titles.slice(getRandomInteger(0, titles.length - 1)).join(' ');
+
+  const title = titleString ? titleString : null;
+  const price = title ? getRandomInteger(FakeValue.MIN_PRICE, FakeValue.MAX_PRICE) : null;
+  const id = getRandomInteger(getRandomInteger(1, 10000));
+
+  if (title === null) {
+    return null;
+  }
+
+  return ({
+    title,
+    price,
+    id
+  });
+};
+
+const getRandomOffers = () => {
+  const offers = {};
+
+  const getOffersArr = () => {
+    const offersArr = [];
+    const valueOfOffers = getRandomInteger(0, FakeValue.MAX_OFFERS);
+
+    for (let i = 0; i < valueOfOffers; i++) {
+      const offer = getFakeOffer();
+
+      if (offer) {
+        offersArr.push(offer);
+      }
+    }
+
+    return offersArr;
+  };
+
+  for (const type of TYPES) {
+    offers[type] = getOffersArr();
+  }
+  return offers;
+};
+
+const getRandomOffer = (type) => {
+  const offers = getRandomOffers();
+  return offers[type];
+};
+
+
 const getRandomDescription = () => {
   let description = '';
   const valueOfSentences = getRandomInteger(0, FakeValue.MAX_SENTENCES);
@@ -49,7 +101,7 @@ const getRandomPictures = () => {
 
   for (let i = 0; i < valueOfPictures; i++) {
     const picture = {
-      url: `${FAKE_PICTURE_URL}${i}`,
+      src: `${FAKE_PICTURE_URL}${i}`,
       description: FAKE_DESCRIPTIONS[i],
     };
     pictures.push(picture);
@@ -76,69 +128,59 @@ const getRandomDate = () => {
 };
 
 
-const getFakeOffer = () => {
-  const titles = FAKE_DESCRIPTIONS[getRandomInteger(0, FAKE_DESCRIPTIONS.length - 1)].split(' ');
-  const titleString = titles.slice(getRandomInteger(0, titles.length - 1)).join(' ');
+const getDestinations = (value) => {
+  const destinationsList = [];
 
-  const title = titleString ? titleString : null;
-  const price = title ? getRandomInteger(FakeValue.MIN_PRICE, FakeValue.MAX_PRICE) : null;
-
-  if (title === null) {
-    return null;
+  for (let i = 0; i < value; i++) {
+    destinationsList.push({
+      name: FAKE_NAMES[i],
+      description: getRandomDescription(),
+      pictures: getRandomPictures(),
+    });
   }
-
-  return ({
-    title,
-    price,
-  });
+  return destinationsList;
 };
+export const destinationsData = getDestinations(VALUE_OF_DESTINATIONS);
 
-const getFakeOffers = () => {
-  const offers = {};
 
-  const getOffers = () => {
-    const offersList = [];
-    const valueOfOffers = getRandomInteger(0, FakeValue.MAX_OFFERS);
+const getOffers = (value) => {
+  const offers = [];
 
-    for (let i = 0; i < valueOfOffers; i++) {
-      const offer = getFakeOffer();
-
-      if (offer) {
-        offersList.push(offer);
-      }
-    }
-
-    return offersList;
-  };
-
-  for (const type of TYPES) {
-    offers[type] = getOffers();
+  for (let i = 0; i < value; i++) {
+    offers.push({
+      type: TYPES[i],
+      offers: getRandomOffer(TYPES[i]),
+    });
   }
   return offers;
 };
+export const offersData = getOffers(VALUE_OF_OFFERS);
 
-const getRandomOffers = (type) => {
-  const offers = getFakeOffers();
-  return offers[type];
-};
 
 export const getPoint = () => {
-  const type = TYPES[getRandomInteger(0, TYPES.length - 1)];
+  const typeValue = TYPES[getRandomInteger(0, TYPES.length - 1)];
+  const city = FAKE_NAMES[getRandomInteger(0, FAKE_NAMES.length - 1)];
+
   const {dateTo, dateFrom} = getRandomDate();
-  const offers = getRandomOffers(type);
+
+  const [destinationData] = destinationsData.filter(({name}) => name === city);
+  const [offerData] = offersData.filter(({type}) => type === typeValue);
+
 
   return ({
     price: getRandomInteger(FakeValue.MIN_PRICE, FakeValue.MAX_PRICE),
     dateFrom,
     dateTo,
     destination: {
-      description: getRandomDescription(),
-      name: FAKE_NAMES[getRandomInteger(0, FAKE_NAMES.length - 1)],
-      pictures: getRandomPictures(),
+      description: destinationData.description,
+      name: destinationData.name,
+      pictures: destinationData.pictures,
     },
     isFavorite: Boolean(getRandomInteger(0, 1)),
-    offers,
-    type,
+    offers: offerData.offers,
+    type: typeValue,
     id: getRandomInteger(1, 10000),
   });
 };
+
+
