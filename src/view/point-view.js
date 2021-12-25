@@ -5,7 +5,7 @@ import AbstractView from './abstract-view';
 
 
 const getOffersTemplate = (offers) => `<h4 class="visually-hidden">Offers:</h4>
-  <ul class="event__selected-offers">
+  <ul class="event__selected-offers"> <!--TODO В колонке «Offers» отображаются дополнительные опции, выбранные для точки маршрута. То, что пришло, а не все-->
     ${offers.map(({title, price}) => `<li class="event__offer">
       <span class="event__offer-title">${title}</span>
           &plus;&euro;&nbsp;

@@ -90,6 +90,7 @@ export default class PointPresenter {
   }
 
   #closeEditPoint = () => {
+    this.#editPointComponent.reset(this.#point);
     replace(this.#pointComponent, this.#editPointComponent);
     document.removeEventListener('keydown', this.#formEscHandler);
     this.#mode = Mode.DEFAULT;
@@ -103,7 +104,8 @@ export default class PointPresenter {
     this.#closeEditPoint();
   }
 
-  #formSubmitHandler = () => {
+  #formSubmitHandler = (point) => {
+    this.#changeData(point);
     this.#closeEditPoint();
   }
 

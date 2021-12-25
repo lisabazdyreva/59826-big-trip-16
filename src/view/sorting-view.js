@@ -1,4 +1,5 @@
 import {SortingType} from '../consts';
+import {isInput} from '../utils/utils';
 import AbstractView from './abstract-view';
 
 const sortingTypesList = Object.values(SortingType);
@@ -43,7 +44,7 @@ export default class SortingView extends AbstractView {
   }
 
   #sortingHandler = (evt) => {
-    if (evt.target.tagName !== 'INPUT') {
+    if (!isInput(evt)) {
       return;
     }
 

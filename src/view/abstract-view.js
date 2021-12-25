@@ -1,4 +1,5 @@
 import {createElement} from '../utils/utils';
+import {ErrorMessage} from '../consts';
 
 export default class AbstractView {
   #element = null;
@@ -6,12 +7,12 @@ export default class AbstractView {
 
   constructor() {
     if (new.target === AbstractView) {
-      throw new Error('Abstract class is not for instantiation');
+      throw new Error(ErrorMessage.INSTANT);
     }
   }
 
   get template() {
-    throw new Error('Getter template implementation is not available in abstract class');
+    throw new Error(ErrorMessage.GETTER);
   }
 
   get element() {
