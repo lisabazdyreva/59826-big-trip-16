@@ -12,6 +12,8 @@ import PointPresenter from './point-presenter';
 
 export default class TripPresenter {
 
+  #pointsModel = null;
+
   #infoComponent = null;
 
   #mainContainer = null;
@@ -26,14 +28,20 @@ export default class TripPresenter {
   #tripPoints = [];
   #pointPresenters = new Map();
 
-  constructor(mainContainer, infoContainer) {
+  constructor(mainContainer, infoContainer, pointsModel) {
     this.#mainContainer = mainContainer;
     this.#infoContainer = infoContainer;
+
+    this.#pointsModel = pointsModel;
   }
 
-  init = (points) => {
-    this.#tripPoints = [...points];
-    this.#sourcedPoints = [...points];
+  get points() {
+    return this.#pointsModel.points;
+  }
+
+  init = () => {
+    this.#tripPoints = [...this.points];
+    this.#sourcedPoints = [...this.points];
 
     this.#renderMainContent();
   }
