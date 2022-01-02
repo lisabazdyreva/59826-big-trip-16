@@ -1,15 +1,15 @@
 export default class AbstractObservable {
   #observers = new Set();
 
-  addObserver() {
-
+  addObserver(observer) {
+    this.#observers.add(observer);
   }
 
-  removeObserver() {
-
+  removeObserver(observer) {
+    this.#observers.delete(observer);
   }
 
   _notify() {
-
+    this.#observers.forEach((observer) => observer());
   }
 }
