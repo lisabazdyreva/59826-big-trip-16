@@ -108,7 +108,7 @@ export default class PointPresenter {
     this.#changeData(
       UserPointAction.UPDATE,
       UpdateType.MINOR,
-      point,
+      point, // TODO еще подумать надо
     );
     this.#closeEditPoint();
   }

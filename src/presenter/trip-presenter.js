@@ -1,5 +1,5 @@
 import {DefaultValue, RenderPosition, SortingType, UpdateType, UserPointAction} from '../consts';
-import {render} from '../utils/render-utils';
+import {remove, render} from '../utils/render-utils';
 import {sortByDuration, sortByFromDate, sortByPrice} from '../utils/utils';
 
 import PointsListView from '../view/points-list-view';
@@ -81,6 +81,12 @@ export default class TripPresenter {
     this.#renderPointsList();
   }
 
+  #removeTrip = () => {
+    remove(this.#infoComponent);
+    remove(this.#sortingComponent);
+    this.#removePointsList();
+  }
+
   #renderMainContent = () => {
     if (!this.points.length) {
       this.#renderEmptyTrip();
@@ -96,13 +102,13 @@ export default class TripPresenter {
   #sortPoints = (sortType) => {
     switch (sortType) {
       case SortingType.DAY:
-        this.points.slice().sort(sortByFromDate);
+        this.points.sort(sortByFromDate);
         break;
       case SortingType.TIME:
-        this.points.slice().sort(sortByDuration);
+        this.points.sort(sortByDuration);
         break;
       case SortingType.PRICE:
-        this.points.slice().sort(sortByPrice);
+        this.points.sort(sortByPrice);
         break;
     }
 
@@ -129,10 +135,12 @@ export default class TripPresenter {
         this.#pointPresenters.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
-        //Обновить список точек
+        this.#removePointsList();
+        this.#renderPointsList();
         break;
       case UpdateType.MAJOR:
-        //обновить main content
+        this.#removeTrip(); // TODO это еще не точная реализация
+        this.#renderTrip();
         break;
     }
   }
