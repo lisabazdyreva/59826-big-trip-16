@@ -11,18 +11,43 @@ export default class PointsModel extends AbstractObservable {
     this.#points = points.slice();
   }
 
-  updatePoint(updatingItem) {
+  updatePoint(updateType, updatingItem) {
     const index = this.#points.findIndex((item) => item.id === updatingItem.id);
 
     if (index === -1) {
       return this.#points;
     }
 
-    return [
+    this.#points = [
       ...this.#points.slice(0, index),
       updatingItem,
       ...this.#points.slice(index + 1),
     ];
 
+    this._notify(updateType, updatingItem);
+  }
+
+  addPoint(updateType, updatingItem) {
+    this.#points = [
+      updatingItem,
+      ...this.#points,
+    ];
+
+    this._notify(updateType, updatingItem);
+  }
+
+  removePoint(updateType, updatingItem) {
+    const index = this.#points.findIndex((item) => item.id === updatingItem.id);
+
+    if (index === -1) {
+      throw new Error('Can\'t remove task.');
+    }
+
+    this.#points = [
+      ...this.#points.slice(0, index),
+      ...this.#points.slice(index + 1),
+    ];
+
+    this._notify(updateType, updatingItem);
   }
 }

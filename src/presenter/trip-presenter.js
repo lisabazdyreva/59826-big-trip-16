@@ -1,6 +1,6 @@
-import {DefaultValue, RenderPosition, SortingType} from '../consts';
+import {DefaultValue, RenderPosition, SortingType, UpdateType, UserPointAction} from '../consts';
 import {render} from '../utils/render-utils';
-import {sortByDuration, sortByFromDate, sortByPrice, updateItem} from '../utils/utils';
+import {sortByDuration, sortByFromDate, sortByPrice} from '../utils/utils';
 
 import PointsListView from '../view/points-list-view';
 import EmptyListView from '../view/empty-list-view';
@@ -24,8 +24,6 @@ export default class TripPresenter {
   #sortingComponent = new SortingView(DefaultValue.SORTING);
 
   #activeSortingType = DefaultValue.SORTING;
-  #sourcedPoints = [];
-  #tripPoints = [];
   #pointPresenters = new Map();
 
   constructor(mainContainer, infoContainer, pointsModel) {
@@ -33,6 +31,7 @@ export default class TripPresenter {
     this.#infoContainer = infoContainer;
 
     this.#pointsModel = pointsModel;
+    this.#pointsModel.add(this.#handleModelEvent);
   }
 
   get points() {
@@ -40,21 +39,18 @@ export default class TripPresenter {
   }
 
   init = () => {
-    this.#tripPoints = [...this.points];
-    this.#sourcedPoints = [...this.points];
-
     this.#renderMainContent();
   }
 
   #renderPoint = (container, point) => {
-    const pointPresenter = new PointPresenter(container, this.#pointDataChangeHandler, this.#pointModeChangeHandler);
+    const pointPresenter = new PointPresenter(container, this.#handleViewAction, this.#pointModeChangeHandler);
     pointPresenter.init(point);
 
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 
   #renderPoints = () => {
-    this.#tripPoints.slice().forEach((point) => this.#renderPoint(this.#pointsListComponent, point));
+    this.points.slice().forEach((point) => this.#renderPoint(this.#pointsListComponent, point));
   }
 
   #removePointsList = () => {
@@ -63,7 +59,7 @@ export default class TripPresenter {
   }
 
   #renderInfo = () => {
-    this.#infoComponent = new InfoView(this.#tripPoints);
+    this.#infoComponent = new InfoView(this.points);
     render(this.#infoContainer, this.#infoComponent, RenderPosition.AFTERBEGIN);
   }
 
@@ -86,7 +82,7 @@ export default class TripPresenter {
   }
 
   #renderMainContent = () => {
-    if (!this.#tripPoints.length) {
+    if (!this.points.length) {
       this.#renderEmptyTrip();
     } else {
       this.#renderTrip();
@@ -100,13 +96,13 @@ export default class TripPresenter {
   #sortPoints = (sortType) => {
     switch (sortType) {
       case SortingType.DAY:
-        this.#tripPoints.sort(sortByFromDate);
+        this.points.slice().sort(sortByFromDate);
         break;
       case SortingType.TIME:
-        this.#tripPoints.sort(sortByDuration);
+        this.points.slice().sort(sortByDuration);
         break;
       case SortingType.PRICE:
-        this.#tripPoints.sort(sortByPrice);
+        this.points.slice().sort(sortByPrice);
         break;
     }
 
@@ -123,12 +119,35 @@ export default class TripPresenter {
     this.#renderPointsList();
   }
 
-  #pointDataChangeHandler = (updatingPoint) => {
-    this.#tripPoints = updateItem(this.#tripPoints, updatingPoint);
-    this.#pointPresenters.get(updatingPoint.id).init(updatingPoint);
-  }
-
   #pointModeChangeHandler = () => {
     this.#pointPresenters.forEach((presenter) => presenter.resetMode());
+  }
+
+  #handleModelEvent = (updateType, data) => {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this.#pointPresenters.get(data.id).init(data);
+        break;
+      case UpdateType.MINOR:
+        //Обновить список точек
+        break;
+      case UpdateType.MAJOR:
+        //обновить main content
+        break;
+    }
+  }
+
+  #handleViewAction = (actionType, updateType, updatingItem) => {
+    switch (actionType) {
+      case UserPointAction.UPDATE:
+        this.#pointsModel.updatePoint(updateType, updatingItem);
+        break;
+      case UserPointAction.ADD:
+        this.#pointsModel.addPoint(updateType, updatingItem);
+        break;
+      case UserPointAction.DELETE:
+        this.#pointsModel.removePoint(updateType, updatingItem);
+        break;
+    }
   }
 }

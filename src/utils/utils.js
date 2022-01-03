@@ -43,19 +43,6 @@ const isEsc = (key) => key === 'Esc' || key === 'Escape';
 
 const isInput = (evt) => evt.target.tagName === TAG_INPUT;
 
-const updateItem = (items, updatingItem) => {
-  const index = items.findIndex((item) => item.id === updatingItem.id);
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    updatingItem,
-    ...items.slice(index + 1),
-  ];
-};
-
 const sortByFromDate = (pointA, pointB) => pointA.dateFrom - pointB.dateFrom;
 
 const sortByDuration = (pointA, pointB) => {
@@ -68,4 +55,4 @@ const sortByDuration = (pointA, pointB) => {
 const sortByPrice = (pointA, pointB) => pointB.price - pointA.price;
 
 
-export {getFormattedDuration, createElement, isEsc, isInput, updateItem, sortByFromDate, sortByDuration, sortByPrice};
+export {getFormattedDuration, createElement, isEsc, isInput, sortByFromDate, sortByDuration, sortByPrice};

@@ -30,4 +30,17 @@ export default class FiltersView extends AbstractView {
   get template() {
     return createFiltersView(this.#activeFilter);
   }
+
+  setClickFilterHandler = (cb) => {
+    this._callbacks.clickFilterHandler = cb;
+    document.querySelector('.trip-filters').addEventListener('click', this.#clickFilterHandler);
+  }
+
+  #clickFilterHandler = (evt) => {
+    if (evt.target.tagName !== 'INPUT') {
+      return;
+    }
+
+    this._callbacks.clickFilterHandler();
+  }
 }

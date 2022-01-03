@@ -75,5 +75,30 @@ const ErrorMessage = {
   INSTANT: 'Abstract class is not for instantiation',
 };
 
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
 
-export {RenderPosition, TYPES, TimeFormat, FAKE_NAMES, SortingType, FilterValue, MenuTab, DefaultValue, Mode, ErrorMessage};
+const UserPointAction = {
+  UPDATE: 'UPDATE',
+  ADD: 'ADD',
+  DELETE: 'DELETE',
+};
+
+
+export {
+  RenderPosition,
+  TYPES,
+  TimeFormat,
+  FAKE_NAMES,
+  SortingType,
+  FilterValue,
+  MenuTab,
+  DefaultValue,
+  Mode,
+  ErrorMessage,
+  UpdateType,
+  UserPointAction
+};
