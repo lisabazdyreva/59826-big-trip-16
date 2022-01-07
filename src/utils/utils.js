@@ -1,3 +1,6 @@
+import {FiltersType, SortingType} from '../consts';
+import dayjs from 'dayjs';
+
 const TimeConverter = {
   MINUTES_IN_HOUR: 60,
   MINUTES_IN_DAY: 1440,
@@ -54,5 +57,26 @@ const sortByDuration = (pointA, pointB) => {
 
 const sortByPrice = (pointA, pointB) => pointB.price - pointA.price;
 
+const currentDate = dayjs();
 
-export {getFormattedDuration, createElement, isEsc, isInput, sortByFromDate, sortByDuration, sortByPrice};
+const filterPoints = {
+  [FiltersType.EVERYTHING]: (points) => points,
+  [FiltersType.FUTURE]: (points) => points.filter((point) => point.dateFrom > currentDate),
+  [FiltersType.PAST]: (points) => points.filter((point) => point.dateFrom < currentDate),
+};
+
+const sortPoints = (type, points) => {
+  switch (type) {
+    case SortingType.DAY:
+      return points.sort(sortByFromDate);
+    case SortingType.TIME:
+      return points.sort(sortByDuration);
+    case SortingType.PRICE:
+      return points.sort(sortByPrice);
+  }
+
+  return points;
+};
+
+
+export {getFormattedDuration, createElement, isEsc, isInput, sortByFromDate, sortByDuration, sortByPrice, filterPoints, sortPoints};

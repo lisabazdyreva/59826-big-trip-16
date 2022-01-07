@@ -23,7 +23,6 @@ const pointsModel = new PointsModel();
 pointsModel.points = data;
 
 const filtersModel = new FiltersModel();
-filtersModel.activeFilter = DefaultValue.FILTER;
 
 const menuComponent = new MenuView(DefaultValue.MENU);
 
@@ -32,11 +31,11 @@ const filtersContainer = document.querySelector('.trip-controls__filters');
 const mainContainer = document.querySelector('.trip-events');
 const infoContainer = document.querySelector('.trip-main');
 
+render(menuContainer, menuComponent, RenderPosition.BEFOREEND);
 
-const tripPresenter = new TripPresenter(mainContainer, infoContainer, pointsModel);
+const tripPresenter = new TripPresenter(mainContainer, infoContainer, pointsModel, filtersModel);
 const filtersPresenter = new FiltersPresenter(filtersContainer, filtersModel);
 
-render(menuContainer, menuComponent, RenderPosition.BEFOREEND);
 
 filtersPresenter.init();
 tripPresenter.init();

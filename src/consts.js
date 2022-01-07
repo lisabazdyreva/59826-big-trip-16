@@ -15,7 +15,7 @@ const SortingType = {
   OFFERS: 'offers',
 };
 
-const FilterValue = {
+const FiltersType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
   PAST: 'past',
@@ -36,7 +36,7 @@ const EmptyNotification = {
 
 const DefaultValue = {
   SORTING: SortingType.DAY,
-  FILTER: FilterValue.EVERYTHING,
+  FILTER: FiltersType.EVERYTHING,
   MENU: MenuTab.TABLE,
   POINT: {
     price: '',
@@ -94,11 +94,11 @@ export {
   TimeFormat,
   FAKE_NAMES,
   SortingType,
-  FilterValue,
   MenuTab,
   DefaultValue,
   Mode,
   ErrorMessage,
   UpdateType,
-  UserPointAction
+  UserPointAction,
+  FiltersType
 };

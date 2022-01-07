@@ -1,6 +1,6 @@
-import {DefaultValue, RenderPosition, SortingType, UpdateType, UserPointAction} from '../consts';
+import {DefaultValue, RenderPosition, UpdateType, UserPointAction} from '../consts';
 import {remove, render} from '../utils/render-utils';
-import {sortByDuration, sortByFromDate, sortByPrice} from '../utils/utils';
+import {filterPoints, sortPoints} from '../utils/utils';
 
 import PointsListView from '../view/points-list-view';
 import EmptyListView from '../view/empty-list-view';
@@ -13,6 +13,7 @@ import PointPresenter from './point-presenter';
 export default class TripPresenter {
 
   #pointsModel = null;
+  #filtersModel = null;
 
   #infoComponent = null;
 
@@ -26,16 +27,23 @@ export default class TripPresenter {
   #activeSortingType = DefaultValue.SORTING;
   #pointPresenters = new Map();
 
-  constructor(mainContainer, infoContainer, pointsModel) {
+  constructor(mainContainer, infoContainer, pointsModel, filtersModel) {
     this.#mainContainer = mainContainer;
     this.#infoContainer = infoContainer;
 
     this.#pointsModel = pointsModel;
+    this.#filtersModel = filtersModel;
+
     this.#pointsModel.add(this.#handleModelEvent);
+    this.#filtersModel.add(this.#handleModelEvent);
   }
 
   get points() {
-    return this.#pointsModel.points;
+    const points = this.#pointsModel.points;
+    const filterType = this.#filtersModel.activeFilter;
+    const filteredPoints = filterPoints[filterType](points);
+
+    return sortPoints(this.#activeSortingType, filteredPoints);
   }
 
   init = () => {
@@ -76,14 +84,13 @@ export default class TripPresenter {
   #renderTrip = () => {
     this.#renderInfo();
     this.#renderSorting();
-    this.#sortPoints(this.#activeSortingType);
-
     this.#renderPointsList();
   }
 
   #removeTrip = () => {
     remove(this.#infoComponent);
     remove(this.#sortingComponent);
+    this.#activeSortingType = DefaultValue.SORTING;
     this.#removePointsList();
   }
 
@@ -99,28 +106,13 @@ export default class TripPresenter {
     render(this.#mainContainer, this.#emptyListComponent, RenderPosition.BEFOREEND);
   }
 
-  #sortPoints = (sortType) => {
-    switch (sortType) {
-      case SortingType.DAY:
-        this.points.sort(sortByFromDate);
-        break;
-      case SortingType.TIME:
-        this.points.sort(sortByDuration);
-        break;
-      case SortingType.PRICE:
-        this.points.sort(sortByPrice);
-        break;
-    }
-
-    this.#activeSortingType = sortType;
-  }
 
   #sortingTypeChangeHandler = (activeSortingType) => {
     if (this.#activeSortingType === activeSortingType) {
       return;
     }
 
-    this.#sortPoints(activeSortingType);
+    this.#activeSortingType = activeSortingType;
     this.#removePointsList();
     this.#renderPointsList();
   }
@@ -139,7 +131,7 @@ export default class TripPresenter {
         this.#renderPointsList();
         break;
       case UpdateType.MAJOR:
-        this.#removeTrip(); // TODO это еще не точная реализация
+        this.#removeTrip();// TODO это еще не точная реализация, ТЗ посмотреть
         this.#renderTrip();
         break;
     }

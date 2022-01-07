@@ -1,7 +1,7 @@
-import {FilterValue} from '../consts';
+import {FiltersType} from '../consts';
 import AbstractView from './abstract-view';
 
-const filterValuesList = Object.values(FilterValue);
+const filterValuesList = Object.values(FiltersType);
 
 const createFiltersView = (activeFilter) => (
   `<form class="trip-filters" action="#" method="get">
@@ -11,7 +11,14 @@ const createFiltersView = (activeFilter) => (
     const isChecked = activeFilter === filter ? 'checked' : '';
 
     return `<div class="trip-filters__filter">
-      <input id="filter-${filter}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value='${filter}' ${isChecked}>
+      <input
+        id="filter-${filter}"
+        class="trip-filters__filter-input  visually-hidden"
+        type="radio"
+        name="trip-filter"
+        value='${filter}'
+        ${isChecked}
+      >
       <label class="trip-filters__filter-label" for="filter-${filter}">${filterText}</label>
     </div>`;}).join('')}
 
@@ -33,14 +40,10 @@ export default class FiltersView extends AbstractView {
 
   setClickFilterHandler = (cb) => {
     this._callbacks.clickFilterHandler = cb;
-    document.querySelector('.trip-filters').addEventListener('click', this.#clickFilterHandler);
+    this.element.addEventListener('change', this.#clickFilterHandler);
   }
 
   #clickFilterHandler = (evt) => {
-    if (evt.target.tagName !== 'INPUT') {
-      return;
-    }
-
-    this._callbacks.clickFilterHandler();
+    this._callbacks.clickFilterHandler(evt.target.value);
   }
 }

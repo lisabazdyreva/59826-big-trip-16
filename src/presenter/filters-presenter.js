@@ -1,5 +1,5 @@
 import {render} from '../utils/render-utils';
-import {RenderPosition} from '../consts';
+import {RenderPosition, UpdateType} from '../consts';
 import FiltersView from '../view/filters-view';
 
 export default class FiltersPresenter {
@@ -28,7 +28,10 @@ export default class FiltersPresenter {
     render(this.#container, this.#component, RenderPosition.BEFOREEND);
   }
 
-  #changeFilterHandler = () => {
-    console.log(10);
+  #changeFilterHandler = (currentFilter) => {
+    if (this.#model.activeFilter === currentFilter) {
+      return;
+    }
+    this.#model.setActiveFilter(UpdateType.MAJOR, currentFilter);
   }
 }
