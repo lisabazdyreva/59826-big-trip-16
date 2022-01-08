@@ -21,10 +21,11 @@ export default class TripPresenter {
   #infoContainer = null;
 
   #pointsListComponent = new PointsListView();
-  #emptyListComponent = new EmptyListView(DefaultValue.NOTIFICATION);
+  #emptyListComponent = null;
   #sortingComponent = new SortingView(DefaultValue.SORTING);
 
   #activeSortingType = DefaultValue.SORTING;
+  #activeFilterType = DefaultValue.FILTER;
   #pointPresenters = new Map();
 
   constructor(mainContainer, infoContainer, pointsModel, filtersModel) {
@@ -40,8 +41,8 @@ export default class TripPresenter {
 
   get points() {
     const points = this.#pointsModel.points;
-    const filterType = this.#filtersModel.activeFilter;
-    const filteredPoints = filterPoints[filterType](points);
+    this.#activeFilterType = this.#filtersModel.activeFilter;
+    const filteredPoints = filterPoints[this.#activeFilterType](points);
 
     return sortPoints(this.#activeSortingType, filteredPoints);
   }
@@ -103,9 +104,9 @@ export default class TripPresenter {
   }
 
   #renderEmptyTrip = () => {
+    this.#emptyListComponent =new EmptyListView(this.#activeFilterType);
     render(this.#mainContainer, this.#emptyListComponent, RenderPosition.BEFOREEND);
   }
-
 
   #sortingTypeChangeHandler = (activeSortingType) => {
     if (this.#activeSortingType === activeSortingType) {

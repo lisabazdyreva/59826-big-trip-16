@@ -21,6 +21,12 @@ const FiltersType = {
   PAST: 'past',
 };
 
+const NoFilteredPointsMessage = {
+  [FiltersType.EVERYTHING]: 'Click New Event to create your first point',
+  [FiltersType.PAST]: 'There are no past events now',
+  [FiltersType.FUTURE]: 'There are no future events now',
+};
+
 const MenuTab = {
   TABLE: 'Table',
   STATS: 'Stats',
@@ -100,5 +106,6 @@ export {
   ErrorMessage,
   UpdateType,
   UserPointAction,
-  FiltersType
+  FiltersType,
+  NoFilteredPointsMessage
 };
