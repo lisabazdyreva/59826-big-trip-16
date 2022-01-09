@@ -88,10 +88,16 @@ export default class TripPresenter {
     this.#renderPointsList();
   }
 
-  #removeTrip = () => {
+  #removeMainContent = () => {
+    if (this.#emptyListComponent !== null) {
+      remove(this.#emptyListComponent);
+    }
+
     remove(this.#infoComponent);
     remove(this.#sortingComponent);
+
     this.#activeSortingType = DefaultValue.SORTING;
+
     this.#removePointsList();
   }
 
@@ -132,8 +138,8 @@ export default class TripPresenter {
         this.#renderPointsList();
         break;
       case UpdateType.MAJOR:
-        this.#removeTrip();// TODO это еще не точная реализация, ТЗ посмотреть
-        this.#renderTrip();
+        this.#removeMainContent();// TODO это еще не точная реализация, ТЗ посмотреть
+        this.#renderMainContent();
         break;
     }
   }

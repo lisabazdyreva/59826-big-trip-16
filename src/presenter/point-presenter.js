@@ -41,6 +41,7 @@ export default class PointPresenter {
 
     this.#editPointComponent.setClickHandler(this.#closeButtonClickHandler);
     this.#editPointComponent.setSubmitHandler(this.#formSubmitHandler);
+    this.#editPointComponent.setDeleteHandler(this.#pointDeleteHandler);
 
     this.#render();
   }
@@ -111,6 +112,14 @@ export default class PointPresenter {
       point, // TODO еще подумать надо
     );
     this.#closeEditPoint();
+  }
+
+  #pointDeleteHandler = (point) => {
+    this.#changeData(
+      UserPointAction.DELETE,
+      UpdateType.MAJOR,
+      point,
+    );
   }
 
   #favoriteToggleHandler = () => {

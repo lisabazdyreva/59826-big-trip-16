@@ -185,6 +185,11 @@ export default class EditPointView extends SmartView {
     this.element.querySelector('.event--edit').addEventListener('submit', this.#submitHandler);
   }
 
+  setDeleteHandler = (cb) => {
+    this._callbacks.deletePointHandler = cb;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteHandler);
+  }
+
   reset = (point) => {
     this.updateState(
       EditPointView.parsePointToState(point),
@@ -197,6 +202,10 @@ export default class EditPointView extends SmartView {
     evt.preventDefault();
     this._callbacks.submitFormHandler(EditPointView.parseStateToPoint(this._state));
   };
+
+  #deleteHandler = () => {
+    this._callbacks.deletePointHandler(EditPointView.parseStateToPoint(this._state));
+  }
 
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-group').addEventListener('click', this.#typeChangeHandler);
