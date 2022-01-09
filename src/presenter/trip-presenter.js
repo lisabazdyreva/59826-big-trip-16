@@ -8,6 +8,7 @@ import InfoView from '../view/info-view';
 import SortingView from '../view/sorting-view';
 
 import PointPresenter from './point-presenter';
+import AddPointPresenter from './add-point-presenter';
 
 
 export default class TripPresenter {
@@ -27,6 +28,7 @@ export default class TripPresenter {
   #activeSortingType = DefaultValue.SORTING;
   #activeFilterType = DefaultValue.FILTER;
   #pointPresenters = new Map();
+  #newPointPresenter = null;
 
   constructor(mainContainer, infoContainer, pointsModel, filtersModel) {
     this.#mainContainer = mainContainer;
@@ -34,6 +36,8 @@ export default class TripPresenter {
 
     this.#pointsModel = pointsModel;
     this.#filtersModel = filtersModel;
+
+    this.#newPointPresenter = new AddPointPresenter(this.#pointsListComponent, this.#handleViewAction);
 
     this.#pointsModel.add(this.#handleModelEvent);
     this.#filtersModel.add(this.#handleModelEvent);
@@ -157,4 +161,12 @@ export default class TripPresenter {
         break;
     }
   }
+
+  createPoint = () => {
+    this.#activeFilterType = DefaultValue.FILTER;
+    this.#filtersModel.setActiveFilter(UpdateType.MAJOR, this.#activeFilterType); // TODO сортировка сбрасывается, потому что мажор. Мб нужен не мажор
+
+    this.#newPointPresenter.init();
+  }
+
 }

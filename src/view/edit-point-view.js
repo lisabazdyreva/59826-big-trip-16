@@ -5,20 +5,10 @@ import {destinationsData, offersData} from '../mock/point';
 import SmartView from './smart-view';
 
 
-const isEditPoint = true; // TODO временно
 const ValidationMessage = {
   NAME: 'Select a value from the list',
 };
 
-
-const getEditButtonGroupTemplate = () => `<button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-  <button class="event__reset-btn" type="reset">Delete</button>
-  <button class="event__rollup-btn" type="button">
-    <span class="visually-hidden">Open event</span>
-  </button>`;
-
-const getAddButtonGroupTemplate = () => `<button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-<button class="event__reset-btn" type="reset">Cancel</button>`;
 
 const getEventTypeListTemplate = (activeType) => `<div class="event__type-list">
   <fieldset class="event__type-group">
@@ -93,14 +83,12 @@ const getDestinationsListTemplate = (destinations) => `<datalist id="destination
 </datalist>`;
 
 
-const createEditPointView = (point) => {
+const createEditPointView = (point, isEditPoint) => {
   const {price, dateFrom, dateTo, destination, offers, type, isOffers, isDescription, isPictures} = point;
   const {name, pictures, description} = destination;
 
   const eventTypeListTemplate = getEventTypeListTemplate(type);
   const timeTemplate = getTimeTemplate(dateFrom, dateTo);
-  const editButtonsTemplate = getEditButtonGroupTemplate();
-  const addButtonsTemplate = getAddButtonGroupTemplate();
 
   const offersTemplate = isOffers ? getOffersTemplate(offers) : '';
   const picturesTemplate = isPictures ? getPicturesTemplate(pictures) : '';
@@ -116,7 +104,7 @@ const createEditPointView = (point) => {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
+            ${type ? `<img class="event__type-icon" width="17" height="17" src='img/icons/${type}.png' alt="Event type icon">` : ''}
           </label>
           <input class="event__type-toggle visually-hidden" id="event-type-toggle-1" type="checkbox">
           ${eventTypeListTemplate}
@@ -149,7 +137,9 @@ const createEditPointView = (point) => {
           <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value='${price}'>
         </div>
 
-        ${isEditPoint ? editButtonsTemplate : addButtonsTemplate}
+        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+        <button class="event__reset-btn" type="reset">${isEditPoint ? 'Delete' : 'Cancel'}</button>
+        ${isEditPoint ? '<button class="event__rollup-btn" type="button"><span class="visually-hidden">Open event</span></button>': ''}
 
       </header>
 
@@ -163,16 +153,19 @@ const createEditPointView = (point) => {
 
 
 export default class EditPointView extends SmartView {
+  #isEditPoint = null;
 
   constructor(point = DefaultValue.POINT) {
     super();
     this._state = EditPointView.parsePointToState(point);
 
+    this.#isEditPoint = point !== DefaultValue.POINT;
+
     this.#setInnerHandlers();
   }
 
   get template() {
-    return createEditPointView(this._state);
+    return createEditPointView(this._state, this.#isEditPoint);
   }
 
   setClickHandler = (cb) => {
@@ -216,7 +209,11 @@ export default class EditPointView extends SmartView {
     this.#setInnerHandlers();
 
     this.setSubmitHandler(this._callbacks.submitFormHandler);
-    this.setClickHandler(this._callbacks.closeClickHandler);
+    this.setDeleteHandler(this._callbacks.deletePointHandler);
+
+    if (this.#isEditPoint) {
+      this.setClickHandler(this._callbacks.closeClickHandler);
+    }
   }
 
   #typeChangeHandler = (evt) => {
