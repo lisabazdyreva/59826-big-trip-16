@@ -61,8 +61,8 @@ const currentDate = dayjs();
 
 const filterPoints = {
   [FiltersType.EVERYTHING]: (points) => points,
-  [FiltersType.FUTURE]: (points) => points.filter((point) => point.dateFrom > currentDate),
-  [FiltersType.PAST]: (points) => points.filter((point) => point.dateFrom < currentDate),
+  [FiltersType.FUTURE]: (points) => points.filter((point) => point.dateFrom >= currentDate),
+  [FiltersType.PAST]: (points) => points.filter((point) => point.dateTo < currentDate),
 };
 
 const sortPoints = (type, points) => {
