@@ -28,7 +28,7 @@ export default class AddPointPresenter {
     render(this.#container, this.#editPointComponent, RenderPosition.AFTERBEGIN);
   }
 
-  #remove = () => {
+  remove = () => {
     if (this.#editPointComponent === null ) {
       return;
     }
@@ -46,7 +46,7 @@ export default class AddPointPresenter {
   }
 
   #deleteFormHandler = () => {
-    this.#remove();
+    this.remove();
     document.removeEventListener('keydown', this.#formEscHandler);
   }
 
@@ -56,6 +56,6 @@ export default class AddPointPresenter {
       UpdateType.MAJOR, // TODO можно минор, если инфо компонент перенести
       {id: getRandomInteger(1, 10000), ...point},
     );
-    this.#remove();
+    this.remove();
   }
 }

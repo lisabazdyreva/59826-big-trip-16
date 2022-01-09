@@ -75,6 +75,11 @@ const ErrorMessage = {
   INSTANT: 'Abstract class is not for instantiation',
 };
 
+const ValidationMessage = {
+  NAME: 'Select a value from the list',
+  PRICE: 'The price cannot be zero or less than zero. Please fill the field correctly.',
+};
+
 const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
@@ -101,5 +106,6 @@ export {
   UpdateType,
   UserPointAction,
   FiltersType,
-  NoFilteredPointsMessage
+  NoFilteredPointsMessage,
+  ValidationMessage
 };

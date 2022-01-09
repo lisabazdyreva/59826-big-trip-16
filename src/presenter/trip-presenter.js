@@ -129,6 +129,7 @@ export default class TripPresenter {
   }
 
   #pointModeChangeHandler = () => {
+    this.#newPointPresenter.remove();
     this.#pointPresenters.forEach((presenter) => presenter.resetMode());
   }
 
@@ -164,7 +165,7 @@ export default class TripPresenter {
 
   createPoint = () => {
     this.#activeFilterType = DefaultValue.FILTER;
-    this.#filtersModel.setActiveFilter(UpdateType.MAJOR, this.#activeFilterType); // TODO сортировка сбрасывается, потому что мажор. Мб нужен не мажор
+    this.#filtersModel.setActiveFilter(UpdateType.MAJOR, this.#activeFilterType); // TODO сортировка сбрасывается, потому что мажор. Мб нужен не мажор. Тогда нужно дропать точку при перерисовке списка точек
 
     this.#newPointPresenter.init();
   }

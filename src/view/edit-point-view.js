@@ -1,13 +1,8 @@
 import dayjs from 'dayjs';
-import {FAKE_NAMES, TYPES, TimeFormat, DefaultValue} from '../consts';
+import {FAKE_NAMES, TYPES, TimeFormat, DefaultValue, ValidationMessage} from '../consts';
 import {isInput} from '../utils/utils';
 import {destinationsData, offersData} from '../mock/point';
 import SmartView from './smart-view';
-
-
-const ValidationMessage = {
-  NAME: 'Select a value from the list',
-};
 
 
 const getEventTypeListTemplate = (activeType) => `<div class="event__type-list">
@@ -134,7 +129,7 @@ const createEditPointView = (point, isEditPoint) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value='${price}'>
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value='${price}'>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -201,6 +196,7 @@ export default class EditPointView extends SmartView {
   }
 
   #setInnerHandlers = () => {
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceInputHandler);
     this.element.querySelector('.event__type-group').addEventListener('click', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
   }
@@ -233,6 +229,18 @@ export default class EditPointView extends SmartView {
       isOffers,
     });
   }
+
+  #priceInputHandler = (evt) => {
+    const price = Number(evt.target.value);
+    const isIncorrect = isNaN(price) || price <= 0;
+
+    if (isIncorrect) {
+      evt.target.setCustomValidity(ValidationMessage.PRICE);
+      return;
+    }
+    this.updateState({price});
+  }
+
 
   #destinationChangeHandler = (evt) => {
     if (!isInput(evt)) {
