@@ -1,7 +1,7 @@
 import {isEsc} from '../utils/utils';
 import {render, replace, remove} from '../utils/render-utils';
 
-import {RenderPosition, Mode} from '../consts';
+import {RenderPosition, Mode, UserPointAction, UpdateType} from '../consts';
 
 import PointView from '../view/point-view';
 import EditPointView from '../view/edit-point-view';
@@ -41,6 +41,7 @@ export default class PointPresenter {
 
     this.#editPointComponent.setClickHandler(this.#closeButtonClickHandler);
     this.#editPointComponent.setSubmitHandler(this.#formSubmitHandler);
+    this.#editPointComponent.setDeleteHandler(this.#pointDeleteHandler);
 
     this.#render();
   }
@@ -105,11 +106,27 @@ export default class PointPresenter {
   }
 
   #formSubmitHandler = (point) => {
-    this.#changeData(point);
+    this.#changeData(
+      UserPointAction.UPDATE,
+      UpdateType.MINOR,
+      point, // TODO еще подумать надо
+    );
     this.#closeEditPoint();
   }
 
+  #pointDeleteHandler = (point) => {
+    this.#changeData(
+      UserPointAction.DELETE,
+      UpdateType.MAJOR,
+      point,
+    );
+  }
+
   #favoriteToggleHandler = () => {
-    this.#changeData({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#changeData(
+      UserPointAction.UPDATE,
+      UpdateType.PATCH,
+      {...this.#point, isFavorite: !this.#point.isFavorite},
+    );
   }
 }

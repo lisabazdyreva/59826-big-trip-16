@@ -15,10 +15,16 @@ const SortingType = {
   OFFERS: 'offers',
 };
 
-const FilterValue = {
+const FiltersType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
   PAST: 'past',
+};
+
+const NoFilteredPointsMessage = {
+  [FiltersType.EVERYTHING]: 'Click New Event to create your first point',
+  [FiltersType.PAST]: 'There are no past events now',
+  [FiltersType.FUTURE]: 'There are no future events now',
 };
 
 const MenuTab = {
@@ -28,15 +34,9 @@ const MenuTab = {
 
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
-const EmptyNotification = {
-  EVERYTHING: 'Click New Event to create your first point',
-  PAST: 'There are no past events now',
-  FUTURE: 'There are no future events now',
-};
-
 const DefaultValue = {
   SORTING: SortingType.DAY,
-  FILTER: FilterValue.EVERYTHING,
+  FILTER: FiltersType.EVERYTHING,
   MENU: MenuTab.TABLE,
   POINT: {
     price: '',
@@ -48,9 +48,9 @@ const DefaultValue = {
       description: '',
     },
     offers: [],
-    type: TYPES[0],
+    type: '',
   },
-  NOTIFICATION: EmptyNotification.EVERYTHING,
+  NOTIFICATION: NoFilteredPointsMessage[FiltersType.EVERYTHING],
 };
 
 const TimeFormat = {
@@ -75,5 +75,37 @@ const ErrorMessage = {
   INSTANT: 'Abstract class is not for instantiation',
 };
 
+const ValidationMessage = {
+  NAME: 'Select a value from the list',
+  PRICE: 'The price cannot be zero or less than zero. Please fill the field correctly.',
+};
 
-export {RenderPosition, TYPES, TimeFormat, FAKE_NAMES, SortingType, FilterValue, MenuTab, DefaultValue, Mode, ErrorMessage};
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+const UserPointAction = {
+  UPDATE: 'UPDATE',
+  ADD: 'ADD',
+  DELETE: 'DELETE',
+};
+
+
+export {
+  RenderPosition,
+  TYPES,
+  TimeFormat,
+  FAKE_NAMES,
+  SortingType,
+  MenuTab,
+  DefaultValue,
+  Mode,
+  ErrorMessage,
+  UpdateType,
+  UserPointAction,
+  FiltersType,
+  NoFilteredPointsMessage,
+  ValidationMessage
+};

@@ -4,9 +4,12 @@ import {DefaultValue, RenderPosition} from './consts';
 import {getPoint} from './mock/point';
 
 import TripPresenter from './presenter/trip-presenter';
+import FiltersPresenter from './presenter/filters-presenter';
+
+import PointsModel from './model/points-model';
 
 import MenuView from './view/menu-view';
-import FiltersView from './view/filters-view';
+import FiltersModel from './model/filters-model';
 
 
 const PointsValue = {
@@ -16,19 +19,25 @@ const PointsValue = {
 
 const data = Array.from({length: PointsValue.FULL}, getPoint);
 
+const pointsModel = new PointsModel();
+pointsModel.points = data;
+
+const filtersModel = new FiltersModel();
+
 const menuComponent = new MenuView(DefaultValue.MENU);
-const filtersComponent = new FiltersView(DefaultValue.FILTER);
 
 const menuContainer = document.querySelector('.trip-controls__navigation');
 const filtersContainer = document.querySelector('.trip-controls__filters');
 const mainContainer = document.querySelector('.trip-events');
 const infoContainer = document.querySelector('.trip-main');
 
-
-const tripPresenter = new TripPresenter(mainContainer, infoContainer);
-
 render(menuContainer, menuComponent, RenderPosition.BEFOREEND);
-render(filtersContainer, filtersComponent, RenderPosition.BEFOREEND);
+
+const tripPresenter = new TripPresenter(mainContainer, infoContainer, pointsModel, filtersModel);
+const filtersPresenter = new FiltersPresenter(filtersContainer, filtersModel);
 
 
-tripPresenter.init(data);
+filtersPresenter.init();
+tripPresenter.init();
+
+document.querySelector('.trip-main__event-add-btn').addEventListener('click', () => tripPresenter.createPoint());

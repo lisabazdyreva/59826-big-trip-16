@@ -1,15 +1,16 @@
 import AbstractView from './abstract-view';
+import {NoFilteredPointsMessage} from '../consts';
 
 
 export default class EmptyListView extends AbstractView {
-  #notification = null;
+  #message = null;
 
-  constructor(notification) {
+  constructor(type) {
     super();
-    this.#notification = notification;
+    this.#message = NoFilteredPointsMessage[type];
   }
 
   get template() {
-    return `<p class="trip-events__msg">${this.#notification}</p>`;
+    return `<p class="trip-events__msg">${this.#message}</p>`;
   }
 }
