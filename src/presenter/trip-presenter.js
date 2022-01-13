@@ -49,7 +49,6 @@ export default class TripPresenter {
     this.#filtersModel = filtersModel;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
-    this.#newPointPresenter = new AddPointPresenter(this.#pointsListComponent, this.#handleViewAction);
 
     this.#pointsModel.add(this.#handleModelEvent);
     this.#filtersModel.add(this.#handleModelEvent);
@@ -111,8 +110,10 @@ export default class TripPresenter {
     if (this.#emptyListComponent !== null) {
       remove(this.#emptyListComponent);
     }
+    if (this.#infoComponent !== null) {
+      remove(this.#infoComponent);
+    }
 
-    remove(this.#infoComponent);
     remove(this.#sortingComponent);
 
     this.#activeSortingType = DefaultValue.SORTING;
@@ -157,7 +158,9 @@ export default class TripPresenter {
   }
 
   #pointModeChangeHandler = () => {
-    this.#newPointPresenter.remove();
+    if (this.#newPointPresenter !== null) {
+      this.#newPointPresenter.remove();
+    }
     this.#pointPresenters.forEach((presenter) => presenter.resetMode());
   }
 
@@ -207,6 +210,7 @@ export default class TripPresenter {
   createPoint = () => {
     this.#activeFilterType = DefaultValue.FILTER;
     this.#filtersModel.setActiveFilter(UpdateType.MAJOR, this.#activeFilterType); // TODO сортировка сбрасывается, потому что мажор. Мб нужен не мажор. Тогда нужно дропать точку при перерисовке списка точек
+    this.#newPointPresenter = new AddPointPresenter(this.#pointsListComponent, this.#handleViewAction, this.#destinations, this.#offers, this.#types, this.#names);
 
     this.#newPointPresenter.init();
   }
