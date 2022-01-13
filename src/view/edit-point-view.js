@@ -1,15 +1,16 @@
 import dayjs from 'dayjs';
-import {FAKE_NAMES, TYPES, TimeFormat, DefaultValue, ValidationMessage} from '../consts';
+import {TimeFormat, DefaultValue, ValidationMessage} from '../consts';
 import {isInput} from '../utils/utils';
-import {destinationsData, offersData} from '../mock/point';
 import SmartView from './smart-view';
 
+import {destinationsModel, offersModel} from '../main';
 
-const getEventTypeListTemplate = (activeType) => `<div class="event__type-list">
+
+const getEventTypeListTemplate = (activeType, types) => `<div class="event__type-list">
   <fieldset class="event__type-group">
     <legend class="visually-hidden">Event type</legend>
 
-    ${TYPES.map((type) => {
+    ${types.map((type) => {
 
     const typeText = type.slice(0, 1).toUpperCase() + type.slice(1);
     const isChecked = activeType === type ? 'checked' : '';
@@ -82,7 +83,7 @@ const createEditPointView = (point, isEditPoint) => {
   const {price, dateFrom, dateTo, destination, offers, type, isOffers, isDescription, isPictures} = point;
   const {name, pictures, description} = destination;
 
-  const eventTypeListTemplate = getEventTypeListTemplate(type);
+  const eventTypeListTemplate = getEventTypeListTemplate(type, offersModel.types);
   const timeTemplate = getTimeTemplate(dateFrom, dateTo);
 
   const offersTemplate = isOffers ? getOffersTemplate(offers) : '';
@@ -90,8 +91,8 @@ const createEditPointView = (point, isEditPoint) => {
   const descriptionTemplate = isDescription ? getDescriptionTemplate(description): '';
 
   const destinationTemplate = isDescription || isPictures ? getDestinationTemplate(descriptionTemplate, picturesTemplate) : '';
-
-  const destinationsListTemplate = getDestinationsListTemplate(FAKE_NAMES);
+  //TODO потом удалить модель отдельно
+  const destinationsListTemplate = getDestinationsListTemplate(destinationsModel.names);
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -218,7 +219,8 @@ export default class EditPointView extends SmartView {
     }
 
     const typeValue = evt.target.value;
-    const [offerWithType] = offersData.filter(({type}) => type === typeValue);
+    //TODO потом удалить модель отдельно
+    const [offerWithType] = offersModel.offers.filter(({type}) => type === typeValue);
 
     const offers = offerWithType.offers;
     const isOffers = offers.length !== 0;
@@ -248,7 +250,8 @@ export default class EditPointView extends SmartView {
     }
 
     const nameValue = evt.target.value;
-    const [destination] = destinationsData.filter(({name}) => name === nameValue);
+    //TODO потом удалить модель отдельно
+    const [destination] = destinationsModel.destinations.filter(({name}) => name === nameValue);
 
     if (destination === undefined) {
       evt.target.setCustomValidity(ValidationMessage.NAME);

@@ -1,5 +1,6 @@
 import AbstractObservable from '../utils/abstract-observable';
 import {UpdateType} from '../consts';
+import dayjs from 'dayjs';
 
 export default class PointsModel extends AbstractObservable {
   #points = [];
@@ -21,8 +22,8 @@ export default class PointsModel extends AbstractObservable {
     const adaptedPoint = {
       ...point,
       price: point['base_price'],
-      dateFrom: point['date_from'], //TODO Data - isoString
-      dateTo: point['date_to'],//TODO Data - isoString
+      dateFrom: dayjs(point['date_from']),
+      dateTo: dayjs(point['date_to']),
       isFavorite: point['is_favorite'],
     };
 

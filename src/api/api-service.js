@@ -37,8 +37,8 @@ export default class ApiService {
     const adaptedPoint = {
       ...point,
       'base_price': point.price,
-      'date_from': point.dateFrom,//TODO Data - isoString
-      'date_to': point.dateTo,//TODO Data - isoString
+      'date_from': point.dateFrom.toISOString(),
+      'date_to': point.dateTo.toISOString(),
       'is_favorite': point.isFavorite,
     };
 

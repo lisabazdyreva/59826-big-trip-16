@@ -1,13 +1,30 @@
 import AbstractObservable from '../utils/abstract-observable';
 
 export default class OffersModel extends AbstractObservable {
-  #offers = [];
+  #offers = null;
+  #api = null;
+  #types = new Set();
+
+  constructor(api) {
+    super();
+    this.#api = api;
+  }
+
+  init = async () => {
+    const offers = await this.#api.getOffers();
+    this.#offers = offers;
+  }
 
   get offers() {
     return this.#offers;
   }
 
-  set offers(offers) {
-    this.#offers = offers.slice();
+  get types() {
+    for (const offer of this.#offers) {
+      this.#types.add(offer.type);
+    }
+
+    this.#types = Array.from(this.#types);
+    return this.#types;
   }
 }

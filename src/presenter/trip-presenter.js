@@ -6,6 +6,7 @@ import PointsListView from '../view/points-list-view';
 import EmptyListView from '../view/empty-list-view';
 import InfoView from '../view/info-view';
 import SortingView from '../view/sorting-view';
+import LoadingView from '../view/loading-view';
 
 import PointPresenter from './point-presenter';
 import AddPointPresenter from './add-point-presenter';
@@ -13,8 +14,12 @@ import AddPointPresenter from './add-point-presenter';
 
 export default class TripPresenter {
 
+  #isLoading = true;
+
   #pointsModel = null;
   #filtersModel = null;
+  #destinationsModel = null;
+  #offersModel = null;
 
   #infoComponent = null;
 
@@ -22,6 +27,7 @@ export default class TripPresenter {
   #infoContainer = null;
 
   #pointsListComponent = new PointsListView();
+  #loadingComponent = new LoadingView();
   #emptyListComponent = null;
   #sortingComponent = new SortingView(DefaultValue.SORTING);
 
@@ -30,12 +36,14 @@ export default class TripPresenter {
   #pointPresenters = new Map();
   #newPointPresenter = null;
 
-  constructor(mainContainer, infoContainer, pointsModel, filtersModel) {
+  constructor(mainContainer, infoContainer, pointsModel, filtersModel, destinationsModel, offersModel) {
     this.#mainContainer = mainContainer;
     this.#infoContainer = infoContainer;
 
     this.#pointsModel = pointsModel;
     this.#filtersModel = filtersModel;
+    this.#destinationsModel = destinationsModel;
+    this.#offersModel = offersModel;
 
     this.#newPointPresenter = new AddPointPresenter(this.#pointsListComponent, this.#handleViewAction);
 
@@ -106,6 +114,11 @@ export default class TripPresenter {
   }
 
   #renderMainContent = () => {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     if (!this.points.length) {
       this.#renderEmptyTrip();
     } else {
@@ -114,8 +127,16 @@ export default class TripPresenter {
   }
 
   #renderEmptyTrip = () => {
-    this.#emptyListComponent =new EmptyListView(this.#activeFilterType);
+    this.#emptyListComponent = new EmptyListView(this.#activeFilterType);
     render(this.#mainContainer, this.#emptyListComponent, RenderPosition.BEFOREEND);
+  }
+
+  #renderLoading = () => {
+    render(this.#mainContainer, this.#loadingComponent, RenderPosition.BEFOREEND);
+  }
+
+  #removeLoading = () => {
+    remove(this.#loadingComponent);
   }
 
   #sortingTypeChangeHandler = (activeSortingType) => {
@@ -144,6 +165,12 @@ export default class TripPresenter {
         break;
       case UpdateType.MAJOR:
         this.#removeMainContent();// TODO это еще не точная реализация, ТЗ посмотреть
+        this.#renderMainContent();
+        break;
+      case UpdateType.INIT:
+        // this.#removeMainContent(); // TODO очистка подписи
+        this.#isLoading = false;
+        this.#removeLoading();
         this.#renderMainContent();
         break;
     }
