@@ -16,6 +16,11 @@ export default class TripPresenter {
 
   #isLoading = true;
 
+  #destinations = null;
+  #names = null;
+  #offers = null;
+  #types = null;
+
   #pointsModel = null;
   #filtersModel = null;
   #destinationsModel = null;
@@ -44,11 +49,13 @@ export default class TripPresenter {
     this.#filtersModel = filtersModel;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
-
     this.#newPointPresenter = new AddPointPresenter(this.#pointsListComponent, this.#handleViewAction);
 
     this.#pointsModel.add(this.#handleModelEvent);
     this.#filtersModel.add(this.#handleModelEvent);
+
+    this.#offersModel.add(this.#handleModelEvent);
+    this.#destinationsModel.add(this.#handleModelEvent);
   }
 
   get points() {
@@ -64,7 +71,7 @@ export default class TripPresenter {
   }
 
   #renderPoint = (container, point) => {
-    const pointPresenter = new PointPresenter(container, this.#handleViewAction, this.#pointModeChangeHandler);
+    const pointPresenter = new PointPresenter(container, this.#handleViewAction, this.#pointModeChangeHandler, this.#destinations, this.#offers, this.#types, this.#names);
     pointPresenter.init(point);
 
     this.#pointPresenters.set(point.id, pointPresenter);
@@ -168,10 +175,17 @@ export default class TripPresenter {
         this.#renderMainContent();
         break;
       case UpdateType.INIT:
-        // this.#removeMainContent(); // TODO очистка подписи
         this.#isLoading = false;
         this.#removeLoading();
         this.#renderMainContent();
+        break;
+      case UpdateType.OFFERS_DOWNLOADED:
+        this.#offers = this.#offersModel.offers;
+        this.#types = this.#offersModel.types;
+        break;
+      case UpdateType.DESTINATIONS_DOWNLOADED:
+        this.#destinations = this.#destinationsModel.destinations;
+        this.#names = this.#destinationsModel.names;
         break;
     }
   }

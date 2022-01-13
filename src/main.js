@@ -21,13 +21,13 @@ const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';
 const api = new ApiService(END_POINT, AUTHORIZATION_KEY);
 
 const pointsModel = new PointsModel(api);
-const destinationsModel = new DestinationsModel(api);//исправлено
-const offersModel = new OffersModel(api);//исправлено
+const destinationsModel = new DestinationsModel(api);
+const offersModel = new OffersModel(api);
 const filtersModel = new FiltersModel();
 
-destinationsModel.init();
-offersModel.init();
-pointsModel.init();
+
+Promise.all([destinationsModel.init(), offersModel.init()]).then(() => pointsModel.init());
+
 
 const menuComponent = new MenuView(DefaultValue.MENU);
 
