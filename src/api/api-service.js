@@ -7,9 +7,9 @@ const Method = {
 };
 
 const Url = {
-  GET_POINTS: 'points',
-  GET_DESTINATIONS: 'destinations',
-  GET_OFFERS: 'offers',
+  POINTS: 'points',
+  DESTINATIONS: 'destinations',
+  OFFERS: 'offers',
 };
 
 export default class ApiService {
@@ -26,11 +26,14 @@ export default class ApiService {
 
     const response = await fetch(`${this.#endPoint}/${url}`, {method, body, headers});
 
-    if (response.ok) {
-      return response;
-    } else {
-      throw new Error('OSHIB OCHKA');
+    return ApiService.checkStatusResponse(response);
+  }
+
+  static checkStatusResponse = (response) => {
+    if (!response.ok) {
+      throw new Error(`${response.status}: ${response.statusText}`);
     }
+    return response;
   }
 
   #adaptToServer = (point) => {
@@ -51,23 +54,56 @@ export default class ApiService {
   }
 
   getPoints = async () => {
-    const response = await this.#load({url: Url.GET_POINTS, method: Method.GET});
+    const response = await this.#load({url: Url.POINTS, method: Method.GET});
 
     const parsedData = await response.json();
     return parsedData;
   }
 
   getDestinations = async () => {
-    const response = await this.#load({url: Url.GET_DESTINATIONS, method: Method.GET});
+    const response = await this.#load({url: Url.DESTINATIONS, method: Method.GET});
 
     const parsedData = await response.json();
     return parsedData;
   }
 
   getOffers = async () => {
-    const response = await this.#load({url: Url.GET_OFFERS, method: Method.GET});
+    const response = await this.#load({url: Url.OFFERS, method: Method.GET});
 
     const parsedData = await response.json();
     return parsedData;
+  }
+
+  updatePoint = async (point) => {
+    const response = await this.#load({
+      url: `${Url.POINTS}/${point.id}`,
+      method: Method.PUT,
+      body: JSON.stringify(this.#adaptToServer(point)),
+      headers: new Headers({'Content-Type' : 'application/json'}),
+    });
+
+    const parsedData = await response.json();
+    return parsedData;
+  }
+
+  addPoint = async (point) => {
+    const response = await this.#load({
+      url: Url.POINTS,
+      method: Method.POST,
+      body: JSON.stringify(this.#adaptToServer(point)),
+      headers: new Headers({'Content-Type' : 'application/json'}),
+    });
+
+    const parsedData = await response.json();
+    return parsedData;
+  }
+
+  removePoint = async (point) => {
+    const response = await this.#load({
+      url: `${Url.POINTS}/${point.id}`,
+      method: Method.DELETE,
+    });
+
+    return response;
   }
 }

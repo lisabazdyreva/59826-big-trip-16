@@ -49,6 +49,7 @@ const DefaultValue = {
     },
     offers: [],
     type: '',
+    isFavorite: false,
   },
   NOTIFICATION: NoFilteredPointsMessage[FiltersType.EVERYTHING],
 };

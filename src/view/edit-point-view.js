@@ -91,7 +91,6 @@ const createEditPointView = (point, isEditPoint, destinationsList, offersList, t
   const descriptionTemplate = isDescription ? getDescriptionTemplate(description): '';
 
   const destinationTemplate = isDescription || isPictures ? getDestinationTemplate(descriptionTemplate, picturesTemplate) : '';
-  //TODO потом удалить модель отдельно
   const destinationsListTemplate = getDestinationsListTemplate(names);
 
   return `<li class="trip-events__item">
@@ -156,7 +155,7 @@ export default class EditPointView extends SmartView {
   #types = null;
   #names = null;
 
-  constructor(point = DefaultValue.POINT, destinationsList, offersList, types, names) {
+  constructor(point, destinationsList, offersList, types, names) {
     super();
     this._state = EditPointView.parsePointToState(point);
 
