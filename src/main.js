@@ -15,7 +15,6 @@ import DestinationsModel from './model/destinations-model';
 import OffersModel from './model/offers-model';
 
 const AUTHORIZATION_KEY = 'Basic difg537hffs08a';
-// const AUTHORIZATION_KEY = '';
 const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';
 
 const api = new ApiService(END_POINT, AUTHORIZATION_KEY);
