@@ -13,6 +13,8 @@ const TimeUnit = {
   DAYS: 'D',
 };
 
+const DATE_FORMAT_DATEPICKER = 'd/m/y H:i';
+
 const TAG_INPUT = 'INPUT';
 
 const getFormattedDuration = (difference) => { // TODO мб улучшить можно будет со временем
@@ -78,5 +80,12 @@ const sortPoints = (type, points) => {
   return points;
 };
 
+const getDatepickerConfig = (handler) => ({
+  dateFormat: DATE_FORMAT_DATEPICKER,
+  enableTime: true,
+  'time_24hr': true,
+  onChange: handler,
+});
 
-export {getFormattedDuration, createElement, isEsc, isInput, sortByFromDate, sortByDuration, sortByPrice, filterPoints, sortPoints};
+
+export {getFormattedDuration, createElement, isEsc, isInput, sortByFromDate, sortByDuration, sortByPrice, filterPoints, sortPoints, getDatepickerConfig};
