@@ -1,15 +1,14 @@
 import dayjs from 'dayjs';
-import {FAKE_NAMES, TYPES, TimeFormat, DefaultValue, ValidationMessage} from '../consts';
+import {TimeFormat, DefaultValue, ValidationMessage} from '../consts';
 import {isInput} from '../utils/utils';
-import {destinationsData, offersData} from '../mock/point';
 import SmartView from './smart-view';
 
 
-const getEventTypeListTemplate = (activeType) => `<div class="event__type-list">
+const getEventTypeListTemplate = (activeType, types) => `<div class="event__type-list">
   <fieldset class="event__type-group">
     <legend class="visually-hidden">Event type</legend>
 
-    ${TYPES.map((type) => {
+    ${types.map((type) => {
 
     const typeText = type.slice(0, 1).toUpperCase() + type.slice(1);
     const isChecked = activeType === type ? 'checked' : '';
@@ -78,11 +77,13 @@ const getDestinationsListTemplate = (destinations) => `<datalist id="destination
 </datalist>`;
 
 
-const createEditPointView = (point, isEditPoint) => {
+const createEditPointView = (point, isEditPoint, destinationsList, offersList, types, names) => {
+
+
   const {price, dateFrom, dateTo, destination, offers, type, isOffers, isDescription, isPictures} = point;
   const {name, pictures, description} = destination;
 
-  const eventTypeListTemplate = getEventTypeListTemplate(type);
+  const eventTypeListTemplate = getEventTypeListTemplate(type, types);
   const timeTemplate = getTimeTemplate(dateFrom, dateTo);
 
   const offersTemplate = isOffers ? getOffersTemplate(offers) : '';
@@ -90,8 +91,7 @@ const createEditPointView = (point, isEditPoint) => {
   const descriptionTemplate = isDescription ? getDescriptionTemplate(description): '';
 
   const destinationTemplate = isDescription || isPictures ? getDestinationTemplate(descriptionTemplate, picturesTemplate) : '';
-
-  const destinationsListTemplate = getDestinationsListTemplate(FAKE_NAMES);
+  const destinationsListTemplate = getDestinationsListTemplate(names);
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -150,17 +150,27 @@ const createEditPointView = (point, isEditPoint) => {
 export default class EditPointView extends SmartView {
   #isEditPoint = null;
 
-  constructor(point = DefaultValue.POINT) {
+  #destinationsList = null;
+  #offersList = null;
+  #types = null;
+  #names = null;
+
+  constructor(point, destinationsList, offersList, types, names) {
     super();
     this._state = EditPointView.parsePointToState(point);
 
     this.#isEditPoint = point !== DefaultValue.POINT;
 
+    this.#destinationsList = destinationsList;
+    this.#offersList = offersList;
+    this.#types = types;
+    this.#names = names;
+
     this.#setInnerHandlers();
   }
 
   get template() {
-    return createEditPointView(this._state, this.#isEditPoint);
+    return createEditPointView(this._state, this.#isEditPoint, this.#destinationsList, this.#offersList, this.#types, this.#names);
   }
 
   setClickHandler = (cb) => {
@@ -218,7 +228,7 @@ export default class EditPointView extends SmartView {
     }
 
     const typeValue = evt.target.value;
-    const [offerWithType] = offersData.filter(({type}) => type === typeValue);
+    const [offerWithType] = this.#offersList.filter(({type}) => type === typeValue);
 
     const offers = offerWithType.offers;
     const isOffers = offers.length !== 0;
@@ -248,7 +258,7 @@ export default class EditPointView extends SmartView {
     }
 
     const nameValue = evt.target.value;
-    const [destination] = destinationsData.filter(({name}) => name === nameValue);
+    const [destination] = this.#destinationsList.filter(({name}) => name === nameValue);
 
     if (destination === undefined) {
       evt.target.setCustomValidity(ValidationMessage.NAME);

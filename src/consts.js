@@ -49,6 +49,7 @@ const DefaultValue = {
     },
     offers: [],
     type: '',
+    isFavorite: false,
   },
   NOTIFICATION: NoFilteredPointsMessage[FiltersType.EVERYTHING],
 };
@@ -84,6 +85,9 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
+  OFFERS_DOWNLOADED: 'DOWNLOADED_OFFERS',
+  DESTINATIONS_DOWNLOADED: 'DOWNLOADED_DESTINATIONS',
 };
 
 const UserPointAction = {
