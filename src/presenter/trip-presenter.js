@@ -40,8 +40,9 @@ export default class TripPresenter {
   #activeFilterType = DefaultValue.FILTER;
   #pointPresenters = new Map();
   #newPointPresenter = null;
+  #filtersPresenter = null;
 
-  constructor(mainContainer, infoContainer, pointsModel, filtersModel, destinationsModel, offersModel) {
+  constructor(mainContainer, infoContainer, pointsModel, filtersModel, destinationsModel, offersModel, filtersPresenter) {
     this.#mainContainer = mainContainer;
     this.#infoContainer = infoContainer;
 
@@ -49,6 +50,8 @@ export default class TripPresenter {
     this.#filtersModel = filtersModel;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
+
+    this.#filtersPresenter = filtersPresenter;
 
     this.#pointsModel.add(this.#handleModelEvent);
     this.#filtersModel.add(this.#handleModelEvent);
@@ -67,6 +70,7 @@ export default class TripPresenter {
 
   init = () => {
     this.#renderMainContent();
+    this.#filtersPresenter.init();
   }
 
   #renderPoint = (container, point) => {
@@ -213,6 +217,27 @@ export default class TripPresenter {
     this.#newPointPresenter = new AddPointPresenter(this.#pointsListComponent, this.#handleViewAction, this.#destinations, this.#offers, this.#types, this.#names);
 
     this.#newPointPresenter.init();
+  }
+
+
+  remove = () => {
+    this.#pointModeChangeHandler();
+    this.#activeFilterType = DefaultValue.FILTER;
+    this.#filtersModel.setActiveFilter(UpdateType.MAJOR, this.#activeFilterType);
+
+    if (this.#emptyListComponent !== null) {
+      remove(this.#emptyListComponent);
+    }
+
+    if(this.#infoComponent !== null) {
+      remove(this.#infoComponent);
+    }
+
+    remove(this.#sortingComponent);
+    this.#filtersPresenter.remove();
+    this.#activeSortingType = DefaultValue.SORTING;
+
+    this.#removePointsList();
   }
 
 }

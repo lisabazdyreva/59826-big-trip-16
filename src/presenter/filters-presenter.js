@@ -33,6 +33,12 @@ export default class FiltersPresenter {
     remove(this.#prevComponent);
   }
 
+  remove = () => {
+    // this.#component.removeElement() // TODO посмотреть еще removeElement, что он вообще делает
+    remove(this.#component);
+    this.#component = null;
+  }
+
   #renderFilters = () => {
     render(this.#container, this.#component, RenderPosition.BEFOREEND);
   }

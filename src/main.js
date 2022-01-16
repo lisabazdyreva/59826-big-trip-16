@@ -1,5 +1,5 @@
-import {render} from './utils/render-utils';
-import {DefaultValue, RenderPosition} from './consts';
+import {remove, render} from './utils/render-utils';
+import {DefaultValue, MenuTab, RenderPosition} from './consts';
 
 
 import TripPresenter from './presenter/trip-presenter';
@@ -30,7 +30,7 @@ Promise.all([destinationsModel.init(), offersModel.init()]).then(() => pointsMod
 
 
 const menuComponent = new MenuView(DefaultValue.MENU);
-const statsComponent = new StatsView();
+let statsComponent = null;
 
 const menuContainer = document.querySelector('.trip-controls__navigation');
 const filtersContainer = document.querySelector('.trip-controls__filters');
@@ -38,13 +38,30 @@ const mainContainer = document.querySelector('.trip-events');
 const infoContainer = document.querySelector('.trip-main');
 
 render(menuContainer, menuComponent, RenderPosition.BEFOREEND);
-render(mainContainer, statsComponent, RenderPosition.BEFOREEND);
 
-const tripPresenter = new TripPresenter(mainContainer, infoContainer, pointsModel, filtersModel, destinationsModel, offersModel);
 const filtersPresenter = new FiltersPresenter(filtersContainer, filtersModel);
+const tripPresenter = new TripPresenter(mainContainer, infoContainer, pointsModel, filtersModel, destinationsModel, offersModel, filtersPresenter);
 
-
-filtersPresenter.init();
 tripPresenter.init();
+const addButtonElement = document.querySelector('.trip-main__event-add-btn');
 
-document.querySelector('.trip-main__event-add-btn').addEventListener('click', () => tripPresenter.createPoint());
+addButtonElement.addEventListener('click', () => tripPresenter.createPoint());
+
+const menuClickHandler = (menuItem) => {
+  switch (menuItem) {
+    case MenuTab.TABLE:
+      remove(statsComponent);
+      statsComponent = null;
+      addButtonElement.disabled = false;
+      tripPresenter.init(); // TODO info оставлять
+      break;
+    case MenuTab.STATS:
+      tripPresenter.remove();
+      addButtonElement.disabled = true;
+      statsComponent = new StatsView();
+      render(mainContainer, statsComponent, RenderPosition.BEFOREEND);
+      break;
+  }
+};
+
+menuComponent.setMenuClickHandler(menuClickHandler);
