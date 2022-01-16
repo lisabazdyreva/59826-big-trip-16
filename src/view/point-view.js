@@ -20,7 +20,7 @@ const getScheduleTemplate = (from, to, difference) => {
   const attrFrom = `${from.format(TimeFormat.ISO)}`;
   const attrTo = `${to.format(TimeFormat.ISO)}`;
 
-  const duration = getFormattedDuration(difference) ;
+  const duration = getFormattedDuration(difference);
 
   return `<div class="event__schedule">
     <p class="event__time">

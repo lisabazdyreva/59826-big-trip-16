@@ -58,7 +58,7 @@ const menuClickHandler = (menuItem) => {
     case MenuTab.STATS:
       tripPresenter.remove();
       addButtonElement.disabled = true;
-      statsComponent = new StatsView();
+      statsComponent = new StatsView(pointsModel.points);
       render(mainContainer, statsComponent, RenderPosition.BEFOREEND);
       break;
   }

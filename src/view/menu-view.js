@@ -29,6 +29,8 @@ export default class MenuView extends AbstractView {
   }
 
   #menuClickHandler = (evt) => {
+    evt.preventDefault();
+
     const value = evt.target.textContent;
     this._callbacks.menuClicked(value);
   }
