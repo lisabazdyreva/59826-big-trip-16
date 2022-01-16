@@ -20,8 +20,12 @@ export default class SmartView extends AbstractView {
     this.restoreHandlers();
   }
 
+  updateStateWithRerender = (update) => {
+    this.updateState(update);
+    this.#updateElement();
+  }
+
   updateState = (update) => {
     this._state = {...this._state, ...update};
-    this.#updateElement();
   }
 }

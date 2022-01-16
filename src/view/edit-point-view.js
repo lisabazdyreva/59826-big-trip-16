@@ -1,7 +1,10 @@
 import dayjs from 'dayjs';
 import {TimeFormat, DefaultValue, ValidationMessage} from '../consts';
-import {isInput} from '../utils/utils';
+import {getDatepickerConfig, isInput} from '../utils/utils';
 import SmartView from './smart-view';
+
+import flatpickr from 'flatpickr';
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 
 const getEventTypeListTemplate = (activeType, types) => `<div class="event__type-list">
@@ -79,7 +82,6 @@ const getDestinationsListTemplate = (destinations) => `<datalist id="destination
 
 const createEditPointView = (point, isEditPoint, destinationsList, offersList, types, names) => {
 
-
   const {price, dateFrom, dateTo, destination, offers, type, isOffers, isDescription, isPictures} = point;
   const {name, pictures, description} = destination;
 
@@ -155,6 +157,9 @@ export default class EditPointView extends SmartView {
   #types = null;
   #names = null;
 
+  #datepickerFrom = null;
+  #datepickerTo = null;
+
   constructor(point, destinationsList, offersList, types, names) {
     super();
     this._state = EditPointView.parsePointToState(point);
@@ -189,7 +194,7 @@ export default class EditPointView extends SmartView {
   }
 
   reset = (point) => {
-    this.updateState(
+    this.updateStateWithRerender(
       EditPointView.parsePointToState(point),
     );
   }
@@ -209,6 +214,27 @@ export default class EditPointView extends SmartView {
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceInputHandler);
     this.element.querySelector('.event__type-group').addEventListener('click', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+
+    this.#setDatepickers();
+  }
+
+  #setDatepickers = () => {
+    this.#setDatepickerFrom();
+    this.#setDatePickerTo();
+  }
+
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
   }
 
   restoreHandlers = () => {
@@ -233,7 +259,7 @@ export default class EditPointView extends SmartView {
     const offers = offerWithType.offers;
     const isOffers = offers.length !== 0;
 
-    this.updateState({
+    this.updateStateWithRerender({
       type: typeValue,
       offers,
       isOffers,
@@ -271,7 +297,7 @@ export default class EditPointView extends SmartView {
     const isDescription = description.length !== 0;
     const isPictures = pictures.length !== 0;
 
-    this.updateState({
+    this.updateStateWithRerender({
       destination: {
         name: nameValue,
         description,
@@ -281,6 +307,32 @@ export default class EditPointView extends SmartView {
       isPictures,
     });
   }
+
+  #setDatepickerFrom = () => {
+    const config = {...getDatepickerConfig(this.#dateFromClickHandler), maxDate: this._state.dateTo.toDate()};
+    this.#datepickerFrom = flatpickr(this.element.querySelector('#event-start-time-1'), config);
+  }
+
+  #setDatePickerTo = () => {
+    const config = {...getDatepickerConfig(this.#dateToClickHandler), minDate: this._state.dateFrom.toDate()};
+    this.#datepickerTo = flatpickr(this.element.querySelector('#event-end-time-1'), config);
+
+  }
+
+  #dateFromClickHandler = ([userDateFrom]) => {
+    this.updateStateWithRerender({
+      dateFrom: dayjs(userDateFrom),
+    });
+    this.#datepickerFrom.open();
+  }
+
+  #dateToClickHandler = ([userDateTo]) => {
+    this.updateStateWithRerender({
+      dateTo: dayjs(userDateTo),
+    });
+    this.#datepickerTo.open();
+  }
+
 
   static parsePointToState = (point) => ({
     ...point,
