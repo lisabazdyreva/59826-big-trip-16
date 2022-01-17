@@ -4,7 +4,6 @@ import {filterPoints, sortPoints} from '../utils/utils';
 
 import PointsListView from '../view/points-list-view';
 import EmptyListView from '../view/empty-list-view';
-import InfoView from '../view/info-view';
 import SortingView from '../view/sorting-view';
 import LoadingView from '../view/loading-view';
 
@@ -26,10 +25,7 @@ export default class TripPresenter {
   #destinationsModel = null;
   #offersModel = null;
 
-  #infoComponent = null;
-
   #mainContainer = null;
-  #infoContainer = null;
 
   #pointsListComponent = new PointsListView();
   #loadingComponent = new LoadingView();
@@ -38,13 +34,14 @@ export default class TripPresenter {
 
   #activeSortingType = DefaultValue.SORTING;
   #activeFilterType = DefaultValue.FILTER;
+
   #pointPresenters = new Map();
   #newPointPresenter = null;
   #filtersPresenter = null;
+  #menuPresenter = null;
 
-  constructor(mainContainer, infoContainer, pointsModel, filtersModel, destinationsModel, offersModel, filtersPresenter) {
+  constructor(mainContainer, pointsModel, filtersModel, destinationsModel, offersModel, filtersPresenter, menuPresenter) {
     this.#mainContainer = mainContainer;
-    this.#infoContainer = infoContainer;
 
     this.#pointsModel = pointsModel;
     this.#filtersModel = filtersModel;
@@ -52,6 +49,7 @@ export default class TripPresenter {
     this.#offersModel = offersModel;
 
     this.#filtersPresenter = filtersPresenter;
+    this.#menuPresenter = menuPresenter;
 
     this.#pointsModel.add(this.#handleModelEvent);
     this.#filtersModel.add(this.#handleModelEvent);
@@ -71,6 +69,8 @@ export default class TripPresenter {
   init = () => {
     this.#renderMainContent();
     this.#filtersPresenter.init();
+    this.#menuPresenter.init();
+    this.#menuPresenter.setAddPointHandler(this.#createPoint);
   }
 
   #renderPoint = (container, point) => {
@@ -89,11 +89,6 @@ export default class TripPresenter {
     this.#pointPresenters.clear();
   }
 
-  #renderInfo = () => {
-    this.#infoComponent = new InfoView(this.points);
-    render(this.#infoContainer, this.#infoComponent, RenderPosition.AFTERBEGIN);
-  }
-
   #renderSorting = () => {
     render(this.#mainContainer, this.#sortingComponent, RenderPosition.BEFOREEND);
     this.#sortingComponent.setSortingChangeHandler(this.#sortingTypeChangeHandler);
@@ -105,7 +100,6 @@ export default class TripPresenter {
   }
 
   #renderTrip = () => {
-    this.#renderInfo();
     this.#renderSorting();
     this.#renderPointsList();
   }
@@ -113,9 +107,6 @@ export default class TripPresenter {
   #removeMainContent = () => {
     if (this.#emptyListComponent !== null) {
       remove(this.#emptyListComponent);
-    }
-    if (this.#infoComponent !== null) {
-      remove(this.#infoComponent);
     }
 
     remove(this.#sortingComponent);
@@ -211,10 +202,10 @@ export default class TripPresenter {
     }
   }
 
-  createPoint = () => {
+  #createPoint = () => {
     this.#activeFilterType = DefaultValue.FILTER;
     this.#filtersModel.setActiveFilter(UpdateType.MAJOR, this.#activeFilterType); // TODO сортировка сбрасывается, потому что мажор. Мб нужен не мажор. Тогда нужно дропать точку при перерисовке списка точек
-    this.#newPointPresenter = new AddPointPresenter(this.#pointsListComponent, this.#handleViewAction, this.#destinations, this.#offers, this.#types, this.#names);
+    this.#newPointPresenter = new AddPointPresenter(this.#pointsListComponent, this.#handleViewAction, this.#menuPresenter.undisableAddButton, this.#destinations, this.#offers, this.#types, this.#names);
 
     this.#newPointPresenter.init();
   }
@@ -227,10 +218,6 @@ export default class TripPresenter {
 
     if (this.#emptyListComponent !== null) {
       remove(this.#emptyListComponent);
-    }
-
-    if(this.#infoComponent !== null) {
-      remove(this.#infoComponent);
     }
 
     remove(this.#sortingComponent);

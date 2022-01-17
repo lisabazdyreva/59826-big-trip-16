@@ -30,8 +30,8 @@ export default class MenuView extends AbstractView {
 
   #menuClickHandler = (evt) => {
     evt.preventDefault();
+    this.#activeTab = evt.target.textContent;
 
-    const value = evt.target.textContent;
-    this._callbacks.menuClicked(value);
+    this._callbacks.menuClicked(this.#activeTab);
   }
 }
