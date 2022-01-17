@@ -32,8 +32,6 @@ const MenuTab = {
   STATS: 'Stats',
 };
 
-const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
-
 const DefaultValue = {
   SORTING: SortingType.DAY,
   FILTER: FiltersType.EVERYTHING,
@@ -63,7 +61,6 @@ const TimeFormat = {
   DAYS_MONTHS_YEARS_TIME: 'DD/MM/YY HH:mm',
 };
 
-const FAKE_NAMES = ['Toronto', 'Tokyo', 'Bursa', 'Bishkek', 'Torzhok', 'Tambov', 'Valencia', 'Warsaw','Dakar', 'Ottawa'];
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -96,12 +93,17 @@ const UserPointAction = {
   DELETE: 'DELETE',
 };
 
+const ChartName = {
+  MONEY: 'MONEY',
+  TYPE: 'TYPE',
+  TIME: 'TIME',
+};
+
 
 export {
+  ChartName,
   RenderPosition,
-  TYPES,
   TimeFormat,
-  FAKE_NAMES,
   SortingType,
   MenuTab,
   DefaultValue,
