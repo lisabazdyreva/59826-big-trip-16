@@ -50,6 +50,8 @@ export default class TripPresenter {
 
     this.#filtersPresenter = filtersPresenter;
     this.#menuPresenter = menuPresenter;
+
+    this.#newPointPresenter = new AddPointPresenter(this.#pointsListComponent, this.#handleViewAction, this.#menuPresenter.undisableAddButton);
   }
 
   get points() {
@@ -109,6 +111,7 @@ export default class TripPresenter {
   }
 
   #removeMainContent = () => {
+    this.#newPointPresenter.remove();
     if (this.#emptyListComponent !== null) {
       remove(this.#emptyListComponent);
     }
@@ -157,9 +160,6 @@ export default class TripPresenter {
   }
 
   #pointModeChangeHandler = () => {
-    if (this.#newPointPresenter !== null) {
-      this.#newPointPresenter.remove();
-    }
     this.#pointPresenters.forEach((presenter) => presenter.resetMode());
   }
 
@@ -195,9 +195,7 @@ export default class TripPresenter {
   #handleViewAction = async (actionType, updateType, updatingItem) => {
     switch (actionType) {
       case UserPointAction.UPDATE:
-        if (updateType !== UpdateType.PATCH) {
-          this.#pointPresenters.get(updatingItem.id).setViewState('SAVING');
-        }
+        this.#pointPresenters.get(updatingItem.id).setViewState('SAVING');
         try {
           await this.#pointsModel.updatePoint(updateType, updatingItem);
         } catch (err) {
@@ -205,7 +203,12 @@ export default class TripPresenter {
         }
         break;
       case UserPointAction.ADD:
-        this.#pointsModel.addPoint(updateType, updatingItem);
+        this.#newPointPresenter.setSaving();
+        try {
+          await this.#pointsModel.addPoint(updateType, updatingItem);
+        } catch (err) {
+          this.#newPointPresenter.setAborting();
+        }
         break;
       case UserPointAction.DELETE:
         this.#pointPresenters.get(updatingItem.id).setViewState('DELETING');
@@ -222,9 +225,8 @@ export default class TripPresenter {
   #createPoint = () => {
     this.#activeFilterType = DefaultValue.FILTER;
     this.#filtersModel.setActiveFilter(UpdateType.MAJOR, this.#activeFilterType); // TODO сортировка сбрасывается, потому что мажор. Мб нужен не мажор. Тогда нужно дропать точку при перерисовке списка точек
-    this.#newPointPresenter = new AddPointPresenter(this.#pointsListComponent, this.#handleViewAction, this.#menuPresenter.undisableAddButton, this.#destinations, this.#offers, this.#types, this.#names);
 
-    this.#newPointPresenter.init();
+    this.#newPointPresenter.init(this.#destinations, this.#offers, this.#types, this.#names);
   }
 
   #removeObservers = () => {

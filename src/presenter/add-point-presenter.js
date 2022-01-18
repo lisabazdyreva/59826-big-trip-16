@@ -15,25 +15,30 @@ export default class AddPointPresenter {
 
   #undisableButton = null;
 
-  constructor(container, changeData, undisableButton, destinations, offers, types, names) {
+  constructor(container, changeData, undisableButton) {
     this.#container = container;
     this.#changeData = changeData;
 
+    this.#undisableButton = undisableButton;
+  }
+
+  init = (destinations, offers, types, names) => {
     this.#destinations = destinations;
     this.#offers = offers;
     this.#types = types;
     this.#names = names;
 
-    this.#undisableButton = undisableButton;
-  }
+    if (this.#editPointComponent!== null) {
+      return;
+    }
 
-  init = () => {
     this.#editPointComponent = new EditPointView(DefaultValue.POINT, this.#destinations, this.#offers, this.#types, this.#names);
-
-    this.#render();
 
     this.#editPointComponent.setSubmitHandler(this.#formSubmitHandler);
     this.#editPointComponent.setDeleteHandler(this.#deleteFormHandler);
+
+    this.#render();
+
     document.addEventListener('keydown', this.#formEscHandler);
   }
 
@@ -70,6 +75,25 @@ export default class AddPointPresenter {
       UpdateType.MAJOR, // TODO можно минор, если инфо компонент перенести
       point,
     );
-    this.remove();
+  }
+
+  setSaving = () => {
+    this.#editPointComponent.updateStateWithRerender({
+      isDisabled: true,
+      isSaving: true,
+    });
+    this.#editPointComponent.disableInputs();
+  }
+
+  #removeFormState = () => {
+    this.#editPointComponent.updateStateWithRerender({
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    });
+  }
+
+  setAborting = () => {
+    this.#editPointComponent.shake(this.#removeFormState);
   }
 }

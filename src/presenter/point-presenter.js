@@ -105,7 +105,6 @@ export default class PointPresenter {
 
   #openEditPoint = () => {
     replace(this.#editPointComponent, this.#pointComponent);
-    this.#editPointComponent.restoreHandlers(); // TODO не самое лучшее решение
     document.addEventListener('keydown', this.#formEscHandler);
     this.#changeMode();
     this.#mode = Mode.EDIT;
@@ -150,15 +149,15 @@ export default class PointPresenter {
     );
   }
 
-  setViewState = (state) => {
-    const resetState = () => {
-      this.#editPointComponent.updateStateWithRerender({
-        isDeleting: false,
-        isDisabled: false,
-        isSaving: false,
-      });
-    };
+  #resetState = () => {
+    this.#editPointComponent.updateStateWithRerender({
+      isDeleting: false,
+      isDisabled: false,
+      isSaving: false,
+    });
+  };
 
+  setViewState = (state) => {
     switch (state) {
       case State.DELETING:
         this.#editPointComponent.updateStateWithRerender({
@@ -168,6 +167,10 @@ export default class PointPresenter {
         this.#editPointComponent.disableInputs();
         break;
       case State.SAVING:
+        if (this.#mode === Mode.DEFAULT) {
+          return;
+        }
+
         this.#editPointComponent.updateStateWithRerender({
           isSaving: true,
           isDisabled: true,
@@ -175,9 +178,13 @@ export default class PointPresenter {
         this.#editPointComponent.disableInputs();
         break;
       case State.ABORTING:
+        if (this.#mode === Mode.DEFAULT) {
+          this.#pointComponent.shake();
+          return;
+        }
+
         this.#editPointComponent.disableInputs();
-        this.#editPointComponent.shake(resetState);
-        this.#pointComponent.shake();
+        this.#editPointComponent.shake(this.#resetState);
         break;
     }
   }
