@@ -195,6 +195,9 @@ export default class TripPresenter {
   #handleViewAction = async (actionType, updateType, updatingItem) => {
     switch (actionType) {
       case UserPointAction.UPDATE:
+        if (updateType !== UpdateType.PATCH) {
+          this.#pointPresenters.get(updatingItem.id).setViewState('SAVING');
+        }
         try {
           await this.#pointsModel.updatePoint(updateType, updatingItem);
         } catch (err) {

@@ -69,11 +69,15 @@ export default class PointPresenter {
     }
 
     if (this.#mode === Mode.DEFAULT) {
+      // console.log(this.#pointComponent);//TODO подумать
       replace(this.#pointComponent, this.#prevPointComponent);
     }
 
     if (this.#mode === Mode.EDIT) {
-      replace(this.#editPointComponent, this.#prevEditPointComponent);
+      // replace(this.#editPointComponent, this.#prevEditPointComponent); //TODO подумать
+      // console.log(this.#pointComponent);//TODO подумать
+      replace(this.#pointComponent, this.#prevEditPointComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
 
@@ -101,6 +105,7 @@ export default class PointPresenter {
 
   #openEditPoint = () => {
     replace(this.#editPointComponent, this.#pointComponent);
+    this.#editPointComponent.restoreHandlers(); // TODO не самое лучшее решение
     document.addEventListener('keydown', this.#formEscHandler);
     this.#changeMode();
     this.#mode = Mode.EDIT;
@@ -127,7 +132,6 @@ export default class PointPresenter {
       UpdateType.MINOR,
       point, // TODO еще подумать надо
     );
-    this.#closeEditPoint();
   }
 
   #pointDeleteHandler = (point) => {
@@ -147,7 +151,6 @@ export default class PointPresenter {
   }
 
   setViewState = (state) => {
-
     const resetState = () => {
       this.#editPointComponent.updateStateWithRerender({
         isDeleting: false,
@@ -156,17 +159,26 @@ export default class PointPresenter {
       });
     };
 
-
     switch (state) {
       case State.DELETING:
         this.#editPointComponent.updateStateWithRerender({
           isDeleting: true,
           isDisabled: true,
         });
+        this.#editPointComponent.disableInputs();
+        break;
+      case State.SAVING:
+        this.#editPointComponent.updateStateWithRerender({
+          isSaving: true,
+          isDisabled: true,
+        });
+        this.#editPointComponent.disableInputs();
         break;
       case State.ABORTING:
+        this.#editPointComponent.disableInputs();
         this.#editPointComponent.shake(resetState);
         this.#pointComponent.shake();
+        break;
     }
   }
 }

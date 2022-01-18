@@ -345,6 +345,12 @@ export default class EditPointView extends SmartView {
     this.#datepickerTo.open();
   }
 
+  disableInputs = () => {
+    this.element.querySelectorAll('input').forEach((elem) => {
+      elem.disabled = true;
+    });
+  }
+
 
   static parsePointToState = (point) => ({
     ...point,
