@@ -2,7 +2,6 @@ import EditPointView from '../view/edit-point-view';
 import {DefaultValue, RenderPosition, UpdateType, UserPointAction} from '../consts';
 import {remove, render} from '../utils/render-utils';
 import {isEsc} from '../utils/utils';
-import {getRandomInteger} from '../utils/mock-utils';
 
 export default class AddPointPresenter {
   #container = null;
@@ -69,7 +68,7 @@ export default class AddPointPresenter {
     this.#changeData(
       UserPointAction.ADD,
       UpdateType.MAJOR, // TODO можно минор, если инфо компонент перенести
-      {id: String(getRandomInteger(1, 10000)), ...point},
+      point,
     );
     this.remove();
   }

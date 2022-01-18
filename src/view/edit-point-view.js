@@ -82,7 +82,7 @@ const getDestinationsListTemplate = (destinations) => `<datalist id="destination
 
 const createEditPointView = (point, isEditPoint, destinationsList, offersList, types, names) => {
 
-  const {price, dateFrom, dateTo, destination, offers, type, isOffers, isDescription, isPictures} = point;
+  const {price, dateFrom, dateTo, destination, offers, type, isOffers, isDescription, isDisabled, isDeleting, isSaving,  isPictures} = point;
   const {name, pictures, description} = destination;
 
   const eventTypeListTemplate = getEventTypeListTemplate(type, types);
@@ -94,6 +94,18 @@ const createEditPointView = (point, isEditPoint, destinationsList, offersList, t
 
   const destinationTemplate = isDescription || isPictures ? getDestinationTemplate(descriptionTemplate, picturesTemplate) : '';
   const destinationsListTemplate = getDestinationsListTemplate(names);
+
+  const buttonResetText = () => {
+    if (isEditPoint && isDeleting) {
+      return 'Deleting';
+    }
+
+    if (!isEditPoint) {
+      return 'Cancel';
+    }
+
+    return 'Delete';
+  };
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -134,9 +146,9 @@ const createEditPointView = (point, isEditPoint, destinationsList, offersList, t
           <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value='${price}'>
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">${isEditPoint ? 'Delete' : 'Cancel'}</button>
-        ${isEditPoint ? '<button class="event__rollup-btn" type="button"><span class="visually-hidden">Open event</span></button>': ''}
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving' : 'Save'}</button>
+        <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${buttonResetText()}</button>
+        ${isEditPoint ? `<button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}><span class="visually-hidden">Open event</span></button>`: ''}
 
       </header>
 
@@ -339,6 +351,9 @@ export default class EditPointView extends SmartView {
     isOffers: point.offers.length !== 0,
     isDescription: point.destination.description.length !== 0,
     isPictures: point.destination.pictures.length !== 0,
+    isDisabled: false,
+    isSaving: false,
+    isDeleting: false,
   });
 
   static parseStateToPoint = (state) => {
@@ -347,6 +362,10 @@ export default class EditPointView extends SmartView {
     delete point.isOffers;
     delete point.isDescription;
     delete point.isPictures;
+
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
 
     return point;
   }

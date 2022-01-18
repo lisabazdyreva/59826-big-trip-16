@@ -192,16 +192,26 @@ export default class TripPresenter {
     }
   }
 
-  #handleViewAction = (actionType, updateType, updatingItem) => {
+  #handleViewAction = async (actionType, updateType, updatingItem) => {
     switch (actionType) {
       case UserPointAction.UPDATE:
-        this.#pointsModel.updatePoint(updateType, updatingItem);
+        try {
+          await this.#pointsModel.updatePoint(updateType, updatingItem);
+        } catch (err) {
+          this.#pointPresenters.get(updatingItem.id).setViewState('ABORTING');
+        }
         break;
       case UserPointAction.ADD:
         this.#pointsModel.addPoint(updateType, updatingItem);
         break;
       case UserPointAction.DELETE:
-        this.#pointsModel.removePoint(updateType, updatingItem);
+        this.#pointPresenters.get(updatingItem.id).setViewState('DELETING');
+        try {
+          await this.#pointsModel.removePoint(updateType, updatingItem);
+        } catch (err) {
+          this.#pointPresenters.get(updatingItem.id).setViewState('ABORTING');
+        }
+
         break;
     }
   }

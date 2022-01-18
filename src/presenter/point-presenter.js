@@ -6,6 +6,12 @@ import {RenderPosition, Mode, UserPointAction, UpdateType} from '../consts';
 import PointView from '../view/point-view';
 import EditPointView from '../view/edit-point-view';
 
+const State = {
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+  ABORTING: 'ABORTING',
+};
+
 
 export default class PointPresenter {
   #container = null;
@@ -138,5 +144,29 @@ export default class PointPresenter {
       UpdateType.PATCH,
       {...this.#point, isFavorite: !this.#point.isFavorite},
     );
+  }
+
+  setViewState = (state) => {
+
+    const resetState = () => {
+      this.#editPointComponent.updateStateWithRerender({
+        isDeleting: false,
+        isDisabled: false,
+        isSaving: false,
+      });
+    };
+
+
+    switch (state) {
+      case State.DELETING:
+        this.#editPointComponent.updateStateWithRerender({
+          isDeleting: true,
+          isDisabled: true,
+        });
+        break;
+      case State.ABORTING:
+        this.#editPointComponent.shake(resetState);
+        this.#pointComponent.shake();
+    }
   }
 }
