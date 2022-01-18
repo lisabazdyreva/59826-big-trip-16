@@ -55,9 +55,11 @@ export default class MenuPresenter {
       this.#renderMenu();
       return;
     }
+
     replace(this.#menuComponent, this.#menuPrevComponent);
     remove(this.#menuPrevComponent);
   }
+
 
   setAddPointHandler = (handler) => {
     this.#addPointHandler = handler;
