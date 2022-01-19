@@ -22,4 +22,16 @@ export default class MenuView extends AbstractView {
   get template() {
     return createMenuView(this.#activeTab);
   }
+
+  setMenuClickHandler = (cb) => {
+    this._callbacks.menuClicked = cb;
+    this.element.addEventListener('click', this.#menuClickHandler);
+  }
+
+  #menuClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#activeTab = evt.target.textContent;
+
+    this._callbacks.menuClicked(this.#activeTab);
+  }
 }

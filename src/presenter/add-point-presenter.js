@@ -14,7 +14,9 @@ export default class AddPointPresenter {
   #types = null;
   #names = null;
 
-  constructor(container, changeData, destinations, offers, types, names) {
+  #undisableButton = null;
+
+  constructor(container, changeData, undisableButton, destinations, offers, types, names) {
     this.#container = container;
     this.#changeData = changeData;
 
@@ -22,6 +24,8 @@ export default class AddPointPresenter {
     this.#offers = offers;
     this.#types = types;
     this.#names = names;
+
+    this.#undisableButton = undisableButton;
   }
 
   init = () => {
@@ -47,6 +51,7 @@ export default class AddPointPresenter {
     this.#editPointComponent = null;
 
     document.removeEventListener('keydown', this.#formEscHandler);
+    this.#undisableButton();
   }
 
   #formEscHandler = (evt) => {

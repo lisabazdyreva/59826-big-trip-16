@@ -4,7 +4,6 @@ import {filterPoints, sortPoints} from '../utils/utils';
 
 import PointsListView from '../view/points-list-view';
 import EmptyListView from '../view/empty-list-view';
-import InfoView from '../view/info-view';
 import SortingView from '../view/sorting-view';
 import LoadingView from '../view/loading-view';
 
@@ -26,10 +25,7 @@ export default class TripPresenter {
   #destinationsModel = null;
   #offersModel = null;
 
-  #infoComponent = null;
-
   #mainContainer = null;
-  #infoContainer = null;
 
   #pointsListComponent = new PointsListView();
   #loadingComponent = new LoadingView();
@@ -38,23 +34,22 @@ export default class TripPresenter {
 
   #activeSortingType = DefaultValue.SORTING;
   #activeFilterType = DefaultValue.FILTER;
+
   #pointPresenters = new Map();
   #newPointPresenter = null;
+  #filtersPresenter = null;
+  #menuPresenter = null;
 
-  constructor(mainContainer, infoContainer, pointsModel, filtersModel, destinationsModel, offersModel) {
+  constructor(mainContainer, pointsModel, filtersModel, destinationsModel, offersModel, filtersPresenter, menuPresenter) {
     this.#mainContainer = mainContainer;
-    this.#infoContainer = infoContainer;
 
     this.#pointsModel = pointsModel;
     this.#filtersModel = filtersModel;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
 
-    this.#pointsModel.add(this.#handleModelEvent);
-    this.#filtersModel.add(this.#handleModelEvent);
-
-    this.#offersModel.add(this.#handleModelEvent);
-    this.#destinationsModel.add(this.#handleModelEvent);
+    this.#filtersPresenter = filtersPresenter;
+    this.#menuPresenter = menuPresenter;
   }
 
   get points() {
@@ -67,6 +62,19 @@ export default class TripPresenter {
 
   init = () => {
     this.#renderMainContent();
+    this.#filtersPresenter.init();
+    this.#menuPresenter.init();
+    this.#menuPresenter.setAddPointHandler(this.#createPoint);
+
+    this.#addObservers();
+  }
+
+  #addObservers = () => {
+    this.#pointsModel.add(this.#handleModelEvent);
+    this.#filtersModel.add(this.#handleModelEvent);
+
+    this.#offersModel.add(this.#handleModelEvent);
+    this.#destinationsModel.add(this.#handleModelEvent);
   }
 
   #renderPoint = (container, point) => {
@@ -85,11 +93,6 @@ export default class TripPresenter {
     this.#pointPresenters.clear();
   }
 
-  #renderInfo = () => {
-    this.#infoComponent = new InfoView(this.points);
-    render(this.#infoContainer, this.#infoComponent, RenderPosition.AFTERBEGIN);
-  }
-
   #renderSorting = () => {
     render(this.#mainContainer, this.#sortingComponent, RenderPosition.BEFOREEND);
     this.#sortingComponent.setSortingChangeHandler(this.#sortingTypeChangeHandler);
@@ -101,7 +104,6 @@ export default class TripPresenter {
   }
 
   #renderTrip = () => {
-    this.#renderInfo();
     this.#renderSorting();
     this.#renderPointsList();
   }
@@ -109,9 +111,6 @@ export default class TripPresenter {
   #removeMainContent = () => {
     if (this.#emptyListComponent !== null) {
       remove(this.#emptyListComponent);
-    }
-    if (this.#infoComponent !== null) {
-      remove(this.#infoComponent);
     }
 
     remove(this.#sortingComponent);
@@ -207,12 +206,32 @@ export default class TripPresenter {
     }
   }
 
-  createPoint = () => {
+  #createPoint = () => {
     this.#activeFilterType = DefaultValue.FILTER;
     this.#filtersModel.setActiveFilter(UpdateType.MAJOR, this.#activeFilterType); // TODO сортировка сбрасывается, потому что мажор. Мб нужен не мажор. Тогда нужно дропать точку при перерисовке списка точек
-    this.#newPointPresenter = new AddPointPresenter(this.#pointsListComponent, this.#handleViewAction, this.#destinations, this.#offers, this.#types, this.#names);
+    this.#newPointPresenter = new AddPointPresenter(this.#pointsListComponent, this.#handleViewAction, this.#menuPresenter.undisableAddButton, this.#destinations, this.#offers, this.#types, this.#names);
 
     this.#newPointPresenter.init();
+  }
+
+  #removeObservers = () => {
+    this.#pointsModel.remove(this.#handleModelEvent);
+    this.#filtersModel.remove(this.#handleModelEvent);
+    this.#offersModel.remove(this.#handleModelEvent);
+    this.#destinationsModel.remove(this.#handleModelEvent);
+  }
+
+
+  remove = () => {
+    this.#pointModeChangeHandler();
+
+    this.#activeFilterType = DefaultValue.FILTER;
+    this.#filtersModel.setActiveFilter(UpdateType.MAJOR, this.#activeFilterType);
+
+    this.#removeMainContent();
+
+    this.#filtersPresenter.remove();
+    this.#removeObservers();
   }
 
 }
