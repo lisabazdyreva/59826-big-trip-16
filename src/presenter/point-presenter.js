@@ -6,6 +6,12 @@ import {RenderPosition, Mode, UserPointAction, UpdateType} from '../consts';
 import PointView from '../view/point-view';
 import EditPointView from '../view/edit-point-view';
 
+const State = {
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+  ABORTING: 'ABORTING',
+};
+
 
 export default class PointPresenter {
   #container = null;
@@ -63,11 +69,15 @@ export default class PointPresenter {
     }
 
     if (this.#mode === Mode.DEFAULT) {
+      // console.log(this.#pointComponent);//TODO подумать
       replace(this.#pointComponent, this.#prevPointComponent);
     }
 
     if (this.#mode === Mode.EDIT) {
-      replace(this.#editPointComponent, this.#prevEditPointComponent);
+      // replace(this.#editPointComponent, this.#prevEditPointComponent); //TODO подумать
+      // console.log(this.#pointComponent);//TODO подумать
+      replace(this.#pointComponent, this.#prevEditPointComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
 
@@ -121,7 +131,6 @@ export default class PointPresenter {
       UpdateType.MINOR,
       point, // TODO еще подумать надо
     );
-    this.#closeEditPoint();
   }
 
   #pointDeleteHandler = (point) => {
@@ -138,5 +147,45 @@ export default class PointPresenter {
       UpdateType.PATCH,
       {...this.#point, isFavorite: !this.#point.isFavorite},
     );
+  }
+
+  #resetState = () => {
+    this.#editPointComponent.updateStateWithRerender({
+      isDeleting: false,
+      isDisabled: false,
+      isSaving: false,
+    });
+  };
+
+  setViewState = (state) => {
+    switch (state) {
+      case State.DELETING:
+        this.#editPointComponent.updateStateWithRerender({
+          isDeleting: true,
+          isDisabled: true,
+        });
+        this.#editPointComponent.disableInputs();
+        break;
+      case State.SAVING:
+        if (this.#mode === Mode.DEFAULT) {
+          return;
+        }
+
+        this.#editPointComponent.updateStateWithRerender({
+          isSaving: true,
+          isDisabled: true,
+        });
+        this.#editPointComponent.disableInputs();
+        break;
+      case State.ABORTING:
+        if (this.#mode === Mode.DEFAULT) {
+          this.#pointComponent.shake();
+          return;
+        }
+
+        this.#editPointComponent.disableInputs();
+        this.#editPointComponent.shake(this.#resetState);
+        break;
+    }
   }
 }

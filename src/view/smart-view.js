@@ -9,6 +9,7 @@ export default class SmartView extends AbstractView {
   }
 
   #updateElement = () => {
+    // console.log('update')
     const prevElement = this.element;
     const parent = prevElement.parentElement;
 

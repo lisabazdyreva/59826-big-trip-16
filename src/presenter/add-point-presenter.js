@@ -2,7 +2,6 @@ import EditPointView from '../view/edit-point-view';
 import {DefaultValue, RenderPosition, UpdateType, UserPointAction} from '../consts';
 import {remove, render} from '../utils/render-utils';
 import {isEsc} from '../utils/utils';
-import {getRandomInteger} from '../utils/mock-utils';
 
 export default class AddPointPresenter {
   #container = null;
@@ -16,25 +15,30 @@ export default class AddPointPresenter {
 
   #undisableButton = null;
 
-  constructor(container, changeData, undisableButton, destinations, offers, types, names) {
+  constructor(container, changeData, undisableButton) {
     this.#container = container;
     this.#changeData = changeData;
 
+    this.#undisableButton = undisableButton;
+  }
+
+  init = (destinations, offers, types, names) => {
     this.#destinations = destinations;
     this.#offers = offers;
     this.#types = types;
     this.#names = names;
 
-    this.#undisableButton = undisableButton;
-  }
+    if (this.#editPointComponent!== null) {
+      return;
+    }
 
-  init = () => {
     this.#editPointComponent = new EditPointView(DefaultValue.POINT, this.#destinations, this.#offers, this.#types, this.#names);
-
-    this.#render();
 
     this.#editPointComponent.setSubmitHandler(this.#formSubmitHandler);
     this.#editPointComponent.setDeleteHandler(this.#deleteFormHandler);
+
+    this.#render();
+
     document.addEventListener('keydown', this.#formEscHandler);
   }
 
@@ -69,8 +73,27 @@ export default class AddPointPresenter {
     this.#changeData(
       UserPointAction.ADD,
       UpdateType.MAJOR, // TODO можно минор, если инфо компонент перенести
-      {id: String(getRandomInteger(1, 10000)), ...point},
+      point,
     );
-    this.remove();
+  }
+
+  setSaving = () => {
+    this.#editPointComponent.updateStateWithRerender({
+      isDisabled: true,
+      isSaving: true,
+    });
+    this.#editPointComponent.disableInputs();
+  }
+
+  #removeFormState = () => {
+    this.#editPointComponent.updateStateWithRerender({
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    });
+  }
+
+  setAborting = () => {
+    this.#editPointComponent.shake(this.#removeFormState);
   }
 }
