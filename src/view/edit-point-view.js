@@ -47,17 +47,29 @@ const getTimeTemplate = (dateFrom, dateTo) => {
   </div>`;
 };
 
-const getOffersTemplate = (offers) => `<section class="event__section  event__section--offers">
+const getOffersTemplate = (offers, offersList, isEditPoint) => `<section class="event__section  event__section--offers">
   <h3 class="event__section-title  event__section-title--offers">Offers</h3>
   <div class="event__available-offers">
-    ${offers.map(({title, price}) => `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked> <!--TODO При изменении типа точки маршрута выбранный ранее список дополнительных опций очищается.-->
-      <label class="event__offer-label" for="event-offer-luggage-1"> <!--TODO изначально нужно будет сравнить offers полученные для точки и offers с сервера, здесь отражаем все + checked.-->
-        <span class="event__offer-title">${title}</span>
-        &plus;&euro;&nbsp;
-        <span class="event__offer-price">${price}</span>
-      </label>
-    </div>`).join('')}
+    ${offersList.map(({title, price}) => {
+    const attr = title.split(' ').map((word) => word.toLowerCase()).join('-');
+    const isChecked = (offers.filter((offer) => offer.title === title).length) && isEditPoint ? 'checked' : '';
+
+    return `<div class="event__offer-selector">
+        <input
+            class="event__offer-checkbox  visually-hidden"
+            id='event-offer-${attr}-1'
+            type="checkbox"
+            name='event-offer-${attr}'
+            value='${title}'
+            ${isChecked}
+        /> <!--TODO При изменении типа точки маршрута выбранный ранее список дополнительных опций очищается.-->
+        <label class="event__offer-label" for='event-offer-${attr}-1'> <!--TODO изначально нужно будет сравнить offers полученные для точки и offers с сервера, здесь отражаем все + checked.-->
+          <span class="event__offer-title">${title}</span>
+          &plus;&euro;&nbsp;
+          <span class="event__offer-price">${price}</span>
+        </label>
+        </div>`;
+  }).join('')}
   </div>
 </section>`;
 
@@ -88,7 +100,7 @@ const createEditPointView = (point, isEditPoint, destinationsList, offersList, t
   const eventTypeListTemplate = getEventTypeListTemplate(type, types);
   const timeTemplate = getTimeTemplate(dateFrom, dateTo);
 
-  const offersTemplate = isOffers ? getOffersTemplate(offers) : '';
+  const offersTemplate = isOffers ? getOffersTemplate(offers, offersList, isEditPoint) : '';
   const picturesTemplate = isPictures ? getPicturesTemplate(pictures) : '';
   const descriptionTemplate = isDescription ? getDescriptionTemplate(description): '';
 
@@ -186,8 +198,16 @@ export default class EditPointView extends SmartView {
     this.#setInnerHandlers();
   }
 
+  get offers() {
+    if (this._state.type) { // TODO придуматься что-то получше
+      const [offerWithType] = this.#offersList.filter(({type}) => type === this._state.type);
+      return offerWithType.offers;
+    }
+    return [];
+  }
+
   get template() {
-    return createEditPointView(this._state, this.#isEditPoint, this.#destinationsList, this.#offersList, this.#types, this.#names);
+    return createEditPointView(this._state, this.#isEditPoint, this.#destinationsList, this.offers, this.#types, this.#names);
   }
 
   setClickHandler = (cb) => {
@@ -226,6 +246,12 @@ export default class EditPointView extends SmartView {
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
     this.element.querySelector('.event__type-group').addEventListener('click', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+
+    const offersElement = this.element.querySelector('.event__section--offers');
+
+    if (offersElement !== null) {
+      offersElement.addEventListener('click', this.#offersClickHandler);
+    }
 
     this.#setDatepickers();
   }
@@ -291,7 +317,6 @@ export default class EditPointView extends SmartView {
     this.updateState({price});
   }
 
-
   #destinationChangeHandler = (evt) => {
     if (!isInput(evt)) {
       return;
@@ -320,6 +345,27 @@ export default class EditPointView extends SmartView {
       isDescription,
       isPictures,
     });
+  }
+
+  #offersClickHandler = (evt) => {
+    if (!isInput(evt)) {
+      return;
+    }
+
+    const [offer] = this.offers.filter(({title}) => title === evt.target.value);
+
+
+    if (evt.target.checked) {
+      this.updateState({
+        offers: [...this._state.offers, offer],
+      });
+    }
+
+    if (!evt.target.checked) {
+      this.updateState({
+        offers: this._state.offers.filter(({id}) => id !== offer.id),
+      });
+    }
   }
 
   #setDatepickerFrom = () => {

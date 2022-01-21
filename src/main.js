@@ -16,7 +16,7 @@ import ApiService from './api/api-service';
 import StatsView from './view/stats-view';
 
 
-const AUTHORIZATION_KEY = 'Basic difg537hffs08a';
+const AUTHORIZATION_KEY = 'Basic difg7hff45ds08a';
 const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';
 
 const api = new ApiService(END_POINT, AUTHORIZATION_KEY);
