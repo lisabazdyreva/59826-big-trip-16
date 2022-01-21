@@ -76,6 +76,10 @@ export default class MenuPresenter {
       remove(this.#infoComponent);
       this.#infoComponent = null;
     }
+
+    if (!this.points.length) {
+      return;
+    }
     this.#renderInfo();
   }
 

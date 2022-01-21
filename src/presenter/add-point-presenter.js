@@ -8,6 +8,9 @@ export default class AddPointPresenter {
   #editPointComponent = null;
   #changeData = null;
 
+  #renderEmpty = null;
+  #emptyComponent = null;
+
   #destinations = null;
   #offers = null;
   #types = null;
@@ -15,18 +18,20 @@ export default class AddPointPresenter {
 
   #undisableButton = null;
 
-  constructor(container, changeData, undisableButton) {
-    this.#container = container;
+  constructor(changeData, undisableButton, renderEmpty) {
     this.#changeData = changeData;
-
     this.#undisableButton = undisableButton;
+    this.#renderEmpty = renderEmpty;
   }
 
-  init = (destinations, offers, types, names) => {
+  init = (container, emptyComponent, destinations, offers, types, names) => {
+    this.#container = container;
     this.#destinations = destinations;
     this.#offers = offers;
     this.#types = types;
     this.#names = names;
+
+    this.#emptyComponent = emptyComponent;
 
     if (this.#editPointComponent!== null) {
       return;
@@ -49,6 +54,10 @@ export default class AddPointPresenter {
   remove = () => {
     if (this.#editPointComponent === null ) {
       return;
+    }
+
+    if (this.#emptyComponent === null) {
+      this.#renderEmpty();
     }
 
     remove(this.#editPointComponent);

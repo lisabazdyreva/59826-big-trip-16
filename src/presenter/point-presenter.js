@@ -31,6 +31,7 @@ export default class PointPresenter {
 
   #changeData = null;
   #changeMode = null;
+  #removeNewPoint = null;
 
   constructor(container, changeData, changeMode, destinations, offers, types, names) {
     this.#container = container;
@@ -43,8 +44,10 @@ export default class PointPresenter {
     this.#types = types;
   }
 
-  init = (point) => {
+  init = (point, removeNewPoint) => {
     this.#point = point;
+
+    this.#removeNewPoint = removeNewPoint;
 
     this.#prevPointComponent = this.#pointComponent;
     this.#prevEditPointComponent = this.#editPointComponent;
@@ -69,15 +72,14 @@ export default class PointPresenter {
     }
 
     if (this.#mode === Mode.DEFAULT) {
-      // console.log(this.#pointComponent);//TODO подумать
+
       replace(this.#pointComponent, this.#prevPointComponent);
     }
 
     if (this.#mode === Mode.EDIT) {
-      // replace(this.#editPointComponent, this.#prevEditPointComponent); //TODO подумать
-      // console.log(this.#pointComponent);//TODO подумать
-      replace(this.#pointComponent, this.#prevEditPointComponent);
-      this.#mode = Mode.DEFAULT;
+      replace(this.#editPointComponent, this.#prevEditPointComponent); //TODO если переписать тип обновления на патч отправки формы, то понадобится нижнее
+      // replace(this.#pointComponent, this.#prevEditPointComponent);
+      // this.#mode = Mode.DEFAULT;
     }
 
 
@@ -170,7 +172,6 @@ export default class PointPresenter {
         if (this.#mode === Mode.DEFAULT) {
           return;
         }
-
         this.#editPointComponent.updateStateWithRerender({
           isSaving: true,
           isDisabled: true,
@@ -182,7 +183,6 @@ export default class PointPresenter {
           this.#pointComponent.shake();
           return;
         }
-
         this.#editPointComponent.disableInputs();
         this.#editPointComponent.shake(this.#resetState);
         break;
