@@ -17,16 +17,18 @@ const DATE_FORMAT_DATEPICKER = 'd/m/y H:i';
 
 const TAG_INPUT = 'INPUT';
 
+const formatTime = (time) => time < 10 ? `0${time}`: time;
+
 const getFormattedDuration = (difference) => { // TODO мб улучшить можно будет со временем
   if (difference < TimeConverter.MINUTES_IN_HOUR) {
-    return `${difference}${TimeUnit.MINUTES}`;
+    return `${formatTime(difference)}${TimeUnit.MINUTES}`;
   }
 
   if (TimeConverter.MINUTES_IN_HOUR < difference && difference < TimeConverter.MINUTES_IN_DAY) {
     const hours = Math.floor(difference / TimeConverter.MINUTES_IN_HOUR);
     const minutes = difference - (hours * TimeConverter.MINUTES_IN_HOUR);
 
-    return `${hours}${TimeUnit.HOURS} ${minutes}${TimeUnit.MINUTES}`;
+    return `${formatTime(hours)}${TimeUnit.HOURS} ${formatTime(minutes)}${TimeUnit.MINUTES}`;
   }
 
   if (TimeConverter.MINUTES_IN_DAY < difference) {
@@ -34,7 +36,7 @@ const getFormattedDuration = (difference) => { // TODO мб улучшить м�
     const hours = Math.floor((difference - days * TimeConverter.MINUTES_IN_DAY) / TimeConverter.MINUTES_IN_HOUR);
     const minutes = (difference - days * TimeConverter.MINUTES_IN_DAY) - (hours * TimeConverter.MINUTES_IN_HOUR);
 
-    return `${days}${TimeUnit.DAYS} ${hours}${TimeUnit.HOURS} ${minutes}${TimeUnit.MINUTES}`;
+    return `${formatTime(days)}${TimeUnit.DAYS} ${formatTime(hours)}${TimeUnit.HOURS} ${formatTime(minutes)}${TimeUnit.MINUTES}`;
   }
 };
 
@@ -61,10 +63,13 @@ const sortByPrice = (pointA, pointB) => pointB.price - pointA.price;
 
 const currentDate = dayjs();
 
+const filterFuture = (points) => points.filter((point) => point.dateFrom >= currentDate || (point.dateFrom < currentDate && point.dateTo > currentDate));
+const filterPast = (points) => points.filter((point) => point.dateTo < currentDate || (point.dateFrom < currentDate && point.dateTo > currentDate));
+
 const filterPoints = {
   [FiltersType.EVERYTHING]: (points) => points,
-  [FiltersType.FUTURE]: (points) => points.filter((point) => point.dateFrom >= currentDate),
-  [FiltersType.PAST]: (points) => points.filter((point) => point.dateTo < currentDate),
+  [FiltersType.FUTURE]: filterFuture,
+  [FiltersType.PAST]: filterPast,
 };
 
 const sortPoints = (type, points) => {

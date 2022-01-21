@@ -4,11 +4,27 @@ import AbstractView from './abstract-view';
 
 const MIN_PRICE = 0;
 
+const CitiesValue = {
+  ONE: 1,
+  TWO: 2,
+  THREE: 3,
+};
+
 const getCitiesTemplate = (cities) => {
   const startCity = cities[0];
   const finishCity = cities[cities.length - 1];
+  const citiesValue = cities.length;
 
-  return `<h1 class="trip-info__title">${startCity} &mdash; ${(cities.length > 3) ? '...' : cities[1]} &mdash; ${finishCity}`;
+  switch (citiesValue) {
+    case (CitiesValue.ONE):
+      return `<h1 class="trip-info__title">${startCity}</h1>`;
+    case (CitiesValue.TWO):
+      return `<h1 class="trip-info__title">${startCity} &mdash; ${finishCity}</h1>`;
+    case (CitiesValue.THREE):
+      return `<h1 class="trip-info__title">${startCity} &mdash; ${cities[1]} &mdash; ${finishCity}</h1>`;
+    default:
+      return `<h1 class="trip-info__title">${startCity} &mdash; ... &mdash; ${finishCity}</h1>`;
+  }
 };
 
 

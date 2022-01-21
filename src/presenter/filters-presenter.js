@@ -34,7 +34,6 @@ export default class FiltersPresenter {
   }
 
   remove = () => {
-    // this.#component.removeElement() // TODO посмотреть еще removeElement, что он вообще делает
     remove(this.#component);
     this.#component = null;
   }

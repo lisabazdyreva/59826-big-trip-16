@@ -76,7 +76,7 @@ const getDestinationTemplate = (descriptionTemplate, picturesTemplate) => `<sect
 </section>`;
 
 const getDestinationsListTemplate = (destinations) => `<datalist id="destination-list-1">
-  ${destinations.map((destination) => `<option value=${destination}></option>`).join('')}
+  ${destinations.map((destination) => `<option value='${destination}'></option>`).join('')}
 </datalist>`;
 
 
@@ -223,7 +223,7 @@ export default class EditPointView extends SmartView {
   }
 
   #setInnerHandlers = () => {
-    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceInputHandler);
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
     this.element.querySelector('.event__type-group').addEventListener('click', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
 
@@ -280,12 +280,14 @@ export default class EditPointView extends SmartView {
 
   #priceInputHandler = (evt) => {
     const price = Number(evt.target.value);
-    const isIncorrect = isNaN(price) || price <= 0;
+    const isIncorrect = price <= 0;
 
     if (isIncorrect) {
       evt.target.setCustomValidity(ValidationMessage.PRICE);
       return;
     }
+
+    evt.target.setCustomValidity('');
     this.updateState({price});
   }
 

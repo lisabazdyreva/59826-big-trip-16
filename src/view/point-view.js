@@ -9,7 +9,7 @@ const getOffersTemplate = (offers) => `<h4 class="visually-hidden">Offers:</h4>
     ${offers.map(({title, price}) => `<li class="event__offer">
       <span class="event__offer-title">${title}</span>
           &plus;&euro;&nbsp;
-      <span class="event__offer-price">${price}</span>`)}
+      <span class="event__offer-price">${price}</span>`).join('')}
   </ul>`;
 
 
