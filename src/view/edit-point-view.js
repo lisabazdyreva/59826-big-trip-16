@@ -56,14 +56,14 @@ const getOffersTemplate = (offers, offersList, isEditPoint) => `<section class="
 
     return `<div class="event__offer-selector">
         <input
-            class="event__offer-checkbox  visually-hidden"
-            id='event-offer-${attr}-1'
-            type="checkbox"
-            name='event-offer-${attr}'
-            value='${title}'
-            ${isChecked}
-        /> <!--TODO При изменении типа точки маршрута выбранный ранее список дополнительных опций очищается.-->
-        <label class="event__offer-label" for='event-offer-${attr}-1'> <!--TODO изначально нужно будет сравнить offers полученные для точки и offers с сервера, здесь отражаем все + checked.-->
+          class="event__offer-checkbox  visually-hidden"
+          id="event-offer-${attr}-1"
+          type="checkbox"
+          name="event-offer-${attr}"
+          value="${title}"
+          ${isChecked}
+        />
+        <label class="event__offer-label" for="event-offer-${attr}-1">
           <span class="event__offer-title">${title}</span>
           &plus;&euro;&nbsp;
           <span class="event__offer-price">${price}</span>
@@ -100,7 +100,7 @@ const createEditPointView = (point, isEditPoint, destinationsList, offersList, t
   const eventTypeListTemplate = getEventTypeListTemplate(type, types);
   const timeTemplate = getTimeTemplate(dateFrom, dateTo);
 
-  const offersTemplate = isOffers ? getOffersTemplate(offers, offersList, isEditPoint) : '';
+  const offersTemplate = (isOffers || offersList.length) ? getOffersTemplate(offers, offersList, isEditPoint) : '';
   const picturesTemplate = isPictures ? getPicturesTemplate(pictures) : '';
   const descriptionTemplate = isDescription ? getDescriptionTemplate(description): '';
 
@@ -175,6 +175,7 @@ const createEditPointView = (point, isEditPoint, destinationsList, offersList, t
 
 export default class EditPointView extends SmartView {
   #isEditPoint = null;
+  #type = null;
 
   #destinationsList = null;
   #offersList = null;
@@ -187,6 +188,7 @@ export default class EditPointView extends SmartView {
   constructor(point, destinationsList, offersList, types, names) {
     super();
     this._state = EditPointView.parsePointToState(point);
+    this.#type = this._state.type;
 
     this.#isEditPoint = point !== DefaultValue.POINT;
 
@@ -199,8 +201,8 @@ export default class EditPointView extends SmartView {
   }
 
   get offers() {
-    if (this._state.type) { // TODO придуматься что-то получше
-      const [offerWithType] = this.#offersList.filter(({type}) => type === this._state.type);
+    if (this.#type) { // TODO придуматься что-то получше
+      const [offerWithType] = this.#offersList.filter(({type}) => type === this.#type);
       return offerWithType.offers;
     }
     return [];
@@ -291,16 +293,12 @@ export default class EditPointView extends SmartView {
       return;
     }
 
-    const typeValue = evt.target.value;
-    const [offerWithType] = this.#offersList.filter(({type}) => type === typeValue);
-
-    const offers = offerWithType.offers;
-    const isOffers = offers.length !== 0;
+    this.#type = evt.target.value;
 
     this.updateStateWithRerender({
-      type: typeValue,
-      offers,
-      isOffers,
+      type: this.#type,
+      offers: [],
+      isOffers: !!this.offers.length,
     });
   }
 
