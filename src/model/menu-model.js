@@ -1,6 +1,7 @@
 import AbstractObservable from '../utils/abstract-observable';
 import {MenuTab} from '../consts';
 
+
 export default class MenuModel extends AbstractObservable {
   #activeMenuTab = MenuTab.TABLE;
 

@@ -12,6 +12,9 @@ const Url = {
   OFFERS: 'offers',
 };
 
+const AUTH = 'Authorization';
+
+
 export default class ApiService {
   #endPoint = null;
   #authorizationKey = null;
@@ -22,7 +25,7 @@ export default class ApiService {
   }
 
   #load = async ({url, method, body = null, headers = new Headers()}) => {
-    headers.set('Authorization', this.#authorizationKey);
+    headers.set(AUTH, this.#authorizationKey);
 
     const response = await fetch(`${this.#endPoint}/${url}`, {method, body, headers});
 
@@ -53,26 +56,16 @@ export default class ApiService {
     return adaptedPoint;
   }
 
-  getPoints = async () => {
-    const response = await this.#load({url: Url.POINTS, method: Method.GET});
-
-    const parsedData = await response.json();
-    return parsedData;
+  #getResponse = async (url) => {
+    const response = await this.#load({url: url, method: Method.GET});
+    return await response.json();
   }
 
-  getDestinations = async () => {
-    const response = await this.#load({url: Url.DESTINATIONS, method: Method.GET});
+  getPoints = () => this.#getResponse(Url.POINTS);
 
-    const parsedData = await response.json();
-    return parsedData;
-  }
+  getDestinations = () => this.#getResponse(Url.DESTINATIONS);
 
-  getOffers = async () => {
-    const response = await this.#load({url: Url.OFFERS, method: Method.GET});
-
-    const parsedData = await response.json();
-    return parsedData;
-  }
+  getOffers = () => this.#getResponse(Url.OFFERS);
 
   updatePoint = async (point) => {
     const response = await this.#load({
@@ -82,8 +75,7 @@ export default class ApiService {
       headers: new Headers({'Content-Type' : 'application/json'}),
     });
 
-    const parsedData = await response.json();
-    return parsedData;
+    return await response.json();
   }
 
   addPoint = async (point) => {
@@ -94,16 +86,8 @@ export default class ApiService {
       headers: new Headers({'Content-Type' : 'application/json'}),
     });
 
-    const parsedData = await response.json();
-    return parsedData;
+    return await response.json();
   }
 
-  removePoint = async (point) => {
-    const response = await this.#load({
-      url: `${Url.POINTS}/${point.id}`,
-      method: Method.DELETE,
-    });
-
-    return response;
-  }
+  removePoint = async (point) => await this.#load({url: `${Url.POINTS}/${point.id}`, method: Method.DELETE,});
 }

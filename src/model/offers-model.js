@@ -1,9 +1,10 @@
 import AbstractObservable from '../utils/abstract-observable';
 import {UpdateType} from '../consts';
 
+
 export default class OffersModel extends AbstractObservable {
-  #offers = null;
   #api = null;
+  #offers = null;
   #types = new Set();
 
   constructor(api) {
@@ -12,15 +13,13 @@ export default class OffersModel extends AbstractObservable {
   }
 
   init = async () => {
-    const offers = await this.#api.getOffers();
-    this.#offers = offers;
+    this.#offers = await this.#api.getOffers();
 
     for (const offer of this.#offers) {
       this.#types.add(offer.type);
     }
 
     this._notify(UpdateType.OFFERS_DOWNLOADED);
-
   }
 
   get offers() {
