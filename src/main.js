@@ -16,7 +16,7 @@ import ApiService from './api/api-service';
 import StatsView from './view/stats-view';
 
 
-const AUTHORIZATION_KEY = 'Basic difg7hff45ds08a';
+const AUTHORIZATION_KEY = 'Basic difg7hfgghf45ds08a';
 const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';
 
 const api = new ApiService(END_POINT, AUTHORIZATION_KEY);
@@ -40,7 +40,7 @@ const mainContainer = document.querySelector('.trip-events');
 const infoContainer = document.querySelector('.trip-main');
 
 
-const filtersPresenter = new FiltersPresenter(filtersContainer, filtersModel);
+const filtersPresenter = new FiltersPresenter(filtersContainer, filtersModel, pointsModel);
 const menuPresenter = new MenuPresenter(menuModel, pointsModel, menuContainer, infoContainer, menuClickHandler);
 const tripPresenter = new TripPresenter(mainContainer, pointsModel, filtersModel, destinationsModel, offersModel, filtersPresenter, menuPresenter);
 
