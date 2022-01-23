@@ -1,8 +1,10 @@
+import {ChartName} from '../consts';
+import {getFormattedDuration} from './utils';
+
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import {getFormattedDuration} from './utils';
-import {ChartName} from '../consts';
 import dayjs from 'dayjs';
+
 
 const BAR_HEIGHT = 55;
 

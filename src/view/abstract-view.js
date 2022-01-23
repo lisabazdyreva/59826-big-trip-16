@@ -1,7 +1,9 @@
-import {createElement} from '../utils/utils';
 import {ErrorMessage} from '../consts';
+import {createElement} from '../utils/utils';
+
 
 const ANIMATION_TIMEOUT = 600;
+
 
 export default class AbstractView {
   #element = null;
@@ -33,10 +35,11 @@ export default class AbstractView {
 
     setTimeout(() => {
       this.element.style.animation = '';
+
       if (cb !== null) {
         cb();
       }
-    }, ANIMATION_TIMEOUT);
 
+    }, ANIMATION_TIMEOUT);
   }
 }

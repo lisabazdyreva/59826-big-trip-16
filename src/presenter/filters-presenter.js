@@ -1,18 +1,23 @@
-import {remove, render, replace} from '../utils/render-utils';
-import {FiltersType, RenderPosition, UpdateType} from '../consts';
 import FiltersView from '../view/filters-view';
+
+import {FiltersType, RenderPosition, UpdateType} from '../consts';
+import {remove, render, replace} from '../utils/render-utils';
 import {filterPoints} from '../utils/utils';
+
 
 export default class FiltersPresenter {
   #container = null;
-  #model = null;
-  #pointsModel = null;
+
   #prevComponent = null;
   #component = null;
+
+  #model = null;
+  #pointsModel = null;
 
   constructor(container, model, pointsModel) {
     this.#container = container;
     this.#model = model;
+
     this.#pointsModel = pointsModel;
   }
 
@@ -32,7 +37,7 @@ export default class FiltersPresenter {
     this.#prevComponent = this.#component;
     this.#component = new FiltersView(this.activeFilter, this.pastPointsLength, this.futurePointsLength);
 
-    this.#component.setClickFilterHandler(this.#changeFilterHandler);
+    this.#component.setClickFilterHandler(this.#changeActiveFilterHandler);
 
     this.#model.add(this.init);
     this.#pointsModel.add(this.init);
@@ -41,6 +46,7 @@ export default class FiltersPresenter {
       this.#renderFilters();
       return;
     }
+
     replace(this.#component, this.#prevComponent);
     remove(this.#prevComponent);
   }
@@ -54,7 +60,7 @@ export default class FiltersPresenter {
     render(this.#container, this.#component, RenderPosition.BEFOREEND);
   }
 
-  #changeFilterHandler = (currentFilter) => {
+  #changeActiveFilterHandler = (currentFilter) => {
     if (this.#model.activeFilter === currentFilter) {
       return;
     }

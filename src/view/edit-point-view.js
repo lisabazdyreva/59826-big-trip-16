@@ -1,8 +1,9 @@
-import dayjs from 'dayjs';
-import {TimeFormat, DefaultValue, ValidationMessage} from '../consts';
-import {getDatepickerConfig, isInput} from '../utils/utils';
 import SmartView from './smart-view';
 
+import {TimeFormat, DefaultValue, ValidationMessage} from '../consts';
+import {getDatepickerConfig, isInput} from '../utils/utils';
+
+import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
@@ -28,7 +29,6 @@ const getEventTypeListTemplate = (activeType, types) => `<div class="event__type
       <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">
         ${typeText}
       </label>
-
     </div>`;}).join('')}
 
   </fieldset>
@@ -179,6 +179,7 @@ export default class EditPointView extends SmartView {
 
   #destinationsList = null;
   #offersList = null;
+
   #types = null;
   #names = null;
 
@@ -194,6 +195,7 @@ export default class EditPointView extends SmartView {
 
     this.#destinationsList = destinationsList;
     this.#offersList = offersList;
+
     this.#types = types;
     this.#names = names;
 
@@ -304,7 +306,7 @@ export default class EditPointView extends SmartView {
 
   #priceInputHandler = (evt) => {
     const price = Number(evt.target.value);
-    const isIncorrect = price <= 0;
+    const isIncorrect = (price <= 0) || (!Number.isInteger(price));
 
     if (isIncorrect) {
       evt.target.setCustomValidity(ValidationMessage.PRICE);
@@ -396,7 +398,6 @@ export default class EditPointView extends SmartView {
       elem.disabled = true;
     });
   }
-
 
   static parsePointToState = (point) => ({
     ...point,

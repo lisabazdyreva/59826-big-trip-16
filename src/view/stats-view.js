@@ -1,6 +1,6 @@
 import SmartView from './smart-view';
-import {renderChart} from '../utils/chart-utils';
 import {ChartName} from '../consts';
+import {renderChart} from '../utils/chart-utils';
 
 
 const createStatsView = () => (`<section class="statistics">
@@ -48,7 +48,6 @@ export default class StatsView extends SmartView {
   }
 
   #setCharts = () => {
-
     this.#moneyChart = renderChart(this.#moneyContext, this.#points, ChartName.MONEY);
     this.#typeChart = renderChart(this.#typeContext, this.#points, ChartName.TYPE);
     this.#timeChart = renderChart(this.#timeContext, this.#points, ChartName.TIME);

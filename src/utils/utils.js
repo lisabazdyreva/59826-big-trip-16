@@ -1,6 +1,7 @@
 import {FiltersType, SortingType} from '../consts';
 import dayjs from 'dayjs';
 
+
 const TimeConverter = {
   MINUTES_IN_HOUR: 60,
   MINUTES_IN_DAY: 1440,
@@ -17,6 +18,8 @@ const DATE_FORMAT_DATEPICKER = 'd/m/y H:i';
 
 const TAG_INPUT = 'INPUT';
 
+const currentDate = dayjs();
+
 const formatTime = (time) => time < 10 ? `0${time}`: time;
 
 const getFormattedDuration = (difference) => { // TODO мб улучшить можно будет со временем
@@ -31,7 +34,7 @@ const getFormattedDuration = (difference) => { // TODO мб улучшить м�
     return `${formatTime(hours)}${TimeUnit.HOURS} ${formatTime(minutes)}${TimeUnit.MINUTES}`;
   }
 
-  if (TimeConverter.MINUTES_IN_DAY < difference) {
+  if (TimeConverter.MINUTES_IN_DAY <= difference) {
     const days = Math.floor(difference / TimeConverter.MINUTES_IN_DAY);
     const hours = Math.floor((difference - days * TimeConverter.MINUTES_IN_DAY) / TimeConverter.MINUTES_IN_HOUR);
     const minutes = (difference - days * TimeConverter.MINUTES_IN_DAY) - (hours * TimeConverter.MINUTES_IN_HOUR);
@@ -61,7 +64,6 @@ const sortByDuration = (pointA, pointB) => {
 
 const sortByPrice = (pointA, pointB) => pointB.price - pointA.price;
 
-const currentDate = dayjs();
 
 const filterFuture = (points) => points.filter((point) => point.dateFrom >= currentDate || (point.dateFrom < currentDate && point.dateTo > currentDate));
 const filterPast = (points) => points.filter((point) => point.dateTo < currentDate || (point.dateFrom < currentDate && point.dateTo > currentDate));

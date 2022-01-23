@@ -73,9 +73,15 @@ const ErrorMessage = {
   INSTANT: 'Abstract class is not for instantiation',
 };
 
+const ResponseErrorMessage = {
+  UPDATE: 'Can\'t update the point right now.',
+  ADD: 'Can\'t add the point right now.',
+  REMOVE: 'Can\'t remove the point right now.',
+};
+
 const ValidationMessage = {
   NAME: 'Select a value from the list',
-  PRICE: 'The price cannot be zero or less than zero. Please fill the field correctly.',
+  PRICE: 'The price cannot be zero, float or less than zero. Please fill the field correctly.',
 };
 
 const UpdateType = {
@@ -99,6 +105,17 @@ const ChartName = {
   TIME: 'TIME',
 };
 
+const State = {
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+  ABORTING: 'ABORTING',
+};
+
+const RenderErrorMessage = {
+  REPLACE: 'Can\'t replace empty elements',
+  REMOVE: 'Can remove only components',
+};
+
 
 export {
   ChartName,
@@ -113,5 +130,8 @@ export {
   UserPointAction,
   FiltersType,
   NoFilteredPointsMessage,
-  ValidationMessage
+  ValidationMessage,
+  ResponseErrorMessage,
+  State,
+  RenderErrorMessage
 };

@@ -1,5 +1,6 @@
-import {FiltersType} from '../consts';
 import AbstractView from './abstract-view';
+import {FiltersType} from '../consts';
+
 
 const filterValuesList = Object.values(FiltersType);
 
@@ -27,8 +28,10 @@ const createFiltersView = (activeFilter, pastPointsLength, futurePointsLength) =
   <button class="visually-hidden" type="submit">Accept filter</button>
 </form>`;
 
+
 export default class FiltersView extends AbstractView {
   #activeFilter = null;
+
   #pastPointsLength = null;
   #futurePointsLength = null;
 

@@ -1,6 +1,8 @@
+import AbstractView from './abstract-view';
+
 import {SortingType} from '../consts';
 import {isInput} from '../utils/utils';
-import AbstractView from './abstract-view';
+
 
 const sortingTypesList = Object.values(SortingType);
 
@@ -25,6 +27,7 @@ const createSortingView = (activeSortingType) => (
     </div>`;}).join('')}
   </form>`
 );
+
 
 export default class SortingView extends AbstractView {
   #activeSortingType = null;

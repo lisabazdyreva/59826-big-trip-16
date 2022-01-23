@@ -1,7 +1,3 @@
-import {DefaultValue, RenderPosition, UpdateType, UserPointAction} from '../consts';
-import {remove, render} from '../utils/render-utils';
-import {filterPoints, sortPoints} from '../utils/utils';
-
 import PointsListView from '../view/points-list-view';
 import EmptyListView from '../view/empty-list-view';
 import SortingView from '../view/sorting-view';
@@ -10,35 +6,40 @@ import LoadingView from '../view/loading-view';
 import PointPresenter from './point-presenter';
 import AddPointPresenter from './add-point-presenter';
 
+import {DefaultValue, RenderPosition, State, UpdateType, UserPointAction} from '../consts';
+import {remove, render} from '../utils/render-utils';
+import {filterPoints, sortPoints} from '../utils/utils';
+
 
 export default class TripPresenter {
+  #mainContainer = null;
 
-  #isLoading = true;
+  #pointsListComponent = null;
+  #emptyListComponent = null;
+
+  #sortingComponent = new SortingView(DefaultValue.SORTING);
+  #loadingComponent = new LoadingView();
+
+  #pointsModel = null;
+  #filtersModel = null;
+
+  #destinationsModel = null;
+  #offersModel = null;
+
+  #newPointPresenter = null;
+  #filtersPresenter = null;
+  #menuPresenter = null;
 
   #destinations = null;
   #names = null;
   #offers = null;
   #types = null;
 
-  #pointsModel = null;
-  #filtersModel = null;
-  #destinationsModel = null;
-  #offersModel = null;
-
-  #mainContainer = null;
-
-  #pointsListComponent = null;
-  #loadingComponent = new LoadingView();
-  #emptyListComponent = null;
-  #sortingComponent = new SortingView(DefaultValue.SORTING);
+  #isLoading = true;
+  #pointPresenters = new Map();
 
   #activeSortingType = DefaultValue.SORTING;
   #activeFilterType = DefaultValue.FILTER;
-
-  #pointPresenters = new Map();
-  #newPointPresenter = null;
-  #filtersPresenter = null;
-  #menuPresenter = null;
 
   constructor(mainContainer, pointsModel, filtersModel, destinationsModel, offersModel, filtersPresenter, menuPresenter) {
     this.#mainContainer = mainContainer;
@@ -51,7 +52,7 @@ export default class TripPresenter {
     this.#filtersPresenter = filtersPresenter;
     this.#menuPresenter = menuPresenter;
 
-    this.#newPointPresenter = new AddPointPresenter(this.#handleViewAction, this.#menuPresenter.undisableAddButton, this.#renderEmptyTrip);
+    this.#newPointPresenter = new AddPointPresenter(this.#handleViewAction, this.#menuPresenter.enableAddButton);
   }
 
   get points() {
@@ -62,10 +63,16 @@ export default class TripPresenter {
     return sortPoints(this.#activeSortingType, filteredPoints);
   }
 
+  get pointsLength() {
+    return this.points.length;
+  }
+
   init = () => {
     this.#renderMainContent();
+
     this.#filtersPresenter.init();
     this.#menuPresenter.init();
+
     this.#menuPresenter.setAddPointHandler(this.#createPoint);
 
     this.#addObservers();
@@ -79,6 +86,14 @@ export default class TripPresenter {
     this.#destinationsModel.add(this.#handleModelEvent);
   }
 
+  #removeObservers = () => {
+    this.#pointsModel.remove(this.#handleModelEvent);
+    this.#filtersModel.remove(this.#handleModelEvent);
+
+    this.#offersModel.remove(this.#handleModelEvent);
+    this.#destinationsModel.remove(this.#handleModelEvent);
+  }
+
   #renderPoint = (container, point) => {
     const pointPresenter = new PointPresenter(container, this.#handleViewAction, this.#pointModeChangeHandler, this.#destinations, this.#offers, this.#types, this.#names);
     pointPresenter.init(point, this.#newPointPresenter.remove);
@@ -86,13 +101,32 @@ export default class TripPresenter {
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 
+  #createPoint = () => {
+    this.#resetFilter();
+
+    if (!this.pointsLength) {
+      this.#renderPointsList();
+      this.#removeEmptyTrip();
+      this.#newPointPresenter.setDeleteHandler(this.#renderEmptyTrip);
+    }
+
+    this.#newPointPresenter.init(this.#pointsListComponent, this.#destinations, this.#offers, this.#types, this.#names);
+  }
+
   #renderPoints = () => {
     this.points.slice().forEach((point) => this.#renderPoint(this.#pointsListComponent, point));
   }
 
-  #removePointsList = () => {
+  #removePoints = () => {
     this.#pointPresenters.forEach((presenter) => presenter.removePointComponent());
     this.#pointPresenters.clear();
+  }
+
+  #removePointsList = () => {
+    if (this.#pointsListComponent !== null) {
+      remove(this.#pointsListComponent);
+      this.#pointsListComponent = null;
+    }
   }
 
   #renderSorting = () => {
@@ -100,35 +134,31 @@ export default class TripPresenter {
     this.#sortingComponent.setSortingChangeHandler(this.#sortingTypeChangeHandler);
   }
 
+  #removeSorting = () => {
+    remove(this.#sortingComponent);
+  }
+
   #renderPointsList = () => {
     this.#pointsListComponent = new PointsListView();
-
     render(this.#mainContainer, this.#pointsListComponent, RenderPosition.BEFOREEND);
-    this.#renderPoints();
   }
 
   #renderTrip = () => {
     this.#renderSorting();
     this.#renderPointsList();
+    this.#renderPoints();
   }
 
   #removeMainContent = () => {
     this.#newPointPresenter.remove();
 
-    if (this.#emptyListComponent !== null) {
-      remove(this.#emptyListComponent);
-    }
-
-    remove(this.#sortingComponent);
+    this.#removeEmptyTrip();
+    this.#removeSorting();
 
     this.#activeSortingType = DefaultValue.SORTING;
 
-    if (this.#pointsListComponent !== null) {
-      remove(this.#pointsListComponent);
-      this.#pointsListComponent = null;
-    }
-
     this.#removePointsList();
+    this.#removePoints();
   }
 
   #renderMainContent = () => {
@@ -137,7 +167,7 @@ export default class TripPresenter {
       return;
     }
 
-    if (!this.points.length) {
+    if (!this.pointsLength) {
       this.#renderEmptyTrip();
     } else {
       this.#renderTrip();
@@ -147,6 +177,13 @@ export default class TripPresenter {
   #renderEmptyTrip = () => {
     this.#emptyListComponent = new EmptyListView(this.#activeFilterType);
     render(this.#mainContainer, this.#emptyListComponent, RenderPosition.BEFOREEND);
+  }
+
+  #removeEmptyTrip = () => {
+    if (this.#emptyListComponent !== null) {
+      remove(this.#emptyListComponent);
+      this.#emptyListComponent = null;
+    }
   }
 
   #renderLoading = () => {
@@ -163,13 +200,19 @@ export default class TripPresenter {
     }
 
     this.#activeSortingType = activeSortingType;
-    this.#removePointsList();
-    this.#renderPointsList();
+
+    this.#removePoints();
+    this.#renderPoints();
   }
 
   #pointModeChangeHandler = () => {
     this.#newPointPresenter.remove();
     this.#pointPresenters.forEach((presenter) => presenter.resetMode());
+  }
+
+  #resetFilter = () => {
+    this.#activeFilterType = DefaultValue.FILTER;
+    this.#filtersModel.setActiveFilter(UpdateType.MAJOR, this.#activeFilterType); // TODO сортировка сбрасывается, потому что мажор. Мб нужен не мажор. Тогда нужно дропать точку при перерисовке списка точек
   }
 
   #handleModelEvent = (updateType, data) => {
@@ -179,7 +222,9 @@ export default class TripPresenter {
         break;
       case UpdateType.MINOR:
         this.#removePointsList();
+        this.#removePoints();
         this.#renderPointsList();
+        this.#renderPoints();
         break;
       case UpdateType.MAJOR:
         this.#removeMainContent();// TODO это еще не точная реализация, ТЗ посмотреть
@@ -204,11 +249,11 @@ export default class TripPresenter {
   #handleViewAction = async (actionType, updateType, updatingItem) => {
     switch (actionType) {
       case UserPointAction.UPDATE:
-        this.#pointPresenters.get(updatingItem.id).setViewState('SAVING');
+        this.#pointPresenters.get(updatingItem.id).setViewState(State.SAVING);
         try {
           await this.#pointsModel.updatePoint(updateType, updatingItem);
         } catch (err) {
-          this.#pointPresenters.get(updatingItem.id).setViewState('ABORTING');
+          this.#pointPresenters.get(updatingItem.id).setViewState(State.ABORTING);
         }
         break;
       case UserPointAction.ADD:
@@ -220,46 +265,21 @@ export default class TripPresenter {
         }
         break;
       case UserPointAction.DELETE:
-        this.#pointPresenters.get(updatingItem.id).setViewState('DELETING');
+        this.#pointPresenters.get(updatingItem.id).setViewState(State.DELETING);
         try {
           await this.#pointsModel.removePoint(updateType, updatingItem);
         } catch (err) {
-          this.#pointPresenters.get(updatingItem.id).setViewState('ABORTING');
+          this.#pointPresenters.get(updatingItem.id).setViewState(State.ABORTING);
         }
-
         break;
     }
   }
 
-  #createPoint = () => {
-    this.#activeFilterType = DefaultValue.FILTER;
-    this.#filtersModel.setActiveFilter(UpdateType.MAJOR, this.#activeFilterType); // TODO сортировка сбрасывается, потому что мажор. Мб нужен не мажор. Тогда нужно дропать точку при перерисовке списка точек
-    if (!this.points.length) {
-      this.#pointsListComponent = new PointsListView();
-      render(this.#mainContainer, this.#pointsListComponent, RenderPosition.BEFOREEND);
-      remove(this.#emptyListComponent);
-      this.#emptyListComponent = null;
-    }
-
-    this.#newPointPresenter.init(this.#pointsListComponent,this.#emptyListComponent, this.#destinations, this.#offers, this.#types, this.#names);
-  }
-
-  #removeObservers = () => {
-    this.#pointsModel.remove(this.#handleModelEvent);
-    this.#filtersModel.remove(this.#handleModelEvent);
-    this.#offersModel.remove(this.#handleModelEvent);
-    this.#destinationsModel.remove(this.#handleModelEvent);
-  }
-
-
   remove = () => {
-    this.#activeFilterType = DefaultValue.FILTER;
-    this.#filtersModel.setActiveFilter(UpdateType.MAJOR, this.#activeFilterType);
-
+    this.#resetFilter();
     this.#removeMainContent();
 
     this.#filtersPresenter.remove();
     this.#removeObservers();
   }
-
 }

@@ -1,25 +1,27 @@
-import {remove, render, replace} from '../utils/render-utils';
-import {RenderPosition, UpdateType} from '../consts';
 import MenuView from '../view/menu-view';
 import InfoView from '../view/info-view';
 
-export default class MenuPresenter {
-  #points = [];
+import {RenderPosition, UpdateType} from '../consts';
+import {remove, render, replace} from '../utils/render-utils';
 
-  #pointsModel = null;
-  #menuModel = null;
+
+export default class MenuPresenter {
+  #menuContainer = null;
+  #infoContainer = null;
+
+  #menuPrevComponent = null;
+  #menuComponent = null;
+
+  #infoComponent = null;
+  #addButtonElement = null;
 
   #addPointHandler = null;
   #menuClickHandler = null;
 
-  #addButtonElement = null;
+  #pointsModel = null;
+  #menuModel = null;
 
-  #menuPrevComponent = null;
-  #menuComponent = null;
-  #menuContainer = null;
-
-  #infoContainer = null;
-  #infoComponent = null;
+  #points = [];
 
   constructor(menuModel, pointsModel, menuContainer, infoContainer, menuClickHandler) {
     this.#pointsModel = pointsModel;
@@ -61,8 +63,8 @@ export default class MenuPresenter {
   }
 
 
-  setAddPointHandler = (handler) => {
-    this.#addPointHandler = handler;
+  setAddPointHandler = (cb) => {
+    this.#addPointHandler = cb;
     this.#addButtonElement.addEventListener('click', this.#clickAddButtonHandler);
   }
 
@@ -80,6 +82,7 @@ export default class MenuPresenter {
     if (!this.points.length) {
       return;
     }
+
     this.#renderInfo();
   }
 
@@ -109,8 +112,7 @@ export default class MenuPresenter {
     this.#addButtonElement.disabled = true;
   }
 
-  undisableAddButton = () => {
+  enableAddButton = () => {
     this.#addButtonElement.disabled = false;
   }
-
 }

@@ -1,7 +1,9 @@
-import dayjs from 'dayjs';
-import {getFormattedDuration} from '../utils/utils';
-import {TimeFormat} from '../consts';
 import AbstractView from './abstract-view';
+
+import {TimeFormat} from '../consts';
+import {getFormattedDuration} from '../utils/utils';
+
+import dayjs from 'dayjs';
 
 
 const getOffersTemplate = (offers) => `<h4 class="visually-hidden">Offers:</h4>
@@ -10,8 +12,7 @@ const getOffersTemplate = (offers) => `<h4 class="visually-hidden">Offers:</h4>
       <span class="event__offer-title">${title}</span>
           &plus;&euro;&nbsp;
       <span class="event__offer-price">${price}</span>`).join('')}
-  </ul>`;
-
+</ul>`;
 
 const getScheduleTemplate = (from, to, difference) => {
   const timeFrom = `${from.format(TimeFormat.HOURS_MINUTES)}`;
@@ -31,7 +32,6 @@ const getScheduleTemplate = (from, to, difference) => {
     <p class="event__duration">${duration}</p>
   </div>`;
 };
-
 
 const getEventDateTemplate = (from) => {
   const date = from.format(TimeFormat.MONTH_DAY);
@@ -78,6 +78,7 @@ const createPointView = (point) => {
     </div>
   </li>`;
 };
+
 
 export default class PointView extends AbstractView {
   #point = null;

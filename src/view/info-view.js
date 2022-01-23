@@ -1,6 +1,7 @@
-import dayjs from 'dayjs';
-import {TimeFormat} from '../consts';
 import AbstractView from './abstract-view';
+import {TimeFormat} from '../consts';
+import dayjs from 'dayjs';
+
 
 const MIN_PRICE = 0;
 
@@ -9,6 +10,7 @@ const CitiesValue = {
   TWO: 2,
   THREE: 3,
 };
+
 
 const getCitiesTemplate = (cities) => {
   const startCity = cities[0];
@@ -27,7 +29,6 @@ const getCitiesTemplate = (cities) => {
   }
 };
 
-
 const getDatesTemplate = (startPoint, finishPoint) => {
 
   const fromDate = dayjs(startPoint.dateFrom);
@@ -43,7 +44,6 @@ const getDatesTemplate = (startPoint, finishPoint) => {
 
   return `<p class="trip-info__dates">${startDate}&nbsp;&mdash;&nbsp;${finishDate}</p>`;
 };
-
 
 const getCost = (points) => points.slice().reduce((total, point) => {
   const {offers, price} = point;
@@ -80,6 +80,7 @@ const createInfoView = (points) => {
     </p>
   </section>`;
 };
+
 
 export default class InfoView extends AbstractView {
   #points = null;

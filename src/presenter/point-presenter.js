@@ -1,27 +1,13 @@
-import {isEsc} from '../utils/utils';
-import {render, replace, remove} from '../utils/render-utils';
-
-import {RenderPosition, Mode, UserPointAction, UpdateType} from '../consts';
-
 import PointView from '../view/point-view';
 import EditPointView from '../view/edit-point-view';
 
-const State = {
-  SAVING: 'SAVING',
-  DELETING: 'DELETING',
-  ABORTING: 'ABORTING',
-};
+import {RenderPosition, Mode, UserPointAction, UpdateType, State} from '../consts';
+import {isEsc} from '../utils/utils';
+import {render, replace, remove} from '../utils/render-utils';
 
 
 export default class PointPresenter {
   #container = null;
-  #point = null;
-  #mode = Mode.DEFAULT;
-
-  #destinations = null;
-  #names = null
-  #types = null;
-  #offers = null;
 
   #pointComponent = null;
   #editPointComponent = null;
@@ -32,6 +18,14 @@ export default class PointPresenter {
   #changeData = null;
   #changeMode = null;
   #removeNewPoint = null;
+
+  #destinations = null;
+  #names = null
+  #types = null;
+  #offers = null;
+
+  #point = null;
+  #mode = Mode.DEFAULT;
 
   constructor(container, changeData, changeMode, destinations, offers, types, names) {
     this.#container = container;
