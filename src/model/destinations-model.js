@@ -4,6 +4,7 @@ import {UpdateType} from '../consts';
 
 export default class DestinationsModel extends AbstractObservable {
   #api = null;
+
   #destinations = null;
   #names = new Set();
 

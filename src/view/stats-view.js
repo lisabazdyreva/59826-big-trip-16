@@ -3,7 +3,7 @@ import {ChartName} from '../consts';
 import {renderChart} from '../utils/chart-utils';
 
 
-const createStatsView = () => (`<section class="statistics">
+const createStatsView = () => `<section class="statistics">
   <h2 class="visually-hidden">Trip statistics</h2>
 
   <div class="statistics__item">
@@ -17,7 +17,7 @@ const createStatsView = () => (`<section class="statistics">
   <div class="statistics__item">
     <canvas class="statistics__chart" id="time" width="900"></canvas>
   </div>
-</section>`);
+</section>`;
 
 
 export default class StatsView extends SmartView {

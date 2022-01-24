@@ -21,7 +21,7 @@ const FiltersType = {
   PAST: 'past',
 };
 
-const NoFilteredPointsMessage = {
+const NoPointsMessage = {
   [FiltersType.EVERYTHING]: 'Click New Event to create your first point',
   [FiltersType.PAST]: 'There are no past events now',
   [FiltersType.FUTURE]: 'There are no future events now',
@@ -49,7 +49,7 @@ const DefaultValue = {
     type: '',
     isFavorite: false,
   },
-  NOTIFICATION: NoFilteredPointsMessage[FiltersType.EVERYTHING],
+  NOTIFICATION: NoPointsMessage[FiltersType.EVERYTHING],
 };
 
 const TimeFormat = {
@@ -60,7 +60,6 @@ const TimeFormat = {
   YEAR_MONTH_DAY: 'YYYY-MM-DD',
   DAYS_MONTHS_YEARS_TIME: 'DD/MM/YY HH:mm',
 };
-
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -116,6 +115,7 @@ const RenderErrorMessage = {
   REMOVE: 'Can remove only components',
 };
 
+const MINUTE = 'minute';
 
 export {
   ChartName,
@@ -129,9 +129,10 @@ export {
   UpdateType,
   UserPointAction,
   FiltersType,
-  NoFilteredPointsMessage,
+  NoPointsMessage,
   ValidationMessage,
   ResponseErrorMessage,
   State,
-  RenderErrorMessage
+  RenderErrorMessage,
+  MINUTE
 };

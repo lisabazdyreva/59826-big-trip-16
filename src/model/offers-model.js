@@ -4,6 +4,7 @@ import {UpdateType} from '../consts';
 
 export default class OffersModel extends AbstractObservable {
   #api = null;
+
   #offers = null;
   #types = new Set();
 

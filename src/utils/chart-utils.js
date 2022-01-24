@@ -1,4 +1,4 @@
-import {ChartName} from '../consts';
+import {ChartName, MINUTE} from '../consts';
 import {getFormattedDuration} from './utils';
 
 import Chart from 'chart.js';
@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 
 
 const BAR_HEIGHT = 55;
+const STEP = 1;
 
 const HexColor = {
   BLACK: '#000000',
@@ -86,7 +87,7 @@ const getChart = (context, types, data, title, formatData) => new Chart(context,
   },
 });
 
-const getSortedData = (data) => Array.from(data.entries()).sort((a, b) => b[1] - a[1]);
+const getSortedData = (data) => Array.from(data.entries()).sort((valueA, valueB) => valueB[1] - valueA[1]);
 
 const getTypes = (data) => Array.from(data.keys()).map((type) => type.toUpperCase());
 
@@ -104,13 +105,11 @@ const getPricesByTypes = (data, result) => {
 };
 
 const getValuesByTypes = (data, result) => {
-  const step = 1;
-
   data.forEach(({type}) => {
     if (result.has(type)) {
-      result.set(type, result.get(type) + step);
+      result.set(type, result.get(type) + STEP);
     } else {
-      result.set(type, 1);
+      result.set(type, STEP);
     }
   });
   return result;
@@ -118,7 +117,7 @@ const getValuesByTypes = (data, result) => {
 
 const getDurationsByTypes = (data, result) => {
   data.forEach(({type, dateFrom, dateTo}) => {
-    const diffMinutes = dayjs(dateTo).diff(dateFrom, 'minute');
+    const diffMinutes = dayjs(dateTo).diff(dateFrom, MINUTE);
 
     if (result.has(type)) {
       result.set(type, result.get(type) + diffMinutes);

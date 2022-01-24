@@ -1,9 +1,9 @@
 import AbstractObservable from '../utils/abstract-observable';
-import {MenuTab} from '../consts';
+import {DefaultValue} from '../consts';
 
 
 export default class MenuModel extends AbstractObservable {
-  #activeMenuTab = MenuTab.TABLE;
+  #activeMenuTab = DefaultValue.MENU;
 
   setActiveMenuTab = (updateType, activeMenuTab) => {
     this.#activeMenuTab = activeMenuTab;

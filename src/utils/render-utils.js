@@ -5,7 +5,6 @@ import {RenderPosition, RenderErrorMessage} from '../consts';
 const getElement = (component) => component instanceof AbstractView ? component.element : component;
 
 const render = (container, element, position) => {
-
   const parent = getElement(container);
   const child = getElement(element);
 
@@ -27,7 +26,6 @@ const render = (container, element, position) => {
       break;
   }
 };
-
 
 const replace = (to, from) => {
   if (to === null || from === null) {

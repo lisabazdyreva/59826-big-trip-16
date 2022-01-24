@@ -37,7 +37,7 @@ export default class FiltersPresenter {
     this.#prevComponent = this.#component;
     this.#component = new FiltersView(this.activeFilter, this.pastPointsLength, this.futurePointsLength);
 
-    this.#component.setClickFilterHandler(this.#changeActiveFilterHandler);
+    this.#component.setFilterChangeHandler(this.#activeFilterChangeHandler);
 
     this.#model.add(this.init);
     this.#pointsModel.add(this.init);
@@ -60,7 +60,7 @@ export default class FiltersPresenter {
     render(this.#container, this.#component, RenderPosition.BEFOREEND);
   }
 
-  #changeActiveFilterHandler = (currentFilter) => {
+  #activeFilterChangeHandler = (currentFilter) => {
     if (this.#model.activeFilter === currentFilter) {
       return;
     }

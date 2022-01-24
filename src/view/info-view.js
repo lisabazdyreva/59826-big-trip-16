@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 
 const MIN_PRICE = 0;
 
-const CitiesValue = {
+const CitiesAmount= {
   ONE: 1,
   TWO: 2,
   THREE: 3,
@@ -18,11 +18,11 @@ const getCitiesTemplate = (cities) => {
   const citiesValue = cities.length;
 
   switch (citiesValue) {
-    case (CitiesValue.ONE):
+    case (CitiesAmount.ONE):
       return `<h1 class="trip-info__title">${startCity}</h1>`;
-    case (CitiesValue.TWO):
+    case (CitiesAmount.TWO):
       return `<h1 class="trip-info__title">${startCity} &mdash; ${finishCity}</h1>`;
-    case (CitiesValue.THREE):
+    case (CitiesAmount.THREE):
       return `<h1 class="trip-info__title">${startCity} &mdash; ${cities[1]} &mdash; ${finishCity}</h1>`;
     default:
       return `<h1 class="trip-info__title">${startCity} &mdash; ... &mdash; ${finishCity}</h1>`;
@@ -59,7 +59,7 @@ const getCost = (points) => points.slice().reduce((total, point) => {
 
 
 const createInfoView = (points) => {
-  const sortedPoints = points.sort((a, b) => dayjs(a.dateFrom) - dayjs(b.dateFrom)); // TODO пока так
+  const sortedPoints = points.sort((a, b) => dayjs(a.dateFrom) - dayjs(b.dateFrom));
   const cities = Array.from(new Set(sortedPoints.map(({destination}) => destination.name)));
 
   const startPoint = sortedPoints[0];

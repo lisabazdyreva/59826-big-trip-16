@@ -4,11 +4,11 @@ import {SortingType} from '../consts';
 import {isInput} from '../utils/utils';
 
 
-const sortingTypesList = Object.values(SortingType);
+const sortingTypes = Object.values(SortingType);
 
-const createSortingView = (activeSortingType) => (
-  `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
-    ${sortingTypesList.map((type) => {
+
+const createSortingView = (activeSortingType) => `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
+    ${sortingTypes.map((type) => {
     const isChecked = activeSortingType === type ? 'checked' : '';
     const isDisabled = SortingType.EVENT === type || SortingType.OFFERS === type ? 'disabled' : '';
 
@@ -25,8 +25,7 @@ const createSortingView = (activeSortingType) => (
       >
       <label class="trip-sort__btn" for="sort-${type}">${type}</label>
     </div>`;}).join('')}
-  </form>`
-);
+</form>`;
 
 
 export default class SortingView extends AbstractView {
@@ -42,15 +41,15 @@ export default class SortingView extends AbstractView {
   }
 
   setSortingChangeHandler = (cb) => {
-    this._callbacks.changeSorting = cb;
-    this.element.addEventListener('change', this.#sortingHandler);
+    this._callbacks.sortingChangeHandler = cb;
+    this.element.addEventListener('change', this.#sortingChangeHandler);
   }
 
-  #sortingHandler = (evt) => {
+  #sortingChangeHandler = (evt) => {
     if (!isInput(evt)) {
       return;
     }
 
-    this._callbacks.changeSorting(evt.target.dataset.sortType);
+    this._callbacks.sortingChangeHandler(evt.target.dataset.sortType);
   }
 }

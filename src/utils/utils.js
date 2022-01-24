@@ -22,7 +22,9 @@ const currentDate = dayjs();
 
 const formatTime = (time) => time < 10 ? `0${time}`: time;
 
-const getFormattedDuration = (difference) => { // TODO мб улучшить можно будет со временем
+const getFormattedDate = (date, format) => dayjs(date).format(format);
+
+const getFormattedDuration = (difference) => {
   if (difference < TimeConverter.MINUTES_IN_HOUR) {
     return `${formatTime(difference)}${TimeUnit.MINUTES}`;
   }
@@ -83,7 +85,6 @@ const sortPoints = (type, points) => {
     case SortingType.PRICE:
       return points.sort(sortByPrice);
   }
-
   return points;
 };
 
@@ -94,5 +95,22 @@ const getDatepickerConfig = (handler) => ({
   onChange: handler,
 });
 
+const checkMinorUpdate = (pointAfterUpdate, pointBeforeUpdate) => pointAfterUpdate.dateTo.diff(pointBeforeUpdate.dateTo) !== 0
+  || pointAfterUpdate.dateFrom.diff(pointBeforeUpdate.dateFrom) !== 0
+  || pointAfterUpdate.price !== pointBeforeUpdate.price;
 
-export {getFormattedDuration, createElement, isEsc, isInput, sortByFromDate, sortByDuration, sortByPrice, filterPoints, sortPoints, getDatepickerConfig};
+
+export {
+  getFormattedDuration,
+  getFormattedDate,
+  createElement,
+  isEsc,
+  isInput,
+  sortByFromDate,
+  sortByDuration,
+  sortByPrice,
+  filterPoints,
+  sortPoints,
+  getDatepickerConfig,
+  checkMinorUpdate
+};

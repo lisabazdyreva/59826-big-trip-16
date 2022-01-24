@@ -15,7 +15,7 @@ export default class MenuPresenter {
   #infoComponent = null;
   #addButtonElement = null;
 
-  #addPointHandler = null;
+  #pointAddHandler = null;
   #menuClickHandler = null;
 
   #pointsModel = null;
@@ -23,14 +23,12 @@ export default class MenuPresenter {
 
   #points = [];
 
-  constructor(menuModel, pointsModel, menuContainer, infoContainer, menuClickHandler) {
+  constructor(menuModel, pointsModel, menuContainer, infoContainer) {
     this.#pointsModel = pointsModel;
     this.#menuModel = menuModel;
 
     this.#menuContainer = menuContainer;
     this.#infoContainer = infoContainer;
-
-    this.#menuClickHandler = menuClickHandler;
 
     this.#addButtonElement = document.querySelector('.trip-main__event-add-btn');
   }
@@ -48,7 +46,7 @@ export default class MenuPresenter {
     this.#menuPrevComponent = this.#menuComponent;
     this.#menuComponent = new MenuView(this.activeMenuTab);
 
-    this.#menuComponent.setMenuClickHandler(this.#handleMenuClick);
+    this.#menuComponent.setMenuTabClickHandler(this.#activeMenuTabClickHandler);
 
     this.#pointsModel.add(this.#handlePointsModelEvent);
     this.#menuModel.add(this.#handleModelEvent);
@@ -62,15 +60,18 @@ export default class MenuPresenter {
     remove(this.#menuPrevComponent);
   }
 
-
-  setAddPointHandler = (cb) => {
-    this.#addPointHandler = cb;
-    this.#addButtonElement.addEventListener('click', this.#clickAddButtonHandler);
+  setPointAddHandler = (cb) => {
+    this.#pointAddHandler = cb;
+    this.#addButtonElement.addEventListener('click', this.#buttonAddClickHandler);
   }
 
-  #clickAddButtonHandler = () => {
+  setMenuClickHandler = (cb) => {
+    this.#menuClickHandler = cb;
+  }
+
+  #buttonAddClickHandler = () => {
     this.disableAddButton();
-    this.#addPointHandler();
+    this.#pointAddHandler();
   }
 
   #handlePointsModelEvent = () => {
@@ -99,7 +100,7 @@ export default class MenuPresenter {
     render(this.#infoContainer, this.#infoComponent, RenderPosition.AFTERBEGIN);
   }
 
-  #handleMenuClick = (menuItem) => {
+  #activeMenuTabClickHandler = (menuItem) => {
     if (menuItem === this.activeMenuTab) {
       return;
     }

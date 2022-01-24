@@ -1,5 +1,5 @@
 import AbstractView from './abstract-view';
-import {NoFilteredPointsMessage} from '../consts';
+import {NoPointsMessage} from '../consts';
 
 
 export default class EmptyListView extends AbstractView {
@@ -7,7 +7,7 @@ export default class EmptyListView extends AbstractView {
 
   constructor(type) {
     super();
-    this.#message = NoFilteredPointsMessage[type];
+    this.#message = NoPointsMessage[type];
   }
 
   get template() {

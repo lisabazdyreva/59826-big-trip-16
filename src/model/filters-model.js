@@ -1,9 +1,9 @@
 import AbstractObservable from '../utils/abstract-observable';
-import {FiltersType} from '../consts';
+import {DefaultValue} from '../consts';
 
 
 export default class FiltersModel extends AbstractObservable {
-  #activeFilter = FiltersType.EVERYTHING;
+  #activeFilter = DefaultValue.FILTER;
 
   setActiveFilter = (updateType, activeFilter) => {
     this.#activeFilter = activeFilter;

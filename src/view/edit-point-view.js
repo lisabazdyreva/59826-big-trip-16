@@ -1,11 +1,20 @@
 import SmartView from './smart-view';
 
 import {TimeFormat, DefaultValue, ValidationMessage} from '../consts';
-import {getDatepickerConfig, isInput} from '../utils/utils';
+import {getDatepickerConfig, getFormattedDate, isInput} from '../utils/utils';
 
 import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+
+
+const ButtonText = {
+  DELETE: 'Delete',
+  DELETING: 'Deleting',
+  CANCEL: 'Cancel',
+  SAVE: 'Save',
+  SAVING: 'Saving',
+};
 
 
 const getEventTypeListTemplate = (activeType, types) => `<div class="event__type-list">
@@ -13,7 +22,6 @@ const getEventTypeListTemplate = (activeType, types) => `<div class="event__type
     <legend class="visually-hidden">Event type</legend>
 
     ${types.map((type) => {
-
     const typeText = type.slice(0, 1).toUpperCase() + type.slice(1);
     const isChecked = activeType === type ? 'checked' : '';
 
@@ -23,7 +31,7 @@ const getEventTypeListTemplate = (activeType, types) => `<div class="event__type
         class="event__type-input  visually-hidden"
         type="radio"
         name="event-type"
-        value='${type}'
+        value="${type}"
         ${isChecked}
       >
       <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">
@@ -35,15 +43,15 @@ const getEventTypeListTemplate = (activeType, types) => `<div class="event__type
 </div>`;
 
 const getTimeTemplate = (dateFrom, dateTo) => {
-  const from = dayjs(dateFrom).format(TimeFormat.DAYS_MONTHS_YEARS_TIME);
-  const to = dayjs(dateTo).format(TimeFormat.DAYS_MONTHS_YEARS_TIME);
+  const from = getFormattedDate(dateFrom, TimeFormat.DAYS_MONTHS_YEARS_TIME);
+  const to = getFormattedDate(dateTo, TimeFormat.DAYS_MONTHS_YEARS_TIME);
 
   return `<div class="event__field-group  event__field-group--time">
     <label class="visually-hidden" for="event-start-time-1">From</label>
-    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value='${from}'>
+    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${from}">
     &mdash;
     <label class="visually-hidden" for="event-end-time-1">To</label>
-    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value='${to}'>
+    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${to}">
   </div>`;
 };
 
@@ -51,31 +59,30 @@ const getOffersTemplate = (offers, offersList, isEditPoint) => `<section class="
   <h3 class="event__section-title  event__section-title--offers">Offers</h3>
   <div class="event__available-offers">
     ${offersList.map(({title, price}) => {
-    const attr = title.split(' ').map((word) => word.toLowerCase()).join('-');
+    const value = title.split(' ').map((word) => word.toLowerCase()).join('-');
     const isChecked = (offers.filter((offer) => offer.title === title).length) && isEditPoint ? 'checked' : '';
 
     return `<div class="event__offer-selector">
         <input
           class="event__offer-checkbox  visually-hidden"
-          id="event-offer-${attr}-1"
+          id="event-offer-${value}-1"
           type="checkbox"
-          name="event-offer-${attr}"
+          name="event-offer-${value}"
           value="${title}"
           ${isChecked}
         />
-        <label class="event__offer-label" for="event-offer-${attr}-1">
+        <label class="event__offer-label" for="event-offer-${value}-1">
           <span class="event__offer-title">${title}</span>
           &plus;&euro;&nbsp;
           <span class="event__offer-price">${price}</span>
         </label>
-        </div>`;
-  }).join('')}
+    </div>`;}).join('')}
   </div>
 </section>`;
 
 const getPicturesTemplate = (pictures) => `<div class="event__photos-container">
   <div class="event__photos-tape">
-    ${pictures.map(({src, description}) => `<img class="event__photo" src=${src} alt=${description}>`).join('')}
+    ${pictures.map(({src, description}) => `<img class="event__photo" src=${src} alt="${description}">`).join('')}
   </div>
 </div>`;
 
@@ -88,36 +95,56 @@ const getDestinationTemplate = (descriptionTemplate, picturesTemplate) => `<sect
 </section>`;
 
 const getDestinationsListTemplate = (destinations) => `<datalist id="destination-list-1">
-  ${destinations.map((destination) => `<option value='${destination}'></option>`).join('')}
+  ${destinations.map((destination) => `<option value="${destination}"></option>`).join('')}
 </datalist>`;
 
 
 const createEditPointView = (point, isEditPoint, destinationsList, offersList, types, names) => {
-
-  const {price, dateFrom, dateTo, destination, offers, type, isOffers, isDescription, isDisabled, isDeleting, isSaving,  isPictures} = point;
+  const {
+    price,
+    dateFrom,
+    dateTo,
+    destination,
+    offers,
+    type,
+    isOffers,
+    isDescription,
+    isDisabled,
+    isDeleting,
+    isSaving,
+    isPictures
+  } = point;
   const {name, pictures, description} = destination;
+
+  const isAnyOffers = isOffers || offersList.length;
+  const isDestination = isDescription || isPictures;
+
+  const isButtonSaving = isSaving ? ButtonText.SAVING : ButtonText.SAVE;
+  const isDisabledButton= isDisabled ? 'disabled' : '';
 
   const eventTypeListTemplate = getEventTypeListTemplate(type, types);
   const timeTemplate = getTimeTemplate(dateFrom, dateTo);
 
-  const offersTemplate = (isOffers || offersList.length) ? getOffersTemplate(offers, offersList, isEditPoint) : '';
+  const offersTemplate = isAnyOffers ? getOffersTemplate(offers, offersList, isEditPoint) : '';
   const picturesTemplate = isPictures ? getPicturesTemplate(pictures) : '';
   const descriptionTemplate = isDescription ? getDescriptionTemplate(description): '';
 
-  const destinationTemplate = isDescription || isPictures ? getDestinationTemplate(descriptionTemplate, picturesTemplate) : '';
+  const destinationTemplate = isDestination ? getDestinationTemplate(descriptionTemplate, picturesTemplate) : '';
   const destinationsListTemplate = getDestinationsListTemplate(names);
 
-  const buttonResetText = () => {
+  const getButtonResetText = () => {
     if (isEditPoint && isDeleting) {
-      return 'Deleting';
+      return ButtonText.DELETING;
     }
 
     if (!isEditPoint) {
-      return 'Cancel';
+      return ButtonText.CANCEL;
     }
 
-    return 'Delete';
+    return ButtonText.DELETE;
   };
+  const buttonResetText = getButtonResetText();
+
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -125,7 +152,7 @@ const createEditPointView = (point, isEditPoint, destinationsList, offersList, t
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            ${type ? `<img class="event__type-icon" width="17" height="17" src='img/icons/${type}.png' alt="Event type icon">` : ''}
+            ${type ? `<img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="${type} icon">` : ''}
           </label>
           <input class="event__type-toggle visually-hidden" id="event-type-toggle-1" type="checkbox">
           ${eventTypeListTemplate}
@@ -140,7 +167,7 @@ const createEditPointView = (point, isEditPoint, destinationsList, offersList, t
             id="event-destination-1"
             type="text"
             name="event-destination"
-            value='${name}'
+            value="${name}"
             list="destination-list-1"
             autocomplete="off"
             required
@@ -155,12 +182,12 @@ const createEditPointView = (point, isEditPoint, destinationsList, offersList, t
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value='${price}' autocomplete="off">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}" autocomplete="off">
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving' : 'Save'}</button>
-        <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${buttonResetText()}</button>
-        ${isEditPoint ? `<button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}><span class="visually-hidden">Open event</span></button>`: ''}
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabledButton}>${isButtonSaving}</button>
+        <button class="event__reset-btn" type="reset" ${isDisabledButton}>${buttonResetText}</button>
+        ${isEditPoint ? `<button class="event__rollup-btn" type="button" ${isDisabledButton}><span class="visually-hidden">Open event</span></button>`: ''}
 
       </header>
 
@@ -203,9 +230,9 @@ export default class EditPointView extends SmartView {
   }
 
   get offers() {
-    if (this.#type) { // TODO придуматься что-то получше
-      const [offerWithType] = this.#offersList.filter(({type}) => type === this.#type);
-      return offerWithType.offers;
+    if (this.#type) {
+      const [offersWithType] = this.#offersList.filter(({type}) => type === this.#type);
+      return offersWithType.offers;
     }
     return [];
   }
@@ -214,19 +241,19 @@ export default class EditPointView extends SmartView {
     return createEditPointView(this._state, this.#isEditPoint, this.#destinationsList, this.offers, this.#types, this.#names);
   }
 
-  setClickHandler = (cb) => {
-    this._callbacks.closeClickHandler = cb;
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickHandler);
+  setCloseButtonClickHandler = (cb) => {
+    this._callbacks.buttonCloseClickHandler = cb;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#buttonCloseClickHandler);
   }
 
   setSubmitHandler = (cb) => {
-    this._callbacks.submitFormHandler = cb;
-    this.element.querySelector('.event--edit').addEventListener('submit', this.#submitHandler);
+    this._callbacks.formSubmitHandler = cb;
+    this.element.querySelector('.event--edit').addEventListener('submit', this.#formSubmitHandler);
   }
 
-  setDeleteHandler = (cb) => {
-    this._callbacks.deletePointHandler = cb;
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteHandler);
+  setButtonDeleteClickHandler = (cb) => {
+    this._callbacks.buttonDeleteClickHandler = cb;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#buttonDeleteClickHandler);
   }
 
   reset = (point) => {
@@ -235,29 +262,34 @@ export default class EditPointView extends SmartView {
     );
   }
 
-  #clickHandler = () => this._callbacks.closeClickHandler();
+  #buttonCloseClickHandler = () => {
+    this._callbacks.buttonCloseClickHandler();
+  }
 
-  #submitHandler = (evt) => {
+  #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callbacks.submitFormHandler(EditPointView.parseStateToPoint(this._state));
+    this._callbacks.formSubmitHandler(EditPointView.parseStateToPoint(this._state));
   };
 
-  #deleteHandler = () => {
-    this._callbacks.deletePointHandler(EditPointView.parseStateToPoint(this._state));
+  #buttonDeleteClickHandler = () => {
+    this._callbacks.buttonDeleteClickHandler(EditPointView.parseStateToPoint(this._state));
   }
 
   #setInnerHandlers = () => {
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
     this.element.querySelector('.event__type-group').addEventListener('click', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+    this.#setOffersEventListener();
 
+    this.#setDatepickers();
+  }
+
+  #setOffersEventListener = () => {
     const offersElement = this.element.querySelector('.event__section--offers');
 
     if (offersElement !== null) {
-      offersElement.addEventListener('click', this.#offersClickHandler);
+      offersElement.addEventListener('click', this.#offerClickHandler);
     }
-
-    this.#setDatepickers();
   }
 
   #setDatepickers = () => {
@@ -282,11 +314,11 @@ export default class EditPointView extends SmartView {
   restoreHandlers = () => {
     this.#setInnerHandlers();
 
-    this.setSubmitHandler(this._callbacks.submitFormHandler);
-    this.setDeleteHandler(this._callbacks.deletePointHandler);
+    this.setSubmitHandler(this._callbacks.formSubmitHandler);
+    this.setDeleteHandler(this._callbacks.buttonDeleteHandler);
 
     if (this.#isEditPoint) {
-      this.setClickHandler(this._callbacks.closeClickHandler);
+      this.setClickHandler(this._callbacks.buttonCloseClickHandler);
     }
   }
 
@@ -347,36 +379,38 @@ export default class EditPointView extends SmartView {
     });
   }
 
-  #offersClickHandler = (evt) => {
+  #offerClickHandler = (evt) => {
     if (!isInput(evt)) {
       return;
     }
 
     const [offer] = this.offers.filter(({title}) => title === evt.target.value);
+    const isChecked = evt.target.checked;
 
-
-    if (evt.target.checked) {
+    if (isChecked) {
       this.updateState({
-        offers: [...this._state.offers, offer],
+        offers: [...this._state.offers, offer]
       });
+      return;
     }
 
-    if (!evt.target.checked) {
-      this.updateState({
-        offers: this._state.offers.filter(({id}) => id !== offer.id),
-      });
-    }
+    this.updateState({
+      offers: this._state.offers.filter(({id}) => id !== offer.id),
+    });
   }
 
   #setDatepickerFrom = () => {
-    const config = {...getDatepickerConfig(this.#dateFromClickHandler), maxDate: this._state.dateTo.toDate()};
+    const maxDate = this._state.dateTo.toDate();
+
+    const config = {...getDatepickerConfig(this.#dateFromClickHandler), maxDate};
     this.#datepickerFrom = flatpickr(this.element.querySelector('#event-start-time-1'), config);
   }
 
   #setDatePickerTo = () => {
-    const config = {...getDatepickerConfig(this.#dateToClickHandler), minDate: this._state.dateFrom.toDate()};
-    this.#datepickerTo = flatpickr(this.element.querySelector('#event-end-time-1'), config);
+    const minDate = this._state.dateFrom.toDate();
 
+    const config = {...getDatepickerConfig(this.#dateToClickHandler), minDate};
+    this.#datepickerTo = flatpickr(this.element.querySelector('#event-end-time-1'), config);
   }
 
   #dateFromClickHandler = ([userDateFrom]) => {
@@ -394,8 +428,8 @@ export default class EditPointView extends SmartView {
   }
 
   disableInputs = () => {
-    this.element.querySelectorAll('input').forEach((elem) => {
-      elem.disabled = true;
+    this.element.querySelectorAll('input').forEach((element) => {
+      element.disabled = true;
     });
   }
 

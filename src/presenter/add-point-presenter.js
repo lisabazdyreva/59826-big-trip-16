@@ -11,7 +11,7 @@ export default class AddPointPresenter {
 
   #changeData = null;
   #enableButton = null;
-  #deleteHandler = null;
+  #formDeleteHandler = null;
 
   #destinations = null;
   #offers = null;
@@ -32,24 +32,24 @@ export default class AddPointPresenter {
     this.#types = types;
     this.#names = names;
 
-    if (this.#editPointComponent!== null) {
+    if (this.#editPointComponent !== null) {
       return;
     }
 
     this.#render();
 
-    document.addEventListener('keydown', this.#formEscHandler);
+    document.addEventListener('keydown', this.#pointEscHandler);
   }
 
-  setDeleteHandler = (cb) => {
-    this.#deleteHandler = cb;
+  setFormDeleteHandler = (cb) => {
+    this.#formDeleteHandler = cb;
   }
 
   #render = () => {
     this.#editPointComponent = new EditPointView(DefaultValue.POINT, this.#destinations, this.#offers, this.#types, this.#names);
 
-    this.#editPointComponent.setSubmitHandler(this.#formSubmitHandler);
-    this.#editPointComponent.setDeleteHandler(this.#deleteFormHandler);
+    this.#editPointComponent.setSubmitHandler(this.#pointSubmitHandler);
+    this.#editPointComponent.setButtonDeleteClickHandler(this.#pointDeleteHandler);
 
     render(this.#container, this.#editPointComponent, RenderPosition.AFTERBEGIN);
   }
@@ -62,32 +62,33 @@ export default class AddPointPresenter {
     remove(this.#editPointComponent);
     this.#editPointComponent = null;
 
-    document.removeEventListener('keydown', this.#formEscHandler);
+    document.removeEventListener('keydown', this.#pointEscHandler);
     this.#enableButton();
 
-    if (this.#deleteHandler !== null) {
-      this.#deleteHandler();
-      this.#deleteHandler = null;
+    if (this.#formDeleteHandler !== null) {
+      this.#formDeleteHandler();
+      this.#formDeleteHandler = null;
     }
   }
 
-  #formEscHandler = (evt) => {
+  #pointEscHandler = (evt) => {
     if (isEsc(evt.code)) {
-      this.#deleteFormHandler();
+      this.#pointDeleteHandler();
     }
   }
 
-  #deleteFormHandler = () => {
+  #pointDeleteHandler = () => {
     this.remove();
-    document.removeEventListener('keydown', this.#formEscHandler);
+    document.removeEventListener('keydown', this.#pointEscHandler);
   }
 
-  #formSubmitHandler = (point) => {
+  #pointSubmitHandler = (point) => {
     this.#changeData(
       UserPointAction.ADD,
-      UpdateType.MAJOR, // TODO можно минор, если инфо компонент перенести
+      UpdateType.MINOR,
       point,
     );
+    this.#enableButton();
   }
 
   setSaving = () => {
@@ -99,10 +100,10 @@ export default class AddPointPresenter {
   }
 
   setAborting = () => {
-    this.#editPointComponent.shake(this.#removeFormState);
+    this.#editPointComponent.shake(this.#removePointState);
   }
 
-  #removeFormState = () => {
+  #removePointState = () => {
     this.#editPointComponent.updateStateWithRerender({
       isDisabled: false,
       isSaving: false,

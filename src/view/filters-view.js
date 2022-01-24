@@ -2,12 +2,12 @@ import AbstractView from './abstract-view';
 import {FiltersType} from '../consts';
 
 
-const filterValuesList = Object.values(FiltersType);
+const filterValues = Object.values(FiltersType);
 
 const isDisabled = (filter, length, type) => !length && filter === type ? 'disabled': '';
 
 const createFiltersView = (activeFilter, pastPointsLength, futurePointsLength) => `<form class="trip-filters" action="#" method="get">
-  ${filterValuesList.map((filter) => {
+  ${filterValues.map((filter) => {
     const filterText = filter.slice(0, 1).toUpperCase() + filter.slice(1);
     const isChecked = activeFilter === filter ? 'checked' : '';
 
@@ -17,7 +17,7 @@ const createFiltersView = (activeFilter, pastPointsLength, futurePointsLength) =
         class="trip-filters__filter-input  visually-hidden"
         type="radio"
         name="trip-filter"
-        value='${filter}'
+        value="${filter}"
         ${isChecked}
         ${isDisabled(filter, pastPointsLength, FiltersType.PAST)}
         ${isDisabled(filter, futurePointsLength, FiltersType.FUTURE)}
@@ -46,12 +46,12 @@ export default class FiltersView extends AbstractView {
     return createFiltersView(this.#activeFilter, this.#pastPointsLength, this.#futurePointsLength);
   }
 
-  setClickFilterHandler = (cb) => {
-    this._callbacks.clickFilterHandler = cb;
-    this.element.addEventListener('change', this.#clickFilterHandler);
+  setFilterChangeHandler = (cb) => {
+    this._callbacks.filterChangeHandler = cb;
+    this.element.addEventListener('change', this.#filterChangeHandler);
   }
 
-  #clickFilterHandler = (evt) => {
-    this._callbacks.clickFilterHandler(evt.target.value);
+  #filterChangeHandler = (evt) => {
+    this._callbacks.filterChangeHandler(evt.target.value);
   }
 }

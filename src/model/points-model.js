@@ -4,8 +4,8 @@ import dayjs from 'dayjs';
 
 
 export default class PointsModel extends AbstractObservable {
-  #points = [];
   #api = null;
+  #points = [];
 
   constructor(api) {
     super();
@@ -13,7 +13,6 @@ export default class PointsModel extends AbstractObservable {
   }
 
   init = async () => {
-
     try {
       const points = await this.#api.getPoints();
       this.#points = points.map(this.#adaptToClient);

@@ -2,7 +2,7 @@ import PointView from '../view/point-view';
 import EditPointView from '../view/edit-point-view';
 
 import {RenderPosition, Mode, UserPointAction, UpdateType, State} from '../consts';
-import {isEsc} from '../utils/utils';
+import {isEsc, checkMinorUpdate} from '../utils/utils';
 import {render, replace, remove} from '../utils/render-utils';
 
 
@@ -49,12 +49,12 @@ export default class PointPresenter {
     this.#pointComponent = new PointView(point);
     this.#editPointComponent = new EditPointView(point, this.#destinations, this.#offers, this.#types, this.#names);
 
-    this.#pointComponent.setClickHandler(this.#openButtonClickHandler);
-    this.#pointComponent.setFavoriteClickHandler(this.#favoriteToggleHandler);
+    this.#pointComponent.setButtonOpenClickHandler(this.#pointOpenClickHandler);
+    this.#pointComponent.setFavoriteClickHandler(this.#pointFavoriteToggleHandler);
 
-    this.#editPointComponent.setClickHandler(this.#closeButtonClickHandler);
-    this.#editPointComponent.setSubmitHandler(this.#formSubmitHandler);
-    this.#editPointComponent.setDeleteHandler(this.#pointDeleteHandler);
+    this.#editPointComponent.setCloseButtonClickHandler(this.#pointCloseClickHandler);
+    this.#editPointComponent.setSubmitHandler(this.#pointSubmitHandler);
+    this.#editPointComponent.setButtonDeleteClickHandler(this.#pointDeleteHandler);
 
     this.#render();
   }
@@ -66,20 +66,16 @@ export default class PointPresenter {
     }
 
     if (this.#mode === Mode.DEFAULT) {
-
       replace(this.#pointComponent, this.#prevPointComponent);
     }
 
     if (this.#mode === Mode.EDIT) {
-      replace(this.#editPointComponent, this.#prevEditPointComponent); //TODO если переписать тип обновления на патч отправки формы, то понадобится нижнее
-      // replace(this.#pointComponent, this.#prevEditPointComponent);
-      // this.#mode = Mode.DEFAULT;
+      replace(this.#pointComponent, this.#prevEditPointComponent);
+      this.#mode = Mode.DEFAULT;
     }
-
 
     remove(this.#prevPointComponent);
     remove(this.#prevEditPointComponent);
-
   }
 
   removePointComponent = () => {
@@ -93,7 +89,7 @@ export default class PointPresenter {
     }
   }
 
-  #formEscHandler = (evt) => {
+  #pointEscHandler = (evt) => {
     if (isEsc(evt.code)) {
       this.#closeEditPoint();
     }
@@ -101,7 +97,7 @@ export default class PointPresenter {
 
   #openEditPoint = () => {
     replace(this.#editPointComponent, this.#pointComponent);
-    document.addEventListener('keydown', this.#formEscHandler);
+    document.addEventListener('keydown', this.#pointEscHandler);
     this.#changeMode();
     this.#mode = Mode.EDIT;
   }
@@ -109,23 +105,25 @@ export default class PointPresenter {
   #closeEditPoint = () => {
     this.#editPointComponent.reset(this.#point);
     replace(this.#pointComponent, this.#editPointComponent);
-    document.removeEventListener('keydown', this.#formEscHandler);
+    document.removeEventListener('keydown', this.#pointEscHandler);
     this.#mode = Mode.DEFAULT;
   }
 
-  #openButtonClickHandler = () => {
+  #pointOpenClickHandler = () => {
     this.#openEditPoint();
   }
 
-  #closeButtonClickHandler = () => {
+  #pointCloseClickHandler = () => {
     this.#closeEditPoint();
   }
 
-  #formSubmitHandler = (point) => {
+  #pointSubmitHandler = (point) => {
+    const isMinor = checkMinorUpdate(point, this.#point);
+
     this.#changeData(
       UserPointAction.UPDATE,
-      UpdateType.MINOR,
-      point, // TODO еще подумать надо
+      isMinor ? UpdateType.MINOR : UpdateType.PATCH,
+      point,
     );
   }
 
@@ -137,7 +135,7 @@ export default class PointPresenter {
     );
   }
 
-  #favoriteToggleHandler = () => {
+  #pointFavoriteToggleHandler = () => {
     this.#changeData(
       UserPointAction.UPDATE,
       UpdateType.PATCH,

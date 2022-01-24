@@ -73,7 +73,7 @@ export default class TripPresenter {
     this.#filtersPresenter.init();
     this.#menuPresenter.init();
 
-    this.#menuPresenter.setAddPointHandler(this.#createPoint);
+    this.#menuPresenter.setPointAddHandler(this.#createPoint);
 
     this.#addObservers();
   }
@@ -107,7 +107,7 @@ export default class TripPresenter {
     if (!this.pointsLength) {
       this.#renderPointsList();
       this.#removeEmptyTrip();
-      this.#newPointPresenter.setDeleteHandler(this.#renderEmptyTrip);
+      this.#newPointPresenter.setFormDeleteHandler(this.#renderEmptyTrip);
     }
 
     this.#newPointPresenter.init(this.#pointsListComponent, this.#destinations, this.#offers, this.#types, this.#names);
@@ -212,7 +212,7 @@ export default class TripPresenter {
 
   #resetFilter = () => {
     this.#activeFilterType = DefaultValue.FILTER;
-    this.#filtersModel.setActiveFilter(UpdateType.MAJOR, this.#activeFilterType); // TODO сортировка сбрасывается, потому что мажор. Мб нужен не мажор. Тогда нужно дропать точку при перерисовке списка точек
+    this.#filtersModel.setActiveFilter(UpdateType.MAJOR, this.#activeFilterType);
   }
 
   #handleModelEvent = (updateType, data) => {
@@ -227,7 +227,7 @@ export default class TripPresenter {
         this.#renderPoints();
         break;
       case UpdateType.MAJOR:
-        this.#removeMainContent();// TODO это еще не точная реализация, ТЗ посмотреть
+        this.#removeMainContent();
         this.#renderMainContent();
         break;
       case UpdateType.INIT:
