@@ -315,10 +315,10 @@ export default class EditPointView extends SmartView {
     this.#setInnerHandlers();
 
     this.setSubmitHandler(this._callbacks.formSubmitHandler);
-    this.setDeleteHandler(this._callbacks.buttonDeleteHandler);
+    this.setButtonDeleteClickHandler(this._callbacks.buttonDeleteClickHandler);
 
     if (this.#isEditPoint) {
-      this.setClickHandler(this._callbacks.buttonCloseClickHandler);
+      this.setCloseButtonClickHandler(this._callbacks.buttonCloseClickHandler);
     }
   }
 
