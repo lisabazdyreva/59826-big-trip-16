@@ -1,34 +1,34 @@
-import {remove, render, replace} from '../utils/render-utils';
-import {RenderPosition, UpdateType} from '../consts';
 import MenuView from '../view/menu-view';
 import InfoView from '../view/info-view';
 
+import {RenderPosition, UpdateType} from '../consts';
+import {remove, render, replace} from '../utils/render-utils';
+
+
 export default class MenuPresenter {
-  #points = [];
+  #menuContainer = null;
+  #infoContainer = null;
+
+  #menuPrevComponent = null;
+  #menuComponent = null;
+
+  #infoComponent = null;
+  #addButtonElement = null;
+
+  #pointAddHandler = null;
+  #menuClickHandler = null;
 
   #pointsModel = null;
   #menuModel = null;
 
-  #addPointHandler = null;
-  #menuClickHandler = null;
+  #points = [];
 
-  #addButtonElement = null;
-
-  #menuPrevComponent = null;
-  #menuComponent = null;
-  #menuContainer = null;
-
-  #infoContainer = null;
-  #infoComponent = null;
-
-  constructor(menuModel, pointsModel, menuContainer, infoContainer, menuClickHandler) {
+  constructor(menuModel, pointsModel, menuContainer, infoContainer) {
     this.#pointsModel = pointsModel;
     this.#menuModel = menuModel;
 
     this.#menuContainer = menuContainer;
     this.#infoContainer = infoContainer;
-
-    this.#menuClickHandler = menuClickHandler;
 
     this.#addButtonElement = document.querySelector('.trip-main__event-add-btn');
   }
@@ -46,7 +46,7 @@ export default class MenuPresenter {
     this.#menuPrevComponent = this.#menuComponent;
     this.#menuComponent = new MenuView(this.activeMenuTab);
 
-    this.#menuComponent.setMenuClickHandler(this.#handleMenuClick);
+    this.#menuComponent.setMenuTabClickHandler(this.#activeMenuTabClickHandler);
 
     this.#pointsModel.add(this.#handlePointsModelEvent);
     this.#menuModel.add(this.#handleModelEvent);
@@ -60,15 +60,18 @@ export default class MenuPresenter {
     remove(this.#menuPrevComponent);
   }
 
-
-  setAddPointHandler = (handler) => {
-    this.#addPointHandler = handler;
-    this.#addButtonElement.addEventListener('click', this.#clickAddButtonHandler);
+  setPointAddHandler = (cb) => {
+    this.#pointAddHandler = cb;
+    this.#addButtonElement.addEventListener('click', this.#buttonAddClickHandler);
   }
 
-  #clickAddButtonHandler = () => {
+  setMenuClickHandler = (cb) => {
+    this.#menuClickHandler = cb;
+  }
+
+  #buttonAddClickHandler = () => {
     this.disableAddButton();
-    this.#addPointHandler();
+    this.#pointAddHandler();
   }
 
   #handlePointsModelEvent = () => {
@@ -76,6 +79,11 @@ export default class MenuPresenter {
       remove(this.#infoComponent);
       this.#infoComponent = null;
     }
+
+    if (!this.points.length) {
+      return;
+    }
+
     this.#renderInfo();
   }
 
@@ -92,7 +100,7 @@ export default class MenuPresenter {
     render(this.#infoContainer, this.#infoComponent, RenderPosition.AFTERBEGIN);
   }
 
-  #handleMenuClick = (menuItem) => {
+  #activeMenuTabClickHandler = (menuItem) => {
     if (menuItem === this.activeMenuTab) {
       return;
     }
@@ -105,8 +113,7 @@ export default class MenuPresenter {
     this.#addButtonElement.disabled = true;
   }
 
-  undisableAddButton = () => {
+  enableAddButton = () => {
     this.#addButtonElement.disabled = false;
   }
-
 }

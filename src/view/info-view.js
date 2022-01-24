@@ -1,16 +1,33 @@
-import dayjs from 'dayjs';
-import {TimeFormat} from '../consts';
 import AbstractView from './abstract-view';
+import {TimeFormat} from '../consts';
+import dayjs from 'dayjs';
+
 
 const MIN_PRICE = 0;
+
+const CitiesAmount= {
+  ONE: 1,
+  TWO: 2,
+  THREE: 3,
+};
+
 
 const getCitiesTemplate = (cities) => {
   const startCity = cities[0];
   const finishCity = cities[cities.length - 1];
+  const citiesValue = cities.length;
 
-  return `<h1 class="trip-info__title">${startCity} &mdash; ${(cities.length > 3) ? '...' : cities[1]} &mdash; ${finishCity}`;
+  switch (citiesValue) {
+    case (CitiesAmount.ONE):
+      return `<h1 class="trip-info__title">${startCity}</h1>`;
+    case (CitiesAmount.TWO):
+      return `<h1 class="trip-info__title">${startCity} &mdash; ${finishCity}</h1>`;
+    case (CitiesAmount.THREE):
+      return `<h1 class="trip-info__title">${startCity} &mdash; ${cities[1]} &mdash; ${finishCity}</h1>`;
+    default:
+      return `<h1 class="trip-info__title">${startCity} &mdash; ... &mdash; ${finishCity}</h1>`;
+  }
 };
-
 
 const getDatesTemplate = (startPoint, finishPoint) => {
 
@@ -28,7 +45,6 @@ const getDatesTemplate = (startPoint, finishPoint) => {
   return `<p class="trip-info__dates">${startDate}&nbsp;&mdash;&nbsp;${finishDate}</p>`;
 };
 
-
 const getCost = (points) => points.slice().reduce((total, point) => {
   const {offers, price} = point;
 
@@ -43,7 +59,7 @@ const getCost = (points) => points.slice().reduce((total, point) => {
 
 
 const createInfoView = (points) => {
-  const sortedPoints = points.sort((a, b) => dayjs(a.dateFrom) - dayjs(b.dateFrom)); // TODO пока так
+  const sortedPoints = points.sort((a, b) => dayjs(a.dateFrom) - dayjs(b.dateFrom));
   const cities = Array.from(new Set(sortedPoints.map(({destination}) => destination.name)));
 
   const startPoint = sortedPoints[0];
@@ -64,6 +80,7 @@ const createInfoView = (points) => {
     </p>
   </section>`;
 };
+
 
 export default class InfoView extends AbstractView {
   #points = null;

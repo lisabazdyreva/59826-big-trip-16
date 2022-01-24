@@ -1,6 +1,7 @@
 import AbstractView from './abstract-view';
 import {ErrorMessage} from '../consts';
 
+
 export default class SmartView extends AbstractView {
   _state = {};
 
@@ -9,7 +10,6 @@ export default class SmartView extends AbstractView {
   }
 
   #updateElement = () => {
-    // console.log('update')
     const prevElement = this.element;
     const parent = prevElement.parentElement;
 

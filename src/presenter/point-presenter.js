@@ -1,27 +1,13 @@
-import {isEsc} from '../utils/utils';
-import {render, replace, remove} from '../utils/render-utils';
-
-import {RenderPosition, Mode, UserPointAction, UpdateType} from '../consts';
-
 import PointView from '../view/point-view';
 import EditPointView from '../view/edit-point-view';
 
-const State = {
-  SAVING: 'SAVING',
-  DELETING: 'DELETING',
-  ABORTING: 'ABORTING',
-};
+import {RenderPosition, Mode, UserPointAction, UpdateType, State} from '../consts';
+import {isEsc, checkMinorUpdate} from '../utils/utils';
+import {render, replace, remove} from '../utils/render-utils';
 
 
 export default class PointPresenter {
   #container = null;
-  #point = null;
-  #mode = Mode.DEFAULT;
-
-  #destinations = null;
-  #names = null
-  #types = null;
-  #offers = null;
 
   #pointComponent = null;
   #editPointComponent = null;
@@ -31,6 +17,15 @@ export default class PointPresenter {
 
   #changeData = null;
   #changeMode = null;
+  #removeNewPoint = null;
+
+  #destinations = null;
+  #names = null
+  #types = null;
+  #offers = null;
+
+  #point = null;
+  #mode = Mode.DEFAULT;
 
   constructor(container, changeData, changeMode, destinations, offers, types, names) {
     this.#container = container;
@@ -43,8 +38,10 @@ export default class PointPresenter {
     this.#types = types;
   }
 
-  init = (point) => {
+  init = (point, removeNewPoint) => {
     this.#point = point;
+
+    this.#removeNewPoint = removeNewPoint;
 
     this.#prevPointComponent = this.#pointComponent;
     this.#prevEditPointComponent = this.#editPointComponent;
@@ -52,12 +49,12 @@ export default class PointPresenter {
     this.#pointComponent = new PointView(point);
     this.#editPointComponent = new EditPointView(point, this.#destinations, this.#offers, this.#types, this.#names);
 
-    this.#pointComponent.setClickHandler(this.#openButtonClickHandler);
-    this.#pointComponent.setFavoriteClickHandler(this.#favoriteToggleHandler);
+    this.#pointComponent.setButtonOpenClickHandler(this.#pointOpenClickHandler);
+    this.#pointComponent.setFavoriteClickHandler(this.#pointFavoriteToggleHandler);
 
-    this.#editPointComponent.setClickHandler(this.#closeButtonClickHandler);
-    this.#editPointComponent.setSubmitHandler(this.#formSubmitHandler);
-    this.#editPointComponent.setDeleteHandler(this.#pointDeleteHandler);
+    this.#editPointComponent.setCloseButtonClickHandler(this.#pointCloseClickHandler);
+    this.#editPointComponent.setSubmitHandler(this.#pointSubmitHandler);
+    this.#editPointComponent.setButtonDeleteClickHandler(this.#pointDeleteHandler);
 
     this.#render();
   }
@@ -69,21 +66,16 @@ export default class PointPresenter {
     }
 
     if (this.#mode === Mode.DEFAULT) {
-      // console.log(this.#pointComponent);//TODO подумать
       replace(this.#pointComponent, this.#prevPointComponent);
     }
 
     if (this.#mode === Mode.EDIT) {
-      // replace(this.#editPointComponent, this.#prevEditPointComponent); //TODO подумать
-      // console.log(this.#pointComponent);//TODO подумать
       replace(this.#pointComponent, this.#prevEditPointComponent);
       this.#mode = Mode.DEFAULT;
     }
 
-
     remove(this.#prevPointComponent);
     remove(this.#prevEditPointComponent);
-
   }
 
   removePointComponent = () => {
@@ -97,7 +89,7 @@ export default class PointPresenter {
     }
   }
 
-  #formEscHandler = (evt) => {
+  #pointEscHandler = (evt) => {
     if (isEsc(evt.code)) {
       this.#closeEditPoint();
     }
@@ -105,7 +97,7 @@ export default class PointPresenter {
 
   #openEditPoint = () => {
     replace(this.#editPointComponent, this.#pointComponent);
-    document.addEventListener('keydown', this.#formEscHandler);
+    document.addEventListener('keydown', this.#pointEscHandler);
     this.#changeMode();
     this.#mode = Mode.EDIT;
   }
@@ -113,23 +105,25 @@ export default class PointPresenter {
   #closeEditPoint = () => {
     this.#editPointComponent.reset(this.#point);
     replace(this.#pointComponent, this.#editPointComponent);
-    document.removeEventListener('keydown', this.#formEscHandler);
+    document.removeEventListener('keydown', this.#pointEscHandler);
     this.#mode = Mode.DEFAULT;
   }
 
-  #openButtonClickHandler = () => {
+  #pointOpenClickHandler = () => {
     this.#openEditPoint();
   }
 
-  #closeButtonClickHandler = () => {
+  #pointCloseClickHandler = () => {
     this.#closeEditPoint();
   }
 
-  #formSubmitHandler = (point) => {
+  #pointSubmitHandler = (point) => {
+    const isMinor = checkMinorUpdate(point, this.#point);
+
     this.#changeData(
       UserPointAction.UPDATE,
-      UpdateType.MINOR,
-      point, // TODO еще подумать надо
+      isMinor ? UpdateType.MINOR : UpdateType.PATCH,
+      point,
     );
   }
 
@@ -141,7 +135,7 @@ export default class PointPresenter {
     );
   }
 
-  #favoriteToggleHandler = () => {
+  #pointFavoriteToggleHandler = () => {
     this.#changeData(
       UserPointAction.UPDATE,
       UpdateType.PATCH,
@@ -170,7 +164,6 @@ export default class PointPresenter {
         if (this.#mode === Mode.DEFAULT) {
           return;
         }
-
         this.#editPointComponent.updateStateWithRerender({
           isSaving: true,
           isDisabled: true,
@@ -182,7 +175,6 @@ export default class PointPresenter {
           this.#pointComponent.shake();
           return;
         }
-
         this.#editPointComponent.disableInputs();
         this.#editPointComponent.shake(this.#resetState);
         break;

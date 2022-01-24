@@ -1,11 +1,10 @@
-import {RenderPosition} from '../consts';
 import AbstractView from '../view/abstract-view';
+import {RenderPosition, RenderErrorMessage} from '../consts';
 
 
 const getElement = (component) => component instanceof AbstractView ? component.element : component;
 
 const render = (container, element, position) => {
-
   const parent = getElement(container);
   const child = getElement(element);
 
@@ -30,7 +29,7 @@ const render = (container, element, position) => {
 
 const replace = (to, from) => {
   if (to === null || from === null) {
-    throw new Error('Can not replace empty elements');
+    throw new Error(RenderErrorMessage.REPLACE);
   }
 
   const newChild = getElement(to);
@@ -45,7 +44,7 @@ const remove = (component) => {
     component.element.remove();
     component.removeElement();
   } else {
-    throw new Error('Can remove only components');
+    throw new Error(RenderErrorMessage.REMOVE);
   }
 };
 

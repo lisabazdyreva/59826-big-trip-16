@@ -1,15 +1,16 @@
-import {MenuTab} from '../consts';
 import AbstractView from './abstract-view';
+import {MenuTab} from '../consts';
 
 
-const menuTabsList = Object.values(MenuTab);
+const menuTabs = Object.values(MenuTab);
 
 
 const createMenuView = (activeTab) => `<nav class="trip-controls__trip-tabs  trip-tabs">
-    ${menuTabsList.map((tab) => {
+    ${menuTabs.map((tab) => {
     const isActive = activeTab === tab ? 'trip-tabs__btn--active' : '';
     return `<a class="trip-tabs__btn ${isActive}" href="#">${tab}</a>`;}).join('')}
 </nav>`;
+
 
 export default class MenuView extends AbstractView {
   #activeTab = null;
@@ -23,8 +24,8 @@ export default class MenuView extends AbstractView {
     return createMenuView(this.#activeTab);
   }
 
-  setMenuClickHandler = (cb) => {
-    this._callbacks.menuClicked = cb;
+  setMenuTabClickHandler = (cb) => {
+    this._callbacks.menuClickHandler = cb;
     this.element.addEventListener('click', this.#menuClickHandler);
   }
 
@@ -32,6 +33,6 @@ export default class MenuView extends AbstractView {
     evt.preventDefault();
     this.#activeTab = evt.target.textContent;
 
-    this._callbacks.menuClicked(this.#activeTab);
+    this._callbacks.menuClickHandler(this.#activeTab);
   }
 }

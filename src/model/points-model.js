@@ -1,10 +1,11 @@
 import AbstractObservable from '../utils/abstract-observable';
-import {UpdateType} from '../consts';
+import {ResponseErrorMessage, UpdateType} from '../consts';
 import dayjs from 'dayjs';
 
+
 export default class PointsModel extends AbstractObservable {
-  #points = [];
   #api = null;
+  #points = [];
 
   constructor(api) {
     super();
@@ -18,7 +19,6 @@ export default class PointsModel extends AbstractObservable {
     } catch(err) {
       this.#points = [];
     }
-
 
     this._notify(UpdateType.INIT);
   }
@@ -63,9 +63,8 @@ export default class PointsModel extends AbstractObservable {
 
       this._notify(updateType, updatingItem);
     } catch(err) {
-      throw new Error('Cannot update poinnt'); // TODO подумать над обработкой, вынести в константы текст
+      throw new Error(ResponseErrorMessage.UPDATE);
     }
-
   }
 
   addPoint = async (updateType, updatingItem) => {
@@ -80,16 +79,15 @@ export default class PointsModel extends AbstractObservable {
 
       this._notify(updateType, updatingItem);
     } catch (err) {
-      throw new Error('Cannot add poinnt');// TODO подумать над обработкой, вынести в константы текст
+      throw new Error(ResponseErrorMessage.ADD);
     }
-
   }
 
   removePoint = async (updateType, updatingItem) => {
     const index = this.#points.findIndex((item) => item.id === updatingItem.id);
 
     if (index === -1) {
-      throw new Error('Can\'t remove point.');
+      throw new Error(ResponseErrorMessage.REMOVE);
     }
 
     try {
@@ -102,7 +100,7 @@ export default class PointsModel extends AbstractObservable {
 
       this._notify(updateType, updatingItem);
     } catch (err) {
-      throw new Error('Cannot remove poinnt');// TODO подумать над обработкой, вынести в константы текст
+      throw new Error(ResponseErrorMessage.REMOVE);
     }
   }
 }

@@ -1,40 +1,57 @@
-import {remove, render, replace} from '../utils/render-utils';
-import {RenderPosition, UpdateType} from '../consts';
 import FiltersView from '../view/filters-view';
+
+import {FiltersType, RenderPosition, UpdateType} from '../consts';
+import {remove, render, replace} from '../utils/render-utils';
+import {filterPoints} from '../utils/utils';
+
 
 export default class FiltersPresenter {
   #container = null;
-  #model = null;
+
   #prevComponent = null;
   #component = null;
 
-  constructor(container, model) {
+  #model = null;
+  #pointsModel = null;
+
+  constructor(container, model, pointsModel) {
     this.#container = container;
     this.#model = model;
+
+    this.#pointsModel = pointsModel;
   }
 
   get activeFilter() {
     return this.#model.activeFilter;
   }
 
+  get pastPointsLength() {
+    return filterPoints[FiltersType.PAST](this.#pointsModel.points).length;
+  }
+
+  get futurePointsLength() {
+    return filterPoints[FiltersType.FUTURE](this.#pointsModel.points).length;
+  }
+
   init = () => {
     this.#prevComponent = this.#component;
-    this.#component = new FiltersView(this.activeFilter);
+    this.#component = new FiltersView(this.activeFilter, this.pastPointsLength, this.futurePointsLength);
 
-    this.#component.setClickFilterHandler(this.#changeFilterHandler);
+    this.#component.setFilterChangeHandler(this.#activeFilterChangeHandler);
 
-    this.#model.add(this.#handleModelEvent);
+    this.#model.add(this.init);
+    this.#pointsModel.add(this.init);
 
     if (this.#prevComponent === null) {
       this.#renderFilters();
       return;
     }
+
     replace(this.#component, this.#prevComponent);
     remove(this.#prevComponent);
   }
 
   remove = () => {
-    // this.#component.removeElement() // TODO посмотреть еще removeElement, что он вообще делает
     remove(this.#component);
     this.#component = null;
   }
@@ -43,15 +60,11 @@ export default class FiltersPresenter {
     render(this.#container, this.#component, RenderPosition.BEFOREEND);
   }
 
-  #changeFilterHandler = (currentFilter) => {
+  #activeFilterChangeHandler = (currentFilter) => {
     if (this.#model.activeFilter === currentFilter) {
       return;
     }
 
     this.#model.setActiveFilter(UpdateType.MAJOR, currentFilter);
-  }
-
-  #handleModelEvent = () => {
-    this.init();
   }
 }
