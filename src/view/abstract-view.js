@@ -3,7 +3,7 @@ import {createElement} from '../utils/utils';
 
 
 const ANIMATION_TIMEOUT = 600;
-
+const MILLISECONDS_IN_SECOND = 1000;
 
 export default class AbstractView {
   #element = null;
@@ -31,7 +31,7 @@ export default class AbstractView {
   }
 
   shake = (cb = null) => {
-    this.element.style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
+    this.element.style.animation = `shake ${ANIMATION_TIMEOUT / MILLISECONDS_IN_SECOND}s`;
 
     setTimeout(() => {
       this.element.style.animation = '';
