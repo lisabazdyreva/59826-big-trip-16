@@ -12,7 +12,7 @@ Also implemented the charts, which provide information like in sorting in user-f
 
 ### Stack description
 
-I develop this app in pure Javascipt(es8). 
+I develop this app in pure Javascipt(es8) in OOP-style. 
 Webpack is used for assembly. 
 For charts and choosing dates I used chart.js and flatpickr libraries. 
 For work with dates I used dayjs.
