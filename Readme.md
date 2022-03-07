@@ -19,6 +19,3 @@ Also implemented the charts, which provide information like in sorting in user-f
 
 Requests to server and catching errors were implemented.
 
-
-# Проект «Большое путешествие»
-
