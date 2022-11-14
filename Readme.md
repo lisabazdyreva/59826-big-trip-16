@@ -46,7 +46,7 @@ Requests to server and catching errors are implemented.
 
 ## Demo site
 
-[Go to Big Trip application>>](https://lisabazdyreva.github.io/big-trip/)
+[Go to Big Trip application >>](https://big-trip-lisabazdyreva.vercel.app/)
 
 
 ## How to run app locally:
@@ -54,7 +54,7 @@ Requests to server and catching errors are implemented.
 
 - Clone repository:
 ```bash
-git clone git@github.com:lisabazdyreva/keksobooking.git
+git clone git@github.com:lisabazdyreva/big-trip.git
 ```
 
 - Install dependencies:
