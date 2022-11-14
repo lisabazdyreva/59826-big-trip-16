@@ -11,7 +11,7 @@ There are 2 useful screens in the application:
 
 ![Alt text](https://github.com/lisabazdyreva/big-trip/blob/master/.github/workflows/big-trip-list.png "Big Trip list of trip points")
 
-On the travel itinerary screen user can view the list of trip point in chronological order by default. Also you can sort trip points by price and by duration.
+On the travel itinerary screen user can view the list of trip point in chronological order by default. Also you can sort trip points by price and by duration or add/remove them from favorites (star button).
 
 ![Alt text](https://github.com/lisabazdyreva/big-trip/blob/master/.github/workflows/big-trip-filtering.png "Big Trip filters for points")
 
@@ -32,16 +32,38 @@ When the user selects a city, a brief description of that city appears below. Al
 In the header you can view the start trip city, the finishing trip city and the total price of all jorney. All this information is updating when you edit or remove points.
 
 
-### Stack description
+## Stack
 
 - Vanilla JavaScript(es8),
 - OOP-style,
+- MVP,
 - Webpack,
 - chart.js,
 - flatpickr,
 - dayjs.
 
-Requests to server and catching errors were implemented.
+Requests to server and catching errors are implemented.
+
+## Demo site
+
+[Go to Big Trip application>>](https://lisabazdyreva.github.io/big-trip/)
 
 
-### Interface description
+## How to run app locally:
+
+
+- Clone repository:
+```bash
+git clone git@github.com:lisabazdyreva/keksobooking.git
+```
+
+- Install dependencies:
+
+```bash
+npm install
+```
+
+- Run application:
+```bash
+npm start
+```
